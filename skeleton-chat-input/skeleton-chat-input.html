@@ -1,0 +1,272 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../../polymerfire/firebase-auth.html">
+<link rel="import" href="../../polymerfire/firebase-database-script.html">
+<link rel="import" href="../../paper-styles/shadow.html">
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-icons/image-icons.html">
+<link rel="import" href="../../iron-icons/av-icons.html">
+
+<dom-module id="skeleton-chat-input">
+  <template>
+    <style>
+      :host {
+        display: block;
+        --skeleton-chat-input: {
+        };
+        /* Default mixin */
+        --skeleton-chat-input-input: {
+        };
+        @apply --skeleton-chat-input;
+
+        --skeleton-chat-input-icon: {
+        };
+        --skeleton-chat-input-icon-emoji: {
+        };
+        --skeleton-chat-input-icon-camera: {
+        };
+        --skeleton-chat-input-icon-mic: {
+        };
+
+        --skeleton-chat-input-container: {
+          border-radius: 30px;
+          padding-left: 1rem;
+          padding-right: 0.5rem;
+          @apply --shadow-elevation-2dp;
+        };
+
+        /*Default reset*/
+        --paper-input-container-underline: {
+          display: none;
+        };
+        --paper-input-container-underline-focus: {
+          display: none;
+        };
+        --paper-input-container: {
+          background-color: white;
+          @apply --skeleton-chat-input-container;
+        };
+
+        --paper-icon-button: {
+          border-radius: 50%;
+          margin-left: 2px;
+        };
+      }
+
+      :host([theme="dark"]) {
+        --paper-input-container: {
+          background-color: var(--paper-grey-700);
+          @apply --skeleton-chat-input-container;
+        };
+        --skeleton-chat-input-icon: {
+          color: white;
+        };
+        --paper-input-container-input: {
+          color: white;
+        };
+        --paper-input-container-color: var(--paper-grey-50);
+      }
+
+      paper-input {
+        margin: 0 1rem 1rem 1rem;
+        @apply --skeleton-chat-input-input;
+      }
+
+      paper-icon-button {
+        color: var(--paper-grey-800);
+        @apply --skeleton-chat-input-icon;
+      }
+
+      .icon-emoji {
+        @apply --skeleton-chat-input-icon-emoji;
+      }
+
+      .icon-camera {
+        @apply --skeleton-chat-input-icon-camera;
+      }
+
+      .icon-mic {
+        background-color: var(--paper-grey-800);
+        color: white;
+        @apply --skeleton-chat-input-icon-mic;
+      }
+    </style>
+
+    <firebase-auth
+      signed-in="{{signedIn}}"
+      user="{{user}}">
+    </firebase-auth>
+    <paper-input label="Say something..."
+                 value="{{text}}"
+                 on-keydown="_checkForEnter"
+                 no-label-float
+                 disabled$="[[!signedIn]]">
+      <template is="dom-if" if="[[camera]]">
+        <paper-icon-button icon="image:photo-camera"
+                           class="icon-camera"
+                           slot="suffix"></paper-icon-button>
+      </template>
+      <template is="dom-if" if="[[emoji]]">
+        <paper-icon-button icon="image:tag-faces"
+                           class="icon-emoji"
+                           slot="suffix"></paper-icon-button>
+      </template>
+      <template is="dom-if" if="[[mic]]">
+        <paper-icon-button icon="av:mic"
+                           class="icon-mic"
+                           slot="suffix"></paper-icon-button>
+      </template>
+    </paper-input>
+  </template>
+
+  <script>
+    /**
+     * `skeleton-chat-input`
+     *
+     * @license Copyright (c) 2017 FabricElements. All rights reserved.
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonChatInput extends Polymer.Element {
+      static get is() {
+        return 'skeleton-chat-input';
+      }
+
+      static get properties() {
+        return {
+          /**
+           * A value to check if the user is signed in.
+           */
+          signedIn: {
+            type: Boolean,
+            value: false,
+          },
+
+          /**
+           * The user Object.
+           */
+          user: {
+            type: Object,
+            value: {},
+          },
+
+          /**
+           * The component theme.
+           */
+          theme: {
+            type: String,
+            value: 'light',
+          },
+
+          /**
+           * The message to send
+           */
+          text: {
+            type: String,
+            value: null,
+          },
+
+          /**
+           * The chat group.
+           */
+          group: {
+            type: String,
+            value: null,
+          },
+
+          /**
+           * Displays emoji
+           */
+          emoji: {
+            type: Boolean,
+            value: false,
+          },
+
+          /**
+           * Displays camera
+           */
+          camera: {
+            type: Boolean,
+            value: false,
+          },
+
+          /**
+           * Displays microphone
+           */
+          mic: {
+            type: Boolean,
+            value: false,
+          },
+        };
+      }
+
+      /**
+       * Function to send message on Enter key press.
+       *
+       * @param {object} event
+       * @return {*}
+       * @private
+       */
+      _checkForEnter(event) {
+        // check if 'enter' was pressed
+        if (event.keyCode === 13) {
+          if (!this.text) {
+            return this._dispatchEvent('error', 'Empty.');
+          }
+          this._sendMessage();
+        }
+      }
+
+      /**
+       * Send message
+       *
+       * @return {*}
+       * @private
+       */
+      _sendMessage() {
+        if (!this.group) {
+          return this._dispatchEvent('error', 'Define the group first.');
+        }
+        const message = {
+          text: {
+            original: this.text,
+          },
+          timestamp: {
+            created: firebase.database.ServerValue.TIMESTAMP,
+            updated: firebase.database.ServerValue.TIMESTAMP,
+          },
+          user: this.user.uid,
+        };
+
+        const chatRef = `chats/groups/group/${this.group}/messages/message`;
+        return firebase.database().ref(chatRef).push(message)
+          .then(() => {
+            this.text = null;
+            this._dispatchEvent('message', 'ok');
+          })
+          .catch((err) => {
+            this._dispatchEvent('error', err);
+          });
+      }
+
+      /**
+       * Dispatch event
+       *
+       * @param {string} event
+       * @param  {string} detail
+       * @private
+       */
+      _dispatchEvent(event, detail) {
+        this.dispatchEvent(new CustomEvent(event, {
+          detail: detail,
+          bubbles: true,
+          composed: true,
+        }));
+      }
+    }
+
+    window.customElements.define(SkeletonChatInput.is, SkeletonChatInput);
+  </script>
+</dom-module>

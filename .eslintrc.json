@@ -22,7 +22,8 @@
         ]
       }
     ],
-    "no-var": "off",
+    "no-var": "error",
+    "no-console": "off",
     "require-jsdoc": [
       "error",
       {
@@ -43,6 +44,7 @@
     "expect": true,
     "setup": true,
     "MockInteractions": true,
-    "WCT": true
+    "WCT": true,
+    "firebase": true
   }
 }
