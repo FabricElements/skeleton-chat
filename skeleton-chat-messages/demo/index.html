@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-  <title>skeleton-chat-input demo</title>
+  <title>skeleton-chat-messages demo</title>
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
@@ -14,29 +14,30 @@
   <link rel="import" href="../../../polymer/lib/elements/dom-bind.html">
   <link rel="import" href="../../../polymer/lib/elements/dom-if.html">
   <link rel="import" href="../../../skeleton-auth/skeleton-auth.html">
-  <link rel="import" href="../skeleton-chat-input.html">
-  <meta name="viewport" content="width=device-width">
+  <link rel="import" href="../skeleton-chat-messages.html">
 
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
-      html {
-        touch-action: manipulation;
-      }
-
       .container {
         background-color: var(--paper-grey-50);
-        padding: 3rem 1rem;
+        padding: 0 1rem;
       }
 
       .dark {
         background-color: var(--paper-grey-800);
+      }
+
+      skeleton-chat-messages {
+        --skeleton-chat-messages: {
+          max-height: 200px;
+        }
       }
     </style>
   </custom-style>
 </head>
 <body>
 <div class="vertical-section-container centered">
-  <h3>skeleton-chat-input demo</h3>
+  <h3>skeleton-chat-messages demo</h3>
 
   <firebase-app auth-domain="ph-staging-c3f40.firebaseapp.com"
                 database-url="https://ph-staging-c3f40.firebaseio.com"
@@ -58,26 +59,38 @@
 
   <demo-snippet>
     <template>
-      <div class="container light">
-        <skeleton-chat-input group="demo"
-                             mic
-                             camera
-                             emoji
-        ></skeleton-chat-input>
-      </div>
+      <dom-bind>
+        <template>
+          <firebase-query
+            path="/chats/groups/group/demo/messages/message"
+            order-by-child="timestamp/created"
+            data="{{data}}">
+          </firebase-query>
+          <div class="container light">
+            <skeleton-chat-messages messages="[[data]]"
+            ></skeleton-chat-messages>
+          </div>
+        </template>
+      </dom-bind>
     </template>
   </demo-snippet>
 
   <demo-snippet>
     <template>
-      <div class="container dark">
-        <skeleton-chat-input group="demo"
-                             mic
-                             camera
-                             emoji
-                             theme="dark"
-        ></skeleton-chat-input>
-      </div>
+      <dom-bind>
+        <template>
+          <firebase-query
+            path="/chats/groups/group/demo/messages/message"
+            order-by-child="timestamp/created"
+            data="{{data}}">
+          </firebase-query>
+          <div class="container dark">
+            <skeleton-chat-messages messages="[[data]]"
+                                    theme="dark"
+            ></skeleton-chat-messages>
+          </div>
+        </template>
+      </dom-bind>
     </template>
   </demo-snippet>
 </div>

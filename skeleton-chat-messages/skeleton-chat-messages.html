@@ -1,0 +1,96 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../iron-list/iron-list.html">
+<link rel="import" href="../skeleton-chat-message/skeleton-chat-message.html">
+<link rel="import" href="../../iron-scroll-threshold/iron-scroll-threshold.html">
+
+<dom-module id="skeleton-chat-messages">
+  <template>
+    <style is="custom-style">
+      :host {
+        display: block;
+        --skeleton-chat-messages: {
+
+        };
+        --skeleton-chat-messages-list: {
+
+        };
+      }
+
+      iron-scroll-threshold {
+        @apply --skeleton-chat-messages;
+      }
+
+      iron-list {
+        --iron-list-items-container: {
+          @apply --skeleton-chat-messages-list;
+        };
+      }
+    </style>
+
+    <iron-scroll-threshold id="threshold">
+      <iron-list items="[[messages]]" scroll-target="threshold">
+        <template>
+          <skeleton-chat-message theme="[[theme]]"
+                                 message="[[item]]"
+          ></skeleton-chat-message>
+        </template>
+      </iron-list>
+    </iron-scroll-threshold>
+  </template>
+
+  <script>
+    /**
+     * `skeleton-chat-messages`
+     *
+     *
+     * @license Copyright (c) 2017 FabricElements. All rights reserved.
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonChatMessages extends Polymer.Element {
+      static get is() {
+        return 'skeleton-chat-messages';
+      }
+
+      static get properties() {
+        return {
+          /**
+           * The component theme.
+           */
+          theme: {
+            type: String,
+            value: 'light',
+          },
+
+          /**
+           * Messages
+           */
+          messages: {
+            type: Array,
+          },
+        };
+      }
+
+      static get observers() {
+        return [
+          '_messagesChange(messages.*)',
+        ];
+      }
+
+      /**
+       * Message list change
+       *
+       * @private
+       */
+      _messagesChange() {
+        const messages = this.messages;
+        if (!messages) return;
+        const list = this.shadowRoot.querySelector('iron-list');
+        list.scrollToIndex(messages.length - 1);
+      }
+    }
+
+    window.customElements.define(SkeletonChatMessages.is, SkeletonChatMessages);
+  </script>
+</dom-module>

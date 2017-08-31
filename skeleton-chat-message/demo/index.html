@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-  <title>skeleton-chat-input demo</title>
+  <title>skeleton-chat-message demo</title>
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
@@ -13,8 +13,9 @@
   <link rel="import" href="../../../polymerfire/polymerfire.html">
   <link rel="import" href="../../../polymer/lib/elements/dom-bind.html">
   <link rel="import" href="../../../polymer/lib/elements/dom-if.html">
+  <link rel="import" href="../../../polymer/lib/utils/resolve-url.html">
   <link rel="import" href="../../../skeleton-auth/skeleton-auth.html">
-  <link rel="import" href="../skeleton-chat-input.html">
+  <link rel="import" href="../skeleton-chat-message.html">
   <meta name="viewport" content="width=device-width">
 
   <custom-style>
@@ -28,15 +29,43 @@
         padding: 3rem 1rem;
       }
 
+      .light,
+      .dark {
+        border-bottom: 1px solid var(--paper-grey-900);
+        margin-bottom: 2rem;
+      }
+
+      .light {
+        border-bottom: 1px solid var(--paper-grey-900);
+      }
+
       .dark {
         background-color: var(--paper-grey-800);
+      }
+
+      h3 {
+        padding: 1rem 0;
+        border-top: 1px solid var(--paper-grey-300);
+      }
+
+      .dark h3 {
+        color: white;
+        border-top: 1px solid var(--paper-grey-600);
       }
     </style>
   </custom-style>
 </head>
 <body>
 <div class="vertical-section-container centered">
-  <h3>skeleton-chat-input demo</h3>
+  <h3>skeleton-chat-message demo</h3>
+
+  <demo-snippet>
+    <template>
+      <div class="container">
+        <skeleton-chat-message></skeleton-chat-message>
+      </div>
+    </template>
+  </demo-snippet>
 
   <firebase-app auth-domain="ph-staging-c3f40.firebaseapp.com"
                 database-url="https://ph-staging-c3f40.firebaseio.com"
@@ -56,30 +85,37 @@
     </template>
   </dom-bind>
 
-  <demo-snippet>
-    <template>
-      <div class="container light">
-        <skeleton-chat-input group="demo"
-                             mic
-                             camera
-                             emoji
-        ></skeleton-chat-input>
-      </div>
-    </template>
-  </demo-snippet>
 
-  <demo-snippet>
+  <dom-bind>
     <template>
-      <div class="container dark">
-        <skeleton-chat-input group="demo"
-                             mic
-                             camera
-                             emoji
-                             theme="dark"
-        ></skeleton-chat-input>
+      <firebase-document
+        path="/chats/groups/group/demo/messages/message"
+        data="{{data}}">
+      </firebase-document>
+      <h2>Light theme</h2>
+      <div class="container light">
+        <h3>Basic</h3>
+        <skeleton-chat-message message="[[data.basic]]"></skeleton-chat-message>
+        <h3>Owner</h3>
+        <skeleton-chat-message message="[[data.owner]]"></skeleton-chat-message>
+        <h3>Anonymous</h3>
+        <skeleton-chat-message message="[[data.anonymous]]"></skeleton-chat-message>
       </div>
+      <h2>Dark theme</h2>
+      <div class="container dark">
+        <h3>Basic</h3>
+        <skeleton-chat-message message="[[data.basic]]"
+                               theme="dark"></skeleton-chat-message>
+        <h3>Owner</h3>
+        <skeleton-chat-message message="[[data.owner]]"
+                               theme="dark"></skeleton-chat-message>
+        <h3>Anonymous</h3>
+        <skeleton-chat-message message="[[data.anonymous]]"
+                               theme="dark"></skeleton-chat-message>
+      </div>
+      <hr>
     </template>
-  </demo-snippet>
+  </dom-bind>
 </div>
 </body>
 </html>

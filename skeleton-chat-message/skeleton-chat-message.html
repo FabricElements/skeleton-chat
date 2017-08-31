@@ -1,0 +1,513 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../paper-item/paper-icon-item.html">
+<link rel="import" href="../../polymerfire/firebase-auth.html">
+<link rel="import" href="../../polymerfire/firebase-database-script.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-image/iron-image.html">
+<link rel="import" href="../../from-now/from-now.html">
+<link rel="import" href="../../polymer/lib/mixins/gesture-event-listeners.html">
+
+<dom-module id="skeleton-chat-message">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding-bottom: 0.5rem;
+        --skeleton-chat-message: {
+        };
+        @apply --skeleton-chat-message;
+
+        /* Default mixin */
+        --skeleton-chat-message-height: 32px;
+        min-height: var(--skeleton-chat-message-height);
+        --skeleton-chat-message-icon-color: var(--paper-grey-100);
+        --skeleton-chat-message-icon-acronym: {
+          background-color: var(--paper-grey-400);
+        };
+        /* Font styles */
+        --skeleton-chat-message-font-family: 'Roboto', 'Noto', sans-serif;
+        --skeleton-chat-message-font-size: 14px;
+        --skeleton-chat-message-font-weight: 400;
+        --skeleton-chat-message-font-color: white;
+        --skeleton-chat-message-font-color-dark: var(--paper-grey-200);
+
+        /* theme colors */
+        --skeleton-chat-bubble-color: var(--paper-blue-500);
+        --skeleton-chat-bubble-color-dark: var(--paper-blue-700);
+      }
+
+      :host([theme="dark"]) {
+        --skeleton-chat-bubble-color: var(--skeleton-chat-bubble-color-dark);
+        --skeleton-chat-message-font-color: var(--skeleton-chat-message-font-color-dark);
+      }
+
+      paper-icon-item {
+        --paper-item-focused-before: {
+          background-color: transparent;
+        };
+        --paper-icon-item: {
+          @apply --layout-start;
+        };
+        --paper-item-icon-width: calc(var(--skeleton-chat-message-height) * 1.5);
+        --paper-item-min-height: var(--skeleton-chat-message-height);
+      }
+
+      .icon-container {
+        background-color: var(--skeleton-chat-message-icon-color);
+        width: var(--skeleton-chat-message-height);
+        height: var(--skeleton-chat-message-height);
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+      }
+
+      [owner] .icon-container {
+        background-color: transparent !important;
+      }
+
+      iron-image {
+        width: var(--skeleton-chat-message-height);
+        height: var(--skeleton-chat-message-height);
+        border-radius: 50%;
+        overflow: hidden;
+        @apply --layout-fit;
+        z-index: 2;
+      }
+
+      .container {
+        display: block;
+        width: 100%;
+        min-height: var(--skeleton-chat-message-height);
+      }
+
+      .bubble {
+        min-height: var(--skeleton-chat-message-height);
+        background-color: var(--skeleton-chat-bubble-color);
+        border-radius: calc(var(--skeleton-chat-message-height) / 2);
+        color: white;
+        display: inline-block;
+        width: auto;
+        max-width: 100%;
+        transition: max-width ease 0.5s;
+      }
+
+      .bubble-content {
+        position: relative;
+        padding: calc(calc(var(--skeleton-chat-message-height) - var(--skeleton-chat-message-font-size)) / 2) calc(var(--skeleton-chat-message-height) / 2);
+      }
+
+      .bubble-text {
+        color: var(--skeleton-chat-message-font-color);
+        -webkit-font-smoothing: antialiased;
+        line-height: calc(var(--skeleton-chat-message-height) / 2);
+        font-size: var(--skeleton-chat-message-font-size);
+        font-weight: var(--skeleton-chat-message-font-weight);
+      }
+
+      [owner] .bubble-text {
+        color: var(--paper-grey-900);
+      }
+
+      .time {
+        @apply --paper-font-caption;
+        color: var(--paper-grey-500);
+      }
+
+      [owner] .container {
+        text-align: right;
+      }
+
+      [owner] iron-image {
+        display: none !important;
+      }
+
+      [owner] .bubble {
+        background-color: var(--paper-grey-300);
+      }
+
+      [hidden] {
+        display: none;
+      }
+
+
+      [owner] .text-original[hidden] {
+        display: block !important;
+      }
+      [owner] .text-translation {
+        display: none !important;
+      }
+
+      #acronym {
+        @apply --paper-font-subhead;
+        @apply --paper-font-common-nowrap;
+        line-height: var(--skeleton-chat-message-height);
+        text-transform: uppercase;
+        text-align: center;
+        @apply --layout-fit;
+        z-index: 1;
+        @apply --skeleton-chat-message-icon-acronym;
+      }
+    </style>
+
+    <firebase-auth
+      signed-in="{{signedIn}}"
+      user="{{user}}">
+    </firebase-auth>
+    <paper-icon-item owner$="[[isOwner]]">
+      <div class="icon-container" slot="item-icon">
+        <template is="dom-if" if="[[!isOwner]]">
+          <template is="dom-if" if="[[image]]">
+            <iron-image fade
+                        sizing="cover"
+                        src$="[[image]]"></iron-image>
+          </template>
+          <div id="acronym">
+            [[acronym]]
+          </div>
+        </template>
+      </div>
+      <div class="container">
+        <div class="bubble" on-down="_bubbleDown" on-up="_bubbleUp">
+          <div class="bubble-content">
+            <template is="dom-if" if="[[originalText]]">
+              <div class="bubble-text">
+                <div class="text-original" hidden$="[[!showOriginal]]">[[originalText]]</div>
+                <div class="text-translation" hidden$="[[showOriginal]]">[[text]]</div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div class="time" hidden$="[[!time]]">
+          <from-now time="[[time]]"></from-now>
+        </div>
+      </div>
+    </paper-icon-item>
+  </template>
+
+  <script>
+    /* eslint-disable max-len */
+
+    /**
+     * `skeleton-chat-message`
+     *
+     *
+     * @license Copyright (c) 2017 FabricElements. All rights reserved.
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonChatMessage extends Polymer.GestureEventListeners(Polymer.Element) {
+      static get is() {
+        return 'skeleton-chat-message';
+      }
+
+      static get properties() {
+        return {
+          /**
+           * A value to check if the user is signed in.
+           */
+          signedIn: {
+            type: Boolean,
+            value: false,
+          },
+
+          /**
+           * The user Object.
+           */
+          user: {
+            type: Object,
+            value: {},
+          },
+
+          /**
+           * The component theme.
+           */
+          theme: {
+            type: String,
+            value: 'light',
+          },
+
+          /**
+           * The moment when the user sends the message.
+           */
+          time: {
+            type: String,
+            value: null,
+            readOnly: true,
+          },
+
+          /**
+           * The user is the message owner.
+           */
+          isOwner: {
+            type: Boolean,
+            value: false,
+            readOnly: true,
+          },
+
+          /**
+           * The user is the message owner.
+           */
+          showOriginal: {
+            type: Boolean,
+            value: false,
+            readOnly: true,
+          },
+
+          /**
+           * The message owner is anonymous
+           */
+          isAnonymous: {
+            type: Boolean,
+            value: true,
+            readOnly: true,
+          },
+
+          /**
+           * The message object
+           */
+          message: {
+            type: Object,
+            value: {},
+          },
+
+          /**
+           * Text
+           */
+          text: {
+            type: String,
+            value: null,
+            readOnly: true,
+            notify: true,
+          },
+
+          /**
+           * Original text
+           */
+          originalText: {
+            type: String,
+            value: null,
+            readOnly: true,
+            notify: true,
+          },
+
+          /**
+           * User name acronym
+           */
+          acronym: {
+            type: String,
+            value: null,
+            readOnly: true,
+            notify: true,
+          },
+
+          /**
+           * Image url
+           */
+          image: {
+            type: String,
+            value: null,
+            readOnly: true,
+            notify: true,
+          },
+
+          /**
+           * Time pressed
+           */
+          timePressed: {
+            type: Number,
+            value: 0,
+            readOnly: true,
+            notify: true,
+            observer: '_timePressedObserver',
+          },
+
+          /**
+           *
+           */
+          timer: {
+            type: Object,
+            value: null,
+            readOnly: true,
+            notify: true,
+          },
+        };
+      }
+
+      static get observers() {
+        return [
+          '_checkBasics(signedIn, user.*, message)',
+          '_messageChange(message.*)',
+        ];
+      }
+
+      /**
+       * Check if is message basics
+       *
+       * @param {boolean} signedIn
+       * @param {*} userData
+       * @param {object} message
+       * @return {boolean}
+       * @private
+       */
+      _checkBasics(signedIn, userData, message) {
+        // Set default values
+        this._setIsOwner(false);
+        this._setIsAnonymous(true);
+
+        /**
+         * Return if can't handle the basics
+         */
+        if (!message) {
+          return false;
+        }
+
+        /**
+         * Return if the message has no user
+         */
+        if (!message.user) {
+          return false;
+        }
+        /**
+         * Check if is an anonymous user
+         */
+        this._setIsAnonymous(!!message.user.isAnonymous);
+
+        /**
+         * Check if the user is signed in
+         */
+        if (!signedIn) {
+          return;
+        }
+
+        /**
+         * Check if is the message owner
+         */
+        this._setIsOwner(this.user.uid === message.user.uid);
+      }
+
+      /**
+       * Check message change
+       *
+       * @private
+       */
+      _messageChange() {
+        const message = this.message;
+        if (!message) return;
+
+        if (message.text) this._returnFinalMessage(message.text);
+        if (message.timestamp && message.timestamp.created) {
+          this._setTime(message.timestamp.created);
+        }
+        if (message.user) this._messageUser(message.user);
+      }
+
+      /**
+       * User specific data
+       *
+       * @param {object} user
+       * @private
+       */
+      _messageUser(user) {
+        /**
+         * Set Image
+         */
+        const image = user.image ? user.image : null;
+        this._setImage(image);
+
+        const name = user.name ? user.name : null;
+        const acronym = name ? this._acronym(name) : '?';
+        this._setAcronym(acronym);
+      }
+
+      /**
+       * Set final message text
+       *
+       * @param {object} message
+       * @private
+       */
+      _returnFinalMessage(message) {
+        const language = this._getBrowserLanguage();
+        const original = message.original ? message.original : null;
+        this._setOriginalText(original);
+        let finalMessage = message[language] ? message[language] : original;
+        this._setText(finalMessage);
+      }
+
+      /**
+       * Return browser language
+       *
+       * @return {string}
+       * @private
+       */
+      _getBrowserLanguage() {
+        const language = (navigator.language || navigator.userLanguage) ?
+          navigator.language : navigator.userLanguage;
+        const separator = language.indexOf('-');
+        return language.substring(0, separator != -1 ? separator : language.length);
+      }
+
+      /**
+       * Returns an acronym from string
+       *
+       * @param {string} text
+       * @return {string}
+       * @private
+       */
+      _acronym(text) {
+        const matches = text.match(/\b(\w)/g);
+        const finalMatches = matches.join('');
+        return finalMatches.substring(0, 2);
+      }
+
+      /**
+       * Bubble was pressed down
+       *
+       * @param {object} event
+       * @private
+       */
+      _bubbleDown(event) {
+        this._pressTimeOut();
+      }
+
+      /**
+       * Bubble was released
+       *
+       * @param {object} event
+       * @private
+       */
+      _bubbleUp(event) {
+        window.clearInterval(this.timer);
+        this._setTimePressed(0);
+      }
+
+      /**
+       * The time that the the bubble has been pressed in seconds
+       *
+       * @param {number} time
+       * @private
+       */
+      _timePressedObserver(time) {
+        this._setShowOriginal(this.isOwner);
+        if (time >= 2) {
+          this._setShowOriginal(true);
+        }
+      }
+
+      /**
+       * Pressed time out
+       *
+       * @private
+       */
+      _pressTimeOut() {
+        let time = 1;
+        const timer = window.setInterval(() => {
+          this._setTimePressed(time++);
+        }, 1000);
+        this._setTimer(timer);
+      }
+    }
+
+    window.customElements.define(SkeletonChatMessage.is, SkeletonChatMessage);
+  </script>
+</dom-module>
