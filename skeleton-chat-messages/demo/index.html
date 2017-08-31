@@ -20,11 +20,17 @@
     <style is="custom-style" include="demo-pages-shared-styles">
       .container {
         background-color: var(--paper-grey-50);
-        padding: 3rem 1rem;
+        padding: 0 1rem;
       }
 
       .dark {
         background-color: var(--paper-grey-800);
+      }
+
+      skeleton-chat-messages {
+        --skeleton-chat-messages: {
+          max-height: 200px;
+        }
       }
     </style>
   </custom-style>
@@ -53,26 +59,38 @@
 
   <demo-snippet>
     <template>
-      <div class="container light">
-        <skeleton-chat-messages group="demo"
-                                mic
-                                camera
-                                emoji
-        ></skeleton-chat-messages>
-      </div>
+      <dom-bind>
+        <template>
+          <firebase-query
+            path="/chats/groups/group/demo/messages/message"
+            order-by-child="timestamp/created"
+            data="{{data}}">
+          </firebase-query>
+          <div class="container light">
+            <skeleton-chat-messages messages="[[data]]"
+            ></skeleton-chat-messages>
+          </div>
+        </template>
+      </dom-bind>
     </template>
   </demo-snippet>
 
   <demo-snippet>
     <template>
-      <div class="container dark">
-        <skeleton-chat-messages group="demo"
-                                mic
-                                camera
-                                emoji
-                                theme="dark"
-        ></skeleton-chat-messages>
-      </div>
+      <dom-bind>
+        <template>
+          <firebase-query
+            path="/chats/groups/group/demo/messages/message"
+            order-by-child="timestamp/created"
+            data="{{data}}">
+          </firebase-query>
+          <div class="container dark">
+            <skeleton-chat-messages messages="[[data]]"
+                                    theme="dark"
+            ></skeleton-chat-messages>
+          </div>
+        </template>
+      </dom-bind>
     </template>
   </demo-snippet>
 </div>
