@@ -18,7 +18,8 @@
       "error",
       {
         "capIsNewExceptions": [
-          "Polymer"
+          "Polymer",
+          "Polymer.GestureEventListeners"
         ]
       }
     ],

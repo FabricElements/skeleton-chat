@@ -15,11 +15,11 @@
         display: block;
         --skeleton-chat-input: {
         };
+        @apply --skeleton-chat-input;
+
         /* Default mixin */
         --skeleton-chat-input-input: {
         };
-        @apply --skeleton-chat-input;
-
         --skeleton-chat-input-icon: {
         };
         --skeleton-chat-input-icon-emoji: {
@@ -229,6 +229,7 @@
         if (!this.group) {
           return this._dispatchEvent('error', 'Define the group first.');
         }
+        console.log(this.user);
         const message = {
           text: {
             original: this.text,
@@ -237,7 +238,12 @@
             created: firebase.database.ServerValue.TIMESTAMP,
             updated: firebase.database.ServerValue.TIMESTAMP,
           },
-          user: this.user.uid,
+          user: {
+            uid: this.user.uid,
+            isAnonymous: this.user.isAnonymous,
+            name: this.user.displayName ? this.user.displayName : null,
+            image: this.user.photoURL ? this.user.photoURL : null,
+          },
         };
 
         const chatRef = `chats/groups/group/${this.group}/messages/message`;

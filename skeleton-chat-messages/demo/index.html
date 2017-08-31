@@ -10,19 +10,69 @@
 
   <link rel="import" href="../../../iron-demo-helpers/demo-pages-shared-styles.html">
   <link rel="import" href="../../../iron-demo-helpers/demo-snippet.html">
+  <link rel="import" href="../../../polymerfire/polymerfire.html">
+  <link rel="import" href="../../../polymer/lib/elements/dom-bind.html">
+  <link rel="import" href="../../../polymer/lib/elements/dom-if.html">
+  <link rel="import" href="../../../skeleton-auth/skeleton-auth.html">
   <link rel="import" href="../skeleton-chat-messages.html">
 
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
+      .container {
+        background-color: var(--paper-grey-50);
+        padding: 3rem 1rem;
+      }
+
+      .dark {
+        background-color: var(--paper-grey-800);
+      }
     </style>
   </custom-style>
 </head>
 <body>
 <div class="vertical-section-container centered">
-  <h3>Basic skeleton-chat-messages demo</h3>
+  <h3>skeleton-chat-messages demo</h3>
+
+  <firebase-app auth-domain="ph-staging-c3f40.firebaseapp.com"
+                database-url="https://ph-staging-c3f40.firebaseio.com"
+                api-key="AIzaSyAWZ2ax6AK7BRty2CVHTME6oNShBJaDkPI"
+                storage-bucket="ph-staging-c3f40.appspot.com"
+                messaging-sender-id="480962898078"></firebase-app>
+  <dom-bind>
+    <template>
+      <firebase-auth signed-in="{{signedIn}}"
+                     user="{{user}}">
+      </firebase-auth>
+      <dom-if if="[[!signedIn]]">
+        <template>
+          <skeleton-auth google></skeleton-auth>
+        </template>
+      </dom-if>
+    </template>
+  </dom-bind>
+
   <demo-snippet>
     <template>
-      <skeleton-chat-messages></skeleton-chat-messages>
+      <div class="container light">
+        <skeleton-chat-messages group="demo"
+                                mic
+                                camera
+                                emoji
+        ></skeleton-chat-messages>
+      </div>
+    </template>
+  </demo-snippet>
+
+  <demo-snippet>
+    <template>
+      <div class="container dark">
+        <skeleton-chat-messages group="demo"
+                                mic
+                                camera
+                                emoji
+                                theme="dark"
+        ></skeleton-chat-messages>
+      </div>
     </template>
   </demo-snippet>
 </div>
