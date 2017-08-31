@@ -1,0 +1,36 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../skeleton-chat-message/skeleton-chat-message.html">
+
+<dom-module id="skeleton-chat-messages">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+  </template>
+
+  <script>
+    /**
+     * `skeleton-chat-messages`
+     *
+     *
+     * @license Copyright (c) 2017 FabricElements. All rights reserved.
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonChatMessages extends Polymer.Element {
+      static get is() {
+        return 'skeleton-chat-messages';
+      }
+
+      static get properties() {
+        return {};
+      }
+    }
+
+    window.customElements.define(SkeletonChatMessages.is, SkeletonChatMessages);
+  </script>
+</dom-module>
