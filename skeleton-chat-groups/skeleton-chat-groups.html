@@ -1,0 +1,116 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../iron-scroll-threshold/iron-scroll-threshold.html">
+<link rel="import" href="../../iron-list/iron-list.html">
+<link rel="import" href="../../polymerfire/firebase-query.html">
+<link rel="import" href="../skeleton-chat-groups-item/skeleton-chat-groups-item.html">
+<link rel="import" href="../../polymerfire/firebase-auth.html">
+
+<dom-module id="skeleton-chat-groups">
+  <template>
+    <style is="custom-style">
+      :host {
+        display: block;
+        min-height: 100%;
+        --skeleton-chat-groups: {
+
+        };
+        --skeleton-chat-groups-list: {
+
+        };
+      }
+
+      iron-scroll-threshold {
+        @apply --skeleton-chat-groups;
+      }
+
+      iron-list {
+        --iron-list-items-container: {
+          @apply --skeleton-chat-groups-list;
+        };
+      }
+    </style>
+
+    <firebase-auth
+      signed-in="{{signedIn}}"
+      user="{{user}}">
+    </firebase-auth>
+
+    <firebase-query
+      path$="/chats/users/[[user.uid]]/groups"
+      order-by-child="timestamp/created"
+      data="{{groups}}">
+    </firebase-query>
+
+    <iron-scroll-threshold id="threshold">
+      <iron-list items="[[groups]]" scroll-target="threshold">
+        <template>
+          <skeleton-chat-groups-item theme$="[[theme]]"
+                                     group$="[[item.$key]]"
+          ></skeleton-chat-groups-item>
+        </template>
+      </iron-list>
+    </iron-scroll-threshold>
+
+  </template>
+
+  <script>
+    /**
+     * `skeleton-chat-groups`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonChatGroups extends Polymer.Element {
+      static get is() {
+        return 'skeleton-chat-groups';
+      }
+
+      static get properties() {
+        return {
+          /**
+           * A value to check if the user is signed in.
+           */
+          signedIn: {
+            type: Boolean,
+            value: false,
+          },
+
+          /**
+           * The user Object.
+           */
+          user: {
+            type: Object,
+            value: {},
+          },
+
+          /**
+           * The component theme.
+           */
+          theme: {
+            type: String,
+            value: 'light',
+          },
+
+          /**
+           * groups
+           */
+          groups: {
+            type: Array,
+          },
+
+          /**
+           * Group id
+           */
+          group: {
+            type: String,
+            value: null,
+          },
+        };
+      }
+    }
+
+    window.customElements.define(SkeletonChatGroups.is, SkeletonChatGroups);
+  </script>
+</dom-module>

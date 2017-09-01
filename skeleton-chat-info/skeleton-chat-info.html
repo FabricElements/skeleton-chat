@@ -1,5 +1,6 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../polymerfire/firebase-document.html">
+<link rel="import" href="../../polymerfire/firebase-auth.html">
 
 <dom-module id="skeleton-chat-info">
   <template>
@@ -8,6 +9,9 @@
         display: none;
       }
     </style>
+    <firebase-auth
+      user="{{user}}">
+    </firebase-auth>
     <firebase-document
       path$="/chats/groups/[[group]]"
       data="{{data}}">
@@ -31,6 +35,13 @@
 
       static get properties() {
         return {
+          /**
+           * The user Object.
+           */
+          user: {
+            type: Object,
+            value: {},
+          },
           group: {
             type: String,
             value: null,
@@ -47,7 +58,7 @@
             notify: true,
             reflectToAttribute: true,
             readOnly: true,
-            computed: '_computeInfo(data, data.*)',
+            computed: '_computeInfo(data, user, data.*)',
           },
         };
       }
@@ -101,37 +112,112 @@
        * Compute the data and returns the info object
        *
        * @param {object} data
+       * @param {object} user
        * @return {{}}
        * @private
        */
-      _computeInfo(data) {
+      _computeInfo(data, user) {
         let finalData = {};
         if (!data) return finalData;
+        if (data.users) {
+          const usersArray = this._usersToArray(data.users);
+          finalData.users = usersArray;
+          finalData.total = Object.keys(data.users).length;
+          const objectUser = this._getObjectUsers(data.users, user);
+          finalData.title = objectUser.name;
+          finalData.image = objectUser.image;
+        }
+
         if (data.info) {
           if (data.info.title) {
             finalData.title = this._returnFinalText(data.info.title);
+            finalData.acronym = this._acronym(finalData.title);
           }
           if (data.info.description) {
             finalData.description = this._returnFinalText(data.info.description);
           }
           if (data.info.image) {
-            finalData.image = this._returnFinalText(data.info.image);
+            finalData.image = data.info.image;
           }
-        }
-        if (data.users) {
-          let totalUsers = 0;
-          finalData.users = Object.keys(data.users).map((key) => {
-            totalUsers++;
-            let user = data.users[key];
-            user.acronym = user.name ? this._acronym(user.name) : '?';
-            user.uid = key;
-            return data.users[key];
-          });
-
-          finalData.total = totalUsers;
         }
 
         return finalData;
+      }
+
+      /**
+       * Extract first word from string
+       *
+       * @param {string} text
+       * @return {string}
+       * @private
+       */
+      _returnFistWord(text) {
+        const i = text.indexOf(' ');
+        return text.substring(0, i);
+      }
+
+      /**
+       * Get object from users
+       *
+       * @param {object} users
+       * @param {object} user
+       * @return {*}
+       * @private
+       */
+      _getObjectUsers(users, user) {
+        let finalObject = {
+          name: null,
+          image: null,
+        };
+
+        if (!user || !user.uid) return finalObject;
+        delete users[user.uid];
+
+        let fullNames = [];
+        let names = [];
+        let person = {};
+        for (let key in users) {
+          if (users.hasOwnProperty(key)) {
+            const userItem = users[key];
+            // Set basic person
+            person.name = userItem.name ? userItem.name : null;
+            person.image = userItem.image ? userItem.image : null;
+            // Set fullNames array
+            if (userItem.name) {
+              fullNames.push(userItem.name);
+            }
+            // Set names array
+            const fistName = this._returnFistWord(userItem.name);
+            names.push(fistName);
+          }
+        }
+
+        if (fullNames.length <= 1) {
+          finalObject.name = person.name;
+          finalObject.image = person.image;
+        } else {
+          finalObject.name = names.join(', ');
+          finalObject.image = null;
+        }
+        return finalObject;
+      }
+
+      /**
+       * Return users array
+       *
+       * @param {object} users
+       * @return {Array}
+       * @private
+       */
+      _usersToArray(users) {
+        return Object.keys(users).map((key) => {
+          let user = users[key];
+          if (user.name) {
+            user.acronym = this._acronym(user.name);
+          }
+          user.uid = key;
+          return users[key];
+        });
       }
     }
 
