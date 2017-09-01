@@ -1,7 +1,8 @@
 <link rel="import" href="../../polymer/polymer-element.html">
-<link rel="import" href="../../iron-list/iron-list.html">
-<link rel="import" href="../skeleton-chat-message/skeleton-chat-message.html">
 <link rel="import" href="../../iron-scroll-threshold/iron-scroll-threshold.html">
+<link rel="import" href="../../iron-list/iron-list.html">
+<link rel="import" href="../../polymerfire/firebase-query.html">
+<link rel="import" href="../skeleton-chat-message/skeleton-chat-message.html">
 
 <dom-module id="skeleton-chat-messages">
   <template>
@@ -26,6 +27,12 @@
         };
       }
     </style>
+
+    <firebase-query
+      path$="/chats/messages/[[group]]"
+      order-by-child="timestamp/created"
+      data="{{messages}}">
+    </firebase-query>
 
     <iron-scroll-threshold id="threshold">
       <iron-list items="[[messages]]" scroll-target="threshold">
@@ -68,6 +75,14 @@
            */
           messages: {
             type: Array,
+          },
+
+          /**
+           * Group id
+           */
+          group: {
+            type: String,
+            value: null,
           },
         };
       }
