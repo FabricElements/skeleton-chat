@@ -1,0 +1,140 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../polymerfire/firebase-document.html">
+
+<dom-module id="skeleton-chat-info">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+    <firebase-document
+      path$="/chats/groups/[[group]]"
+      data="{{data}}">
+    </firebase-document>
+
+  </template>
+
+  <script>
+    /**
+     * `skeleton-chat-info`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonChatInfo extends Polymer.Element {
+      static get is() {
+        return 'skeleton-chat-info';
+      }
+
+      static get properties() {
+        return {
+          group: {
+            type: String,
+            value: null,
+          },
+          data: {
+            type: Object,
+            value: {
+              info: {},
+              users: {},
+            },
+          },
+          info: {
+            type: Object,
+            notify: true,
+            reflectToAttribute: true,
+            readOnly: true,
+            computed: '_computeInfo(data, data.*)',
+          },
+        };
+      }
+
+      static get observers() {
+        return [
+//          '_dataObserver(data, data.*)',
+        ];
+      }
+
+      /**
+       *
+       * @param {object} textObject
+       * @return {null}
+       * @private
+       */
+      _returnFinalText(textObject) {
+        const language = this._getBrowserLanguage();
+        const original = textObject.original ? textObject.original : null;
+        return textObject[language] ? textObject[language] : original;
+      }
+
+      /**
+       * Return browser language
+       *
+       * @return {string}
+       * @private
+       */
+      _getBrowserLanguage() {
+        const language = (navigator.language || navigator.userLanguage) ?
+          navigator.language : navigator.userLanguage;
+        const separator = language.indexOf('-');
+        const finalLanguage = separator !== -1 ? separator : language.length;
+        return language.substring(0, finalLanguage);
+      }
+
+      /**
+       * Returns an acronym from string
+       *
+       * @param {string} text
+       * @return {string}
+       * @private
+       */
+      _acronym(text) {
+        const matches = text.match(/\b(\w)/g);
+        const finalMatches = matches.join('');
+        return finalMatches.substring(0, 2);
+      }
+
+      /**
+       * Compute the data and returns the info object
+       *
+       * @param {object} data
+       * @return {{}}
+       * @private
+       */
+      _computeInfo(data) {
+        let finalData = {};
+        if (!data) return finalData;
+        if (data.info) {
+          if (data.info.title) {
+            finalData.title = this._returnFinalText(data.info.title);
+          }
+          if (data.info.description) {
+            finalData.description = this._returnFinalText(data.info.description);
+          }
+          if (data.info.image) {
+            finalData.image = this._returnFinalText(data.info.image);
+          }
+        }
+        if (data.users) {
+          let totalUsers = 0;
+          finalData.users = Object.keys(data.users).map((key) => {
+            totalUsers++;
+            let user = data.users[key];
+            user.acronym = user.name ? this._acronym(user.name) : '?';
+            user.uid = key;
+            return data.users[key];
+          });
+
+          finalData.total = totalUsers;
+        }
+
+        return finalData;
+      }
+    }
+
+    window.customElements.define(SkeletonChatInfo.is, SkeletonChatInfo);
+  </script>
+</dom-module>
