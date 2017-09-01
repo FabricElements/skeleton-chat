@@ -59,38 +59,18 @@
 
   <demo-snippet>
     <template>
-      <dom-bind>
-        <template>
-          <firebase-query
-            path="/chats/groups/group/demo/messages/message"
-            order-by-child="timestamp/created"
-            data="{{data}}">
-          </firebase-query>
-          <div class="container light">
-            <skeleton-chat-messages messages="[[data]]"
-            ></skeleton-chat-messages>
-          </div>
-        </template>
-      </dom-bind>
+      <skeleton-chat-messages group="demo"
+      ></skeleton-chat-messages>
     </template>
   </demo-snippet>
 
   <demo-snippet>
     <template>
-      <dom-bind>
-        <template>
-          <firebase-query
-            path="/chats/groups/group/demo/messages/message"
-            order-by-child="timestamp/created"
-            data="{{data}}">
-          </firebase-query>
-          <div class="container dark">
-            <skeleton-chat-messages messages="[[data]]"
-                                    theme="dark"
-            ></skeleton-chat-messages>
-          </div>
-        </template>
-      </dom-bind>
+      <div class="container dark">
+        <skeleton-chat-messages group="demo"
+                                theme="dark"
+        ></skeleton-chat-messages>
+      </div>
     </template>
   </demo-snippet>
 </div>

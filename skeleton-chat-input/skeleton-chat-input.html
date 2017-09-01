@@ -229,7 +229,6 @@
         if (!this.group) {
           return this._dispatchEvent('error', 'Define the group first.');
         }
-        console.log(this.user);
         const message = {
           text: {
             original: this.text,
@@ -246,7 +245,7 @@
           },
         };
 
-        const chatRef = `chats/groups/group/${this.group}/messages/message`;
+        const chatRef = `chats/messages/${this.group}`;
         return firebase.database().ref(chatRef).push(message)
           .then(() => {
             this.text = null;
