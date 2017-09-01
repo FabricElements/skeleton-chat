@@ -1,0 +1,177 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../paper-item/paper-icon-item.html">
+<link rel="import" href="../../paper-item/paper-item-body.html">
+<link rel="import" href="../../iron-image/iron-image.html">
+<link rel="import" href="../skeleton-chat-info/skeleton-chat-info.html">
+<link rel="import" href="../../paper-styles/typography.html">
+<link rel="import" href="../../iron-icons/social-icons.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../paper-styles/color.html">
+
+<dom-module id="skeleton-chat-groups-item">
+  <template>
+    <style is="custom-style">
+      :host {
+        display: block;
+        --skeleton-chat-group-item: {
+        };
+        @apply --skeleton-chat-group-item;
+
+        /* Default mixin */
+        --skeleton-chat-group-item-height: 72px;
+        min-height: var(--skeleton-chat-group-item-height);
+        --skeleton-chat-group-item-image-color: var(--paper-grey-100);
+        --skeleton-chat-group-item-image-size: 40px;
+        /* Font styles */
+        --skeleton-chat-group-item-font-family: 'Roboto', 'Noto', sans-serif;
+        --skeleton-chat-group-item-font-size: 16px;
+        --skeleton-chat-group-item-font-weight: 400;
+        --skeleton-chat-group-item-font-color: var(--paper-grey-900);
+        --skeleton-chat-group-item-font-color-dark: var(--paper-grey-50);
+
+      }
+
+      :host([theme="dark"]) {
+        --skeleton-chat-group-item-font-color: var(--skeleton-chat-group-item-font-color-dark);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      [hidden] {
+        display: none;
+      }
+
+      iron-image {
+        display: block;
+        border-radius: 50%;
+        overflow: hidden;
+        @apply --layout-fit;
+        z-index: 2;
+      }
+
+      paper-icon-item {
+        --paper-item-focused-before: {
+          /*background-color: transparent;*/
+        };
+        --paper-icon-item: {
+          /*@apply --layout-start;*/
+        };
+        /*--paper-item-icon-width: calc(var(--skeleton-chat-group-item-height) * 1.5);*/
+        --paper-item-min-height: var(--skeleton-chat-group-item-height);
+      }
+
+      .image-container {
+        background-color: var(--skeleton-chat-group-item-image-color);
+        height: var(--skeleton-chat-group-item-image-size);
+        width: var(--skeleton-chat-group-item-image-size);
+        @apply --layout-vertical;
+        @apply --layout-center-center;
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .image-container iron-icon {
+        position: relative;
+        z-index: 1;
+      }
+
+      .title {
+        @apply --paper-font-common-nowrap;
+        font-family: var(--skeleton-chat-group-item-font-family);
+        font-size: var(--skeleton-chat-group-item-font-size);
+        font-weight: var(--skeleton-chat-group-item-font-weight);
+        color: var(--skeleton-chat-group-item-font-color);
+      }
+    </style>
+
+    <skeleton-chat-info group="[[group]]" info="{{info}}"></skeleton-chat-info>
+
+    <a href$="[[path]]/[[group]]" tabindex="-1">
+      <paper-icon-item>
+        <div class="image-container" slot="item-icon">
+          <template is="dom-if" if="[[info.image]]">
+            <iron-image fade
+                        sizing="cover"
+                        src$="[[info.image]]"></iron-image>
+          </template>
+          <iron-icon icon$="social:[[icon]]"></iron-icon>
+        </div>
+        <paper-item-body>
+          <div class="title">[[info.title]]</div>
+        </paper-item-body>
+      </paper-icon-item>
+    </a>
+  </template>
+
+  <script>
+    /**
+     * `skeleton-chat-groups-item`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonChatGroupsItem extends Polymer.Element {
+      static get is() {
+        return 'skeleton-chat-groups-item';
+      }
+
+      static get properties() {
+        return {
+          /**
+           * The component theme.
+           */
+          theme: {
+            type: String,
+            value: 'light',
+          },
+
+          /**
+           * Group id
+           */
+          group: {
+            type: String,
+            value: null,
+          },
+
+          path: {
+            type: String,
+            value: '/chat/group',
+          },
+
+          info: {
+            type: Object,
+            value: null,
+          },
+
+          icon: {
+            type: String,
+            value: null,
+            readOnly: true,
+            computed: '_computeIcon(info, info.*)',
+          },
+        };
+      }
+
+      _computeIcon(info) {
+        let icon = 'person';
+        if (!info) return icon;
+        const total = info.total;
+        if (total) {
+          if (total >= 3) {
+            icon = 'group';
+          }
+        }
+        return icon;
+      }
+    }
+
+    window.customElements.define(SkeletonChatGroupsItem.is, SkeletonChatGroupsItem);
+  </script>
+</dom-module>

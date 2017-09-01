@@ -4,40 +4,30 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-  <title>skeleton-chat-input demo</title>
+  <title>skeleton-chat-info demo</title>
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="../../../iron-demo-helpers/demo-pages-shared-styles.html">
   <link rel="import" href="../../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../../polymerfire/polymerfire.html">
   <link rel="import" href="../../../polymer/lib/elements/dom-bind.html">
+  <link rel="import" href="../../../polymer/lib/elements/dom-repeat.html">
   <link rel="import" href="../../../polymer/lib/elements/dom-if.html">
+  <link rel="import" href="../../../polymerfire/polymerfire.html">
   <link rel="import" href="../../../skeleton-auth/skeleton-auth.html">
-  <link rel="import" href="../skeleton-chat-input.html">
-  <meta name="viewport" content="width=device-width">
+  <link rel="import" href="../skeleton-chat-info.html">
 
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
-      html {
-        touch-action: manipulation;
-      }
-
-      .container {
-        background-color: var(--paper-grey-50);
-        padding: 3rem 1rem;
-      }
-
-      .dark {
-        background-color: var(--paper-grey-800);
+      img {
+        display: block;
       }
     </style>
   </custom-style>
 </head>
 <body>
 <div class="vertical-section-container centered">
-  <h3>skeleton-chat-input demo</h3>
-
+  <h3>Basic skeleton-chat-info demo</h3>
   <firebase-app auth-domain="fabricelements.firebaseapp.com"
                 database-url="https://fabricelements.firebaseio.com"
                 api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
@@ -55,29 +45,35 @@
       </dom-if>
     </template>
   </dom-bind>
-
   <demo-snippet>
     <template>
-      <div class="container light">
-        <skeleton-chat-input group="demo"
-                             mic
-                             camera
-                             emoji
-        ></skeleton-chat-input>
-      </div>
-    </template>
-  </demo-snippet>
+      <dom-bind>
+        <template>
+          <skeleton-chat-info group="demo" info="{{info}}"></skeleton-chat-info>
+          <ul>
+            <li><strong>Title:</strong> [[info.title]]</li>
+            <li><strong>Description:</strong> [[info.description]]</li>
+          </ul>
+          <hr>
 
-  <demo-snippet>
-    <template>
-      <div class="container dark">
-        <skeleton-chat-input group="demo"
-                             mic
-                             camera
-                             emoji
-                             theme="dark"
-        ></skeleton-chat-input>
-      </div>
+
+          <article>
+            <h3>Users</h3>
+            <p>Total users: [[info.total]]</p>
+            <dom-repeat items="[[info.users]]" item="{{item}}">
+              <template>
+                <ul>
+                  <li><strong>Name:</strong> [[item.name]]</li>
+                  <li><strong>Acronym:</strong> [[item.acronym]]</li>
+                  <li><strong>Image:</strong> <img src$="[[item.image]]"></li>
+                </ul>
+                ---
+              </template>
+            </dom-repeat>
+          </article>
+
+        </template>
+      </dom-bind>
     </template>
   </demo-snippet>
 </div>

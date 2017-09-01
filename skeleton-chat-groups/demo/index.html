@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <title>skeleton-chat-groups demo</title>
+
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+
+  <link rel="import" href="../../../iron-demo-helpers/demo-pages-shared-styles.html">
+  <link rel="import" href="../../../iron-demo-helpers/demo-snippet.html">
+  <link rel="import" href="../../../polymer/lib/elements/dom-bind.html">
+  <link rel="import" href="../../../polymer/lib/elements/dom-repeat.html">
+  <link rel="import" href="../../../polymer/lib/elements/dom-if.html">
+  <link rel="import" href="../../../polymerfire/polymerfire.html">
+  <link rel="import" href="../../../skeleton-auth/skeleton-auth.html">
+  <link rel="import" href="../skeleton-chat-groups.html">
+
+  <custom-style>
+    <style is="custom-style" include="demo-pages-shared-styles">
+      .container {
+        background-color: var(--paper-grey-50);
+      }
+
+      .dark {
+        background-color: var(--paper-grey-800);
+      }
+    </style>
+  </custom-style>
+</head>
+<body>
+<firebase-app auth-domain="fabricelements.firebaseapp.com"
+              database-url="https://fabricelements.firebaseio.com"
+              api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
+              storage-bucket="fabricelements.appspot.com"
+              messaging-sender-id="908593247251"></firebase-app>
+<dom-bind>
+  <template>
+    <firebase-auth signed-in="{{signedIn}}"
+                   user="{{user}}">
+    </firebase-auth>
+    <dom-if if="[[!signedIn]]">
+      <template>
+        <skeleton-auth google></skeleton-auth>
+      </template>
+    </dom-if>
+  </template>
+</dom-bind>
+
+<div class="vertical-section-container centered">
+  <h3>Basic skeleton-chat-groups demo</h3>
+  <demo-snippet>
+    <template>
+      <div class="container light">
+        <skeleton-chat-groups></skeleton-chat-groups>
+      </div>
+    </template>
+  </demo-snippet>
+</div>
+<div class="vertical-section-container centered">
+  <h3>Basic skeleton-chat-groups demo</h3>
+  <demo-snippet>
+    <template>
+      <div class="container dark">
+        <skeleton-chat-groups theme="dark"></skeleton-chat-groups>
+      </div>
+    </template>
+  </demo-snippet>
+</div>
+</body>
+</html>
