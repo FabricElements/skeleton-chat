@@ -9,7 +9,7 @@
 
 <dom-module id="skeleton-chat-message">
   <template>
-    <style>
+    <style is="custom-style">
       :host {
         display: block;
         padding-bottom: 0.5rem;
@@ -129,10 +129,10 @@
         display: none;
       }
 
-
       [owner] .text-original[hidden] {
         display: block !important;
       }
+
       [owner] .text-translation {
         display: none !important;
       }
@@ -337,7 +337,7 @@
       static get observers() {
         return [
           '_checkBasics(signedIn, user.*, message)',
-          '_messageChange(message.*)',
+          '_messageChange(message, message.*)',
         ];
       }
 
@@ -389,10 +389,10 @@
       /**
        * Check message change
        *
+       * @param {object} message
        * @private
        */
-      _messageChange() {
-        const message = this.message;
+      _messageChange(message) {
         if (!message) return;
 
         if (message.text) this._returnFinalMessage(message.text);
