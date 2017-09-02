@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-  <title>skeleton-chat-groups-item demo</title>
+  <title>skeleton-chat-box demo</title>
 
   <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
@@ -15,17 +15,10 @@
   <link rel="import" href="../../../polymer/lib/elements/dom-if.html">
   <link rel="import" href="../../../polymerfire/polymerfire.html">
   <link rel="import" href="../../../skeleton-auth/skeleton-auth.html">
-  <link rel="import" href="../skeleton-chat-groups-item.html">
+  <link rel="import" href="../skeleton-chat-box.html">
 
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
-      .container {
-        background-color: var(--paper-grey-50);
-      }
-
-      .dark {
-        background-color: var(--paper-grey-800);
-      }
     </style>
   </custom-style>
 </head>
@@ -36,7 +29,7 @@
               storage-bucket="fabricelements.appspot.com"
               messaging-sender-id="908593247251"></firebase-app>
 <div class="vertical-section-container centered">
-  <h3>Basic skeleton-chat-groups-item demo</h3>
+  <h3>Basic skeleton-chat-box demo</h3>
   <dom-bind>
     <template>
       <firebase-auth signed-in="{{signedIn}}"
@@ -51,18 +44,16 @@
   </dom-bind>
   <demo-snippet>
     <template>
-      <skeleton-chat-groups-item group="demo"
-      ></skeleton-chat-groups-item>
+      <skeleton-chat-box group="demo"
+      ></skeleton-chat-box>
     </template>
   </demo-snippet>
 
   <demo-snippet>
     <template>
-      <div class="container dark">
-        <skeleton-chat-groups-item group="demo"
-                                theme="dark"
-        ></skeleton-chat-groups-item>
-      </div>
+      <skeleton-chat-box group="demo"
+                         theme="dark"
+      ></skeleton-chat-box>
     </template>
   </demo-snippet>
 </div>

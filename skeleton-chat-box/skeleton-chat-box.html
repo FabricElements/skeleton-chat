@@ -1,0 +1,72 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../skeleton-chat-messages/skeleton-chat-messages.html">
+<link rel="import" href="../skeleton-chat-input/skeleton-chat-input.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+
+<dom-module id="skeleton-chat-box">
+  <template>
+    <style is="custom-style">
+      :host {
+        display: block;
+        position: relative;
+        min-height: 200px;
+        --skeleton-chat-box: {
+
+        };
+        @apply --skeleton-chat-box;
+      }
+
+      skeleton-chat-messages {
+        @apply --layout-fit;
+        --skeleton-chat-messages: {
+          max-height: 100%;
+        };
+      }
+
+      skeleton-chat-messages {
+        --skeleton-chat-box-bottom: 78px;
+      }
+    </style>
+    <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]">
+      <skeleton-chat-input theme$="[[theme]]" group$="[[group]]"></skeleton-chat-input>
+    </skeleton-chat-messages>
+  </template>
+
+  <script>
+    /**
+     * `skeleton-chat-box`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonChatBox extends Polymer.Element {
+      static get is() {
+        return 'skeleton-chat-box';
+      }
+
+      static get properties() {
+        return {
+          /**
+           * The component theme.
+           */
+          theme: {
+            type: String,
+            value: 'light',
+          },
+
+          /**
+           * Group id
+           */
+          group: {
+            type: String,
+            value: null,
+          },
+        };
+      }
+    }
+
+    window.customElements.define(SkeletonChatBox.is, SkeletonChatBox);
+  </script>
+</dom-module>

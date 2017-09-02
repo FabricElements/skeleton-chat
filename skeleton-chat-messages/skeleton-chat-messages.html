@@ -1,7 +1,7 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../iron-scroll-threshold/iron-scroll-threshold.html">
 <link rel="import" href="../../iron-list/iron-list.html">
-<link rel="import" href="../../polymerfire/firebase-query.html">
+<link rel="import" href="../../polymerfire/firebase-database-script.html">
 <link rel="import" href="../skeleton-chat-message/skeleton-chat-message.html">
 
 <dom-module id="skeleton-chat-messages">
@@ -9,39 +9,67 @@
     <style is="custom-style">
       :host {
         display: block;
+        position: relative;
+        z-index: 0;
+        --skeleton-chat-messages-bg-color: var(--paper-grey-50);
+
         --skeleton-chat-messages: {
 
         };
         --skeleton-chat-messages-list: {
 
         };
+        --skeleton-chat-box-bottom: 0px;
+        background-color: var(--skeleton-chat-messages-bg-color);
+      }
+
+      :host([theme="dark"]) {
+        --skeleton-chat-messages-bg-color: var(--paper-grey-800);
       }
 
       iron-scroll-threshold {
+        max-height: 100vh;
         @apply --skeleton-chat-messages;
       }
 
       iron-list {
         --iron-list-items-container: {
+          margin-top: 1rem;
+          /*padding-bottom: var(--skeleton-chat-box-bottom);*/
           @apply --skeleton-chat-messages-list;
         };
       }
+
+      #space-bottom {
+        display: block;
+        height: var(--skeleton-chat-box-bottom);
+      }
+
+      #input-box {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 10;
+      }
     </style>
 
-    <firebase-query
-      path$="/chats/messages/[[group]]"
-      order-by-child="timestamp/created"
-      data="{{messages}}">
-    </firebase-query>
-
     <iron-scroll-threshold id="threshold">
-      <iron-list items="[[messages]]" scroll-target="threshold">
+      <iron-list items="[[data]]"
+                 as="message"
+                 max-physical-count="100"
+                 scroll-target="threshold"
+                 scroll-offset="1000">
         <template>
           <skeleton-chat-message theme="[[theme]]"
-                                 message="[[item]]"
+                                 message="[[message]]"
           ></skeleton-chat-message>
         </template>
       </iron-list>
+      <div id="input-box">
+        <slot></slot>
+      </div>
+      <div id="space-bottom"></div>
     </iron-scroll-threshold>
   </template>
 
@@ -73,8 +101,16 @@
           /**
            * Messages
            */
-          messages: {
+          data: {
             type: Array,
+            value: [],
+            notify: true,
+          },
+
+          list: {
+            type: Array,
+            value: Array,
+            notify: true,
           },
 
           /**
@@ -83,26 +119,64 @@
           group: {
             type: String,
             value: null,
+            observer: '_groupObserver',
           },
         };
       }
 
-      static get observers() {
-        return [
-          '_messagesChange(messages.*)',
-        ];
+      /**
+       * Group observer
+       *
+       * @param {string} group
+       * @private
+       */
+      _groupObserver(group) {
+        if (!group) return;
+        this._getData(group);
       }
 
       /**
-       * Message list change
+       * Get data
+       *
+       * @param {string} group
+       * @private
+       */
+      _getData(group) {
+        /**
+         * DB Query
+         * @type {firebase.database.Query}
+         */
+        const messagesRef = firebase.database().ref(`/chats/messages/${group}`)
+          .orderByChild('timestamp/created')
+          .limitToLast(8);
+
+        /**
+         * Listen for changes and apply the data
+         */
+        messagesRef.on('value', (snapshot) => {
+          const data = snapshot.val();
+          const arr = Object.keys(data).map((key) => data[key]);
+          this.data = arr;
+        });
+
+        messagesRef.once('value').then(() => {
+          this._scrollToLast();
+        });
+
+        messagesRef.on('child_added', (data) => {
+          this._scrollToLast();
+        });
+      }
+
+      /**
+       * Scroll the list to last  item
        *
        * @private
        */
-      _messagesChange() {
-        const messages = this.messages;
-        if (!messages) return;
+      _scrollToLast() {
         const list = this.shadowRoot.querySelector('iron-list');
-        list.scrollToIndex(messages.length - 1);
+        list.fire('iron-resize');
+        list.scrollToIndex(this.data.length - 1);
       }
     }
 
