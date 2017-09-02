@@ -1,5 +1,6 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../polymerfire/firebase-auth.html">
+<link rel="import" href="../../polymerfire/firebase-document.html">
 
 <dom-module id="skeleton-chat-info">
   <template>
@@ -11,6 +12,11 @@
     <firebase-auth
       user="{{user}}">
     </firebase-auth>
+    <firebase-document
+      disabled$="[[!group]]"
+      path$="/chats/groups/[[group]]"
+      data="{{data}}">
+    </firebase-document>
   </template>
 
   <script>
@@ -37,21 +43,18 @@
             type: Object,
             value: {},
           },
-          data: {
-            type: Object,
-            value: {
-              info: {
-                title: {
-                  original: null,
-                },
-                description: {
-                  original: null,
-                },
-                image: null,
-              },
-              users: {},
-            },
+
+          /**
+           * Group id
+           */
+          group: {
+            type: String,
+            value: null,
           },
+
+          /**
+           * Info data
+           */
           info: {
             type: Object,
             notify: true,
@@ -60,12 +63,6 @@
             computed: '_computeInfo(data, user, data.*)',
           },
         };
-      }
-
-      static get observers() {
-        return [
-//          '_dataObserver(data, data.*)',
-        ];
       }
 
       /**

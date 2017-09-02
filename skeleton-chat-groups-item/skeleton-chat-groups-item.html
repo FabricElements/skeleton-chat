@@ -89,7 +89,7 @@
       }
     </style>
 
-    <skeleton-chat-info data="[[group]]" info="{{info}}"></skeleton-chat-info>
+    <skeleton-chat-info group="[[group]]" info="{{info}}"></skeleton-chat-info>
 
     <a href$="[[path]]/[[group]]" tabindex="-1">
       <paper-icon-item>
@@ -156,9 +156,8 @@
            * groups
            */
           group: {
-            type: Object,
-            readOnly: true,
-            computed: '_computedGroup(data, data.*)',
+            type: String,
+            value: null,
           },
 
           /**
@@ -206,18 +205,6 @@
           }
         }
         return icon;
-      }
-
-      /**
-       * Computed group data
-       *
-       * @param {object} data
-       * @return {*}
-       * @private
-       */
-      _computedGroup(data) {
-        if (!data) return {};
-        return data;
       }
     }
 
