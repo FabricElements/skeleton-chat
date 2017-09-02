@@ -250,6 +250,7 @@
           .then(() => {
             this.text = null;
             this._dispatchEvent('message', 'ok');
+            this._updateGroupTimestamp();
           })
           .catch((err) => {
             this._dispatchEvent('error', err);
@@ -269,6 +270,20 @@
           bubbles: true,
           composed: true,
         }));
+      }
+
+      /**
+       * Update timestamp
+       *
+       * @private
+       */
+      _updateGroupTimestamp() {
+        const chatRef = `chats/groups/${this.group}/timestamp/updated`;
+        firebase.database().ref(chatRef)
+          .push(firebase.database.ServerValue.TIMESTAMP)
+          .catch((err) => {
+            this._dispatchEvent('error', err);
+          });
       }
     }
 

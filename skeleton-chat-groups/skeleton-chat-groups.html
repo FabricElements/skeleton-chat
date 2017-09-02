@@ -1,6 +1,7 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../iron-scroll-threshold/iron-scroll-threshold.html">
 <link rel="import" href="../../iron-list/iron-list.html">
+<link rel="import" href="../../polymerfire/firebase-database-script.html">
 <link rel="import" href="../../polymerfire/firebase-query.html">
 <link rel="import" href="../skeleton-chat-groups-item/skeleton-chat-groups-item.html">
 <link rel="import" href="../../polymerfire/firebase-auth.html">
@@ -36,16 +37,19 @@
     </firebase-auth>
 
     <firebase-query
-      path$="/chats/users/[[user.uid]]/groups"
-      order-by-child="timestamp/created"
-      data="{{groups}}">
+      disabled$="[[!user.uid]]"
+      path="chats/groups"
+      order-by-child$="users/[[user.uid]]"
+      start-at$="[[user.uid]]"
+      limit-to-last="50"
+      data="{{data}}">
     </firebase-query>
 
     <iron-scroll-threshold id="threshold">
       <iron-list items="[[groups]]" scroll-target="threshold">
         <template>
           <skeleton-chat-groups-item theme$="[[theme]]"
-                                     group$="[[item.$key]]"
+                                     data$="[[item]]"
           ></skeleton-chat-groups-item>
         </template>
       </iron-list>
@@ -58,6 +62,7 @@
      * `skeleton-chat-groups`
      *
      *
+     * @license Copyright (c) 2017 FabricElements. All rights reserved.
      * @customElement
      * @polymer
      * @demo demo/index.html
@@ -96,8 +101,17 @@
           /**
            * groups
            */
+          data: {
+            type: Array,
+          },
+
+          /**
+           * groups
+           */
           groups: {
             type: Array,
+            readOnly: true,
+            computed: '_sortData(data, data.*)',
           },
 
           /**
@@ -108,6 +122,43 @@
             value: null,
           },
         };
+      }
+
+      /**
+       * Sort data
+       *
+       * @param {array} data
+       * @return {array}
+       * @private
+       */
+      _sortData(data) {
+        let sorted = Array;
+        if (!data) return sorted;
+        // Return array from object
+        const dataArray = Object.keys(data).map((key) => {
+          return data[key];
+        });
+        // Sort the data
+        sorted = dataArray.sort((a, b) => {
+          const aTime = this._getTime(a);
+          const bTime = this._getTime(b);
+          return bTime - aTime;
+        });
+        return sorted;
+      }
+
+      /**
+       * Get the time from timestamp
+       *
+       * @param {object} times
+       * @return {*}
+       * @private
+       */
+      _getTime(times) {
+        if (!times || !times.timestamp || !times.timestamp.updated) {
+          return Date.now();
+        }
+        return times.timestamp.updated;
       }
     }
 

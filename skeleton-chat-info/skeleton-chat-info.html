@@ -1,5 +1,4 @@
 <link rel="import" href="../../polymer/polymer-element.html">
-<link rel="import" href="../../polymerfire/firebase-document.html">
 <link rel="import" href="../../polymerfire/firebase-auth.html">
 
 <dom-module id="skeleton-chat-info">
@@ -12,11 +11,6 @@
     <firebase-auth
       user="{{user}}">
     </firebase-auth>
-    <firebase-document
-      path$="/chats/groups/[[group]]"
-      data="{{data}}">
-    </firebase-document>
-
   </template>
 
   <script>
@@ -24,6 +18,7 @@
      * `skeleton-chat-info`
      *
      *
+     * @license Copyright (c) 2017 FabricElements. All rights reserved.
      * @customElement
      * @polymer
      * @demo demo/index.html
@@ -42,14 +37,18 @@
             type: Object,
             value: {},
           },
-          group: {
-            type: String,
-            value: null,
-          },
           data: {
             type: Object,
             value: {
-              info: {},
+              info: {
+                title: {
+                  original: null,
+                },
+                description: {
+                  original: null,
+                },
+                image: null,
+              },
               users: {},
             },
           },
@@ -131,7 +130,6 @@
         if (data.info) {
           if (data.info.title) {
             finalData.title = this._returnFinalText(data.info.title);
-            finalData.acronym = this._acronym(finalData.title);
           }
           if (data.info.description) {
             finalData.description = this._returnFinalText(data.info.description);
