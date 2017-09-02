@@ -49,7 +49,7 @@
       <iron-list items="[[groups]]" scroll-target="threshold">
         <template>
           <skeleton-chat-groups-item theme$="[[theme]]"
-                                     data$="[[item]]"
+                                     group$="[[item.$key]]"
           ></skeleton-chat-groups-item>
         </template>
       </iron-list>

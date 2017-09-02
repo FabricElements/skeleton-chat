@@ -26,13 +26,13 @@
   </custom-style>
 </head>
 <body>
+<firebase-app auth-domain="fabricelements.firebaseapp.com"
+              database-url="https://fabricelements.firebaseio.com"
+              api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
+              storage-bucket="fabricelements.appspot.com"
+              messaging-sender-id="908593247251"></firebase-app>
 <div class="vertical-section-container centered">
   <h3>Basic skeleton-chat-info demo</h3>
-  <firebase-app auth-domain="fabricelements.firebaseapp.com"
-                database-url="https://fabricelements.firebaseio.com"
-                api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
-                storage-bucket="fabricelements.appspot.com"
-                messaging-sender-id="908593247251"></firebase-app>
   <dom-bind>
     <template>
       <firebase-auth signed-in="{{signedIn}}"
