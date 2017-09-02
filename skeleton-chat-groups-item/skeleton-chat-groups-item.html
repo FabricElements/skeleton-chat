@@ -89,7 +89,7 @@
       }
     </style>
 
-    <skeleton-chat-info group="[[group]]" info="{{info}}"></skeleton-chat-info>
+    <skeleton-chat-info data="[[group]]" info="{{info}}"></skeleton-chat-info>
 
     <a href$="[[path]]/[[group]]" tabindex="-1">
       <paper-icon-item>
@@ -113,6 +113,7 @@
      * `skeleton-chat-groups-item`
      *
      *
+     * @license Copyright (c) 2017 FabricElements. All rights reserved.
      * @customElement
      * @polymer
      * @demo demo/index.html
@@ -133,23 +134,52 @@
           },
 
           /**
-           * Group id
+           * Data object
            */
-          group: {
-            type: String,
-            value: null,
+          data: {
+            type: Object,
+            value: {
+              info: {
+                title: {
+                  original: null,
+                },
+                description: {
+                  original: null,
+                },
+                image: null,
+              },
+              users: {},
+            },
           },
 
+          /**
+           * groups
+           */
+          group: {
+            type: Object,
+            readOnly: true,
+            computed: '_computedGroup(data, data.*)',
+          },
+
+          /**
+           * Link path
+           */
           path: {
             type: String,
             value: '/chat/group',
           },
 
+          /**
+           * Info object
+           */
           info: {
             type: Object,
             value: null,
           },
 
+          /**
+           * Icon
+           */
           icon: {
             type: String,
             value: null,
@@ -159,6 +189,13 @@
         };
       }
 
+      /**
+       * Compute icon
+       *
+       * @param {object} info
+       * @return {string}
+       * @private
+       */
       _computeIcon(info) {
         let icon = 'person';
         if (!info) return icon;
@@ -169,6 +206,18 @@
           }
         }
         return icon;
+      }
+
+      /**
+       * Computed group data
+       *
+       * @param {object} data
+       * @return {*}
+       * @private
+       */
+      _computedGroup(data) {
+        if (!data) return {};
+        return data;
       }
     }
 
