@@ -101,7 +101,7 @@
                  value="{{text}}"
                  on-keydown="_checkForEnter"
                  no-label-float
-                 disabled$="[[!signedIn]]">
+                 disabled$="[[!allowed]]">
       <template is="dom-if" if="[[camera]]">
         <paper-icon-button icon="image:photo-camera"
                            class="icon-camera"
@@ -130,10 +130,16 @@
      * @demo demo/index.html
      */
     class SkeletonChatInput extends Polymer.Element {
+      /**
+       * @return {string}
+       */
       static get is() {
         return 'skeleton-chat-input';
       }
 
+      /**
+       * @return {object}
+       */
       static get properties() {
         return {
           /**
@@ -199,7 +205,24 @@
             type: Boolean,
             value: false,
           },
+
+          allowed: {
+            type: Boolean,
+            value: false,
+            readOnly: true,
+            notify: true,
+            reflectToAttribute: true,
+          },
         };
+      }
+
+      /**
+       * @return {array}
+       */
+      static get observers() {
+        return [
+          '_checkUserPermissions(user, group)',
+        ];
       }
 
       /**
@@ -284,6 +307,28 @@
           .catch((err) => {
             this._dispatchEvent('error', err);
           });
+      }
+
+      /**
+       * Check if the user has permissions for a group
+       *
+       * @param {object} user
+       * @param {string} group
+       * @private
+       */
+      _checkUserPermissions(user, group) {
+        this._setAllowed(false);
+        if (!user || !user.uid || !group) return;
+        const chatRef = `chats/groups/${group}/users`;
+        const userRef = firebase.database().ref(chatRef);
+        userRef.on('value', (snapshot) => {
+          if (snapshot.hasChild(user.uid)) {
+            this._setAllowed(true);
+          }
+        }, (err) => {
+          this._setAllowed(false);
+          this._dispatchEvent('error', err);
+        });
       }
     }
 

@@ -19,6 +19,14 @@
 
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
+      body {
+        height: 100vh;
+      }
+      skeleton-chat-box {
+        --skeleton-chat-box: {
+          min-height: 500px;
+        };
+      }
     </style>
   </custom-style>
 </head>
@@ -44,14 +52,14 @@
   </dom-bind>
   <demo-snippet>
     <template>
-      <skeleton-chat-box group="demo"
+      <skeleton-chat-box group="testing"
       ></skeleton-chat-box>
     </template>
   </demo-snippet>
 
   <demo-snippet>
     <template>
-      <skeleton-chat-box group="demo"
+      <skeleton-chat-box group="testing"
                          theme="dark"
       ></skeleton-chat-box>
     </template>

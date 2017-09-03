@@ -18,13 +18,10 @@
 
       skeleton-chat-messages {
         @apply --layout-fit;
-        --skeleton-chat-messages: {
-          max-height: 100%;
-        };
-      }
-
-      skeleton-chat-messages {
         --skeleton-chat-box-bottom: 78px;
+        /*--skeleton-chat-messages: {*/
+          /*@apply --layout-fit;*/
+        /*};*/
       }
     </style>
     <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]">
@@ -42,10 +39,16 @@
      * @demo demo/index.html
      */
     class SkeletonChatBox extends Polymer.Element {
+      /**
+       * @return {string}
+       */
       static get is() {
         return 'skeleton-chat-box';
       }
 
+      /**
+       * @return {object}
+       */
       static get properties() {
         return {
           /**
