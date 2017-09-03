@@ -198,10 +198,16 @@
      * @demo demo/index.html
      */
     class SkeletonChatMessage extends Polymer.GestureEventListeners(Polymer.Element) {
+      /**
+       * @return {string}
+       */
       static get is() {
         return 'skeleton-chat-message';
       }
 
+      /**
+       * @return {object}
+       */
       static get properties() {
         return {
           /**
@@ -335,6 +341,9 @@
         };
       }
 
+      /**
+       * @return {array}
+       */
       static get observers() {
         return [
           '_checkBasics(signedIn, user.*, message)',
@@ -416,7 +425,7 @@
         const image = user.image ? user.image : null;
         this._setImage(image);
 
-        const name = user.name ? user.name : null;
+        const name = user.name ? user.name : '';
         const acronym = name ? this._acronym(name) : '?';
         this._setAcronym(acronym);
       }
@@ -490,7 +499,7 @@
        */
       _timePressedObserver(time) {
         this._setShowOriginal(this.isOwner);
-        if (time >= 2) {
+        if (time >= 1) {
           this._setShowOriginal(true);
         }
       }

@@ -28,21 +28,18 @@
       }
 
       iron-scroll-threshold {
-        max-height: 100vh;
+        padding-top: 1rem;
+        padding-bottom: var(--skeleton-chat-box-bottom);
+        max-height: calc(100% - 1rem - var(--skeleton-chat-box-bottom));
         @apply --skeleton-chat-messages;
       }
 
       iron-list {
         --iron-list-items-container: {
-          margin-top: 1rem;
-          /*padding-bottom: var(--skeleton-chat-box-bottom);*/
+          /*margin-top: 1rem;*/
+          /*margin-bottom: var(--skeleton-chat-box-bottom);*/
           @apply --skeleton-chat-messages-list;
         };
-      }
-
-      #space-bottom {
-        display: block;
-        height: var(--skeleton-chat-box-bottom);
       }
 
       #input-box {
@@ -54,12 +51,13 @@
       }
     </style>
 
-    <iron-scroll-threshold id="threshold">
-      <iron-list items="[[data]]"
+    <iron-scroll-threshold id="threshold"
+                           lower-threshold="0">
+      <iron-list items="[[list]]"
                  as="message"
-                 max-physical-count="100"
-                 scroll-target="threshold"
-                 scroll-offset="1000">
+                 max-physical-count="30"
+                 scroll-offset="100"
+                 scroll-target="threshold">
         <template>
           <skeleton-chat-message theme="[[theme]]"
                                  message="[[message]]"
@@ -69,7 +67,6 @@
       <div id="input-box">
         <slot></slot>
       </div>
-      <div id="space-bottom"></div>
     </iron-scroll-threshold>
   </template>
 
@@ -84,10 +81,16 @@
      * @demo demo/index.html
      */
     class SkeletonChatMessages extends Polymer.Element {
+      /**
+       * @return {string}
+       */
       static get is() {
         return 'skeleton-chat-messages';
       }
 
+      /**
+       * @return {object}
+       */
       static get properties() {
         return {
           /**
@@ -99,18 +102,12 @@
           },
 
           /**
-           * Messages
+           * List of messages
            */
-          data: {
-            type: Array,
-            value: [],
-            notify: true,
-          },
-
           list: {
             type: Array,
-            value: Array,
             notify: true,
+            value: Array,
           },
 
           /**
@@ -147,24 +144,35 @@
          * @type {firebase.database.Query}
          */
         const messagesRef = firebase.database().ref(`/chats/messages/${group}`)
-          .orderByChild('timestamp/created')
-          .limitToLast(8);
+          .orderByKey()
+          .limitToLast(100);
 
         /**
          * Listen for changes and apply the data
          */
-        messagesRef.on('value', (snapshot) => {
-          const data = snapshot.val();
-          const arr = Object.keys(data).map((key) => data[key]);
-          this.data = arr;
-        });
-
-        messagesRef.once('value').then(() => {
-          this._scrollToLast();
-        });
-
         messagesRef.on('child_added', (data) => {
+          let finalData = data.val();
+          finalData.key = data.key;
+          this.push('list', finalData);
+          this._notifyListResize();
           this._scrollToLast();
+        });
+
+        messagesRef.on('child_changed', (data) => {
+          const finalData = data.val();
+          const index = this._getIndexFromObject(data);
+          if (index > 0) {
+            this.set(`list.${index}`, finalData);
+            this._notifyListResize();
+          }
+        });
+
+        messagesRef.on('child_removed', (data) => {
+          const index = this._getIndexFromObject(data);
+          if (index > 0) {
+            this.splice('list', index, 1);
+            this._notifyListResize();
+          }
         });
       }
 
@@ -175,8 +183,28 @@
        */
       _scrollToLast() {
         const list = this.shadowRoot.querySelector('iron-list');
-        list.fire('iron-resize');
-        list.scrollToIndex(this.data.length - 1);
+        list.scrollToIndex(this.list.length - 1);
+      }
+
+      /**
+       * Notify iron-list that the list has been updated
+       *
+       * @private
+       */
+      _notifyListResize() {
+        const list = this.shadowRoot.querySelector('iron-list');
+        list.fire('resize');
+      }
+
+      /**
+       * Get Index from list array
+       *
+       * @param {object} data
+       * @return {number}
+       * @private
+       */
+      _getIndexFromObject(data) {
+        return this.list.findIndex((i) => i.key === data.key);
       }
     }
 
