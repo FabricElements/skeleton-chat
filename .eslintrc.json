@@ -49,10 +49,11 @@
     ]
   },
   "globals": {
-    "Polymer": true,
+    "firebase": true,
     "fixture": true,
+    "flush": true,
     "MockInteractions": true,
-    "WCT": true,
-    "firebase": true
+    "Polymer": true,
+    "WCT": true
   }
 }
