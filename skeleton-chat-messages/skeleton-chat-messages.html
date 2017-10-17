@@ -122,6 +122,16 @@
       }
 
       /**
+       * connectedCallback
+       */
+      connectedCallback() {
+        super.connectedCallback();
+        firebase.auth().onAuthStateChanged((user) => {
+          this._getData(this.group);
+        });
+      }
+
+      /**
        * Group observer
        *
        * @param {string} group

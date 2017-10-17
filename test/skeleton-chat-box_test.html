@@ -118,8 +118,6 @@
               'skeleton-chat-messages'
             );
 
-          done();
-
           // Wait for Firebase API response
           return oncePropChanged(
               skeletonMessages,
@@ -133,16 +131,20 @@
                 'skeleton-chat-messages'
               );
 
+            const testMessage = skeletonMessages.list.find(
+              (el) => el.key === '-Kw0ptoLrZkar3ih1OU-'
+            );
+
             expect(
-              skeletonMessages.list[20].text.original
+              testMessage.text.original
             ).to.equal('hey');
 
             expect(
-              skeletonMessages.list[20].user.name
+              testMessage.user.name
             ).to.equal('Fabric Elements');
 
             expect(
-              skeletonMessages.list[20].user.uid
+              testMessage.user.uid
             ).to.be.ok;
 
             const skeletonInput = skeletonChatBox
@@ -155,12 +157,16 @@
             const chatInput = skeletonInput
               .shadowRoot
               .querySelector('paper-input');
+
             chatInput.value = 'testing';
 
             MockInteractions.pressAndReleaseKeyOn(chatInput, keyCode.enter);
 
             expect(
-              skeletonMessages.list[21].text.original
+              skeletonMessages
+              .list[skeletonMessages.list.length - 1]
+              .text
+              .original
             ).to.equal('testing');
 
             done();
