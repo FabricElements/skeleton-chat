@@ -1,73 +1,79 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../iron-scroll-threshold/iron-scroll-threshold.html">
 <link rel="import" href="../../iron-list/iron-list.html">
-<link rel="import" href="../../polymerfire/firebase-database-script.html">
+<link rel="import" href="../../polymerfire/firebase-firestore-script.html">
+<link rel="import" href="../../polymerfire/firebase-auth.html">
 <link rel="import" href="../skeleton-chat-message/skeleton-chat-message.html">
 
 <dom-module id="skeleton-chat-messages">
   <template>
+    <!--suppress CssInvalidPseudoSelector -->
+    <!--suppress CssUnresolvedCustomProperty -->
+    <!--suppress CssUnresolvedCustomPropertySet -->
     <style is="custom-style">
       :host {
         display: block;
         position: relative;
         z-index: 0;
-        --skeleton-chat-messages-bg-color: var(--paper-grey-50);
-
-        --skeleton-chat-messages: {
-
-        };
-        --skeleton-chat-messages-list: {
-
-        };
-        --skeleton-chat-box-bottom: 0px;
-        background-color: var(--skeleton-chat-messages-bg-color);
+        @apply --layout-vertical;
+        background-color: var(--skeleton-chat-bg-color, #ffffff);
       }
 
       :host([theme="dark"]) {
-        --skeleton-chat-messages-bg-color: var(--paper-grey-800);
+        background-color: var(--skeleton-chat-bg-color-dark, var(--paper-grey-800));
+      }
+
+      :host > * {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
       }
 
       iron-scroll-threshold {
+        @apply --layout-flex-auto;
+        bottom: var(--skeleton-chat-box-bottom);
+        box-sizing: border-box;
         padding-top: 1rem;
-        padding-bottom: var(--skeleton-chat-box-bottom);
-        max-height: calc(100% - 1rem - var(--skeleton-chat-box-bottom));
+        padding-bottom: 1rem;
         @apply --skeleton-chat-messages;
       }
 
       iron-list {
         --iron-list-items-container: {
-          /*margin-top: 1rem;*/
-          /*margin-bottom: var(--skeleton-chat-box-bottom);*/
           @apply --skeleton-chat-messages-list;
         };
       }
 
       #input-box {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 10;
+        @apply --shadow-none;
+        @apply --skeleton-chat-messages-input;
       }
     </style>
+
+    <firebase-auth
+      signed-in="{{signedIn}}"
+      user="{{user}}">
+    </firebase-auth>
 
     <iron-scroll-threshold id="threshold"
                            lower-threshold="0">
       <iron-list items="[[list]]"
                  as="message"
-                 max-physical-count="30"
+                 max-physical-count="50"
                  scroll-offset="100"
                  scroll-target="threshold">
         <template>
           <skeleton-chat-message theme="[[theme]]"
                                  message="[[message]]"
+                                 user="[[user]]"
+                                 signed-in$="[[signedIn]]"
           ></skeleton-chat-message>
         </template>
       </iron-list>
-      <div id="input-box">
-        <slot></slot>
-      </div>
     </iron-scroll-threshold>
+    <div id="input-box">
+      <slot></slot>
+    </div>
   </template>
 
   <script>
@@ -93,6 +99,21 @@
        */
       static get properties() {
         return {
+          /**
+           * A value to check if the user is signed in.
+           */
+          signedIn: {
+            type: Boolean,
+            value: false,
+          },
+
+          /**
+           * The user Object.
+           */
+          user: {
+            type: Object,
+            value: {},
+          },
           /**
            * The component theme.
            */
@@ -146,44 +167,31 @@
        * Get data
        *
        * @param {string} group
+       * @return {Array}
        * @private
        */
       _getData(group) {
-        /**
-         * DB Query
-         * @type {firebase.database.Query}
-         */
-        const messagesRef = firebase.database().ref(`/chats/messages/${group}`)
-          .orderByKey()
-          .limitToLast(100);
+        if (!group) return this.set('list', []);
 
-        /**
-         * Listen for changes and apply the data
-         */
-        messagesRef.on('child_added', (data) => {
-          let finalData = data.val();
-          finalData.key = data.key;
-          this.push('list', finalData);
-          this._notifyListResize();
-          this._scrollToLast();
-        });
-
-        messagesRef.on('child_changed', (data) => {
-          const finalData = data.val();
-          const index = this._getIndexFromObject(data);
-          if (index > 0) {
-            this.set(`list.${index}`, finalData);
-            this._notifyListResize();
-          }
-        });
-
-        messagesRef.on('child_removed', (data) => {
-          const index = this._getIndexFromObject(data);
-          if (index > 0) {
-            this.splice('list', index, 1);
-            this._notifyListResize();
-          }
-        });
+        const chatRef = `chat/${group}/messages`;
+        const db = firebase.firestore();
+        db.collection(chatRef)
+          .orderBy('created', 'desc')
+          .limit(30)
+          .onSnapshot((querySnapshot) => {
+            this.set('list', []);
+            querySnapshot.forEach((doc) => {
+              this.unshift('list', doc.data());
+              this._notifyListResize();
+              this._scrollToLast();
+            });
+          }, (err) => {
+            console.error(err);
+            this._dispatchEvent('error', err);
+          }, () => {
+//            this.list = list;
+            this._scrollToLast();
+          });
       }
 
       /**

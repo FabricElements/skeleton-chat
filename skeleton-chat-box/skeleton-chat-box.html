@@ -5,27 +5,33 @@
 
 <dom-module id="skeleton-chat-box">
   <template>
+    <!--suppress CssInvalidPseudoSelector -->
+    <!--suppress CssUnresolvedCustomProperty -->
+    <!--suppress CssUnresolvedCustomPropertySet -->
     <style is="custom-style">
       :host {
         display: block;
         position: relative;
         min-height: 200px;
-        --skeleton-chat-box: {
-
-        };
+        background-color: var(--skeleton-chat-bg-color, #ffffff);
         @apply --skeleton-chat-box;
       }
 
       skeleton-chat-messages {
         @apply --layout-fit;
         --skeleton-chat-box-bottom: 78px;
-        /*--skeleton-chat-messages: {*/
-          /*@apply --layout-fit;*/
-        /*};*/
+      }
+
+      :host([theme="dark"]) {
+        background-color: var(--skeleton-chat-bg-color-dark, var(--paper-grey-800));
       }
     </style>
     <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]">
-      <skeleton-chat-input theme$="[[theme]]" group$="[[group]]"></skeleton-chat-input>
+      <skeleton-chat-input theme$="[[theme]]" group$="[[group]]"
+                           mic
+                           camera
+                           emoji
+                           send></skeleton-chat-input>
     </skeleton-chat-messages>
   </template>
 

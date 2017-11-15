@@ -1,8 +1,7 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../paper-styles/typography.html">
 <link rel="import" href="../../paper-item/paper-icon-item.html">
-<link rel="import" href="../../polymerfire/firebase-auth.html">
-<link rel="import" href="../../polymerfire/firebase-database-script.html">
+<link rel="import" href="../../paper-item/paper-item-body.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../iron-image/iron-image.html">
 <link rel="import" href="../../from-now/from-now.html">
@@ -10,9 +9,15 @@
 
 <dom-module id="skeleton-chat-message">
   <template>
+    <!--suppress CssInvalidPseudoSelector -->
+    <!--suppress CssUnresolvedCustomProperty -->
+    <!--suppress CssUnresolvedCustomPropertySet -->
     <style is="custom-style">
       :host {
         display: block;
+        box-sizing: border-box;
+        max-width: 100%;
+        width: 100%;
         padding-bottom: 0.5rem;
         --skeleton-chat-message: {
         };
@@ -43,6 +48,8 @@
       }
 
       paper-icon-item {
+        box-sizing: border-box;
+        margin-bottom: 0.5rem;
         --paper-item-focused-before: {
           background-color: transparent;
         };
@@ -75,46 +82,66 @@
         z-index: 2;
       }
 
-      .container {
+      /*paper-icon-item {
         display: block;
         width: 100%;
         min-height: var(--skeleton-chat-message-height);
+      }*/
+      #bubble-container {
+        @apply --layout-flex-auto;
+        position: relative;
+        display: block;
+        max-width: calc(100% - var(--paper-item-icon-width));
       }
 
       .bubble {
+        box-sizing: border-box;
         min-height: var(--skeleton-chat-message-height);
         background-color: var(--skeleton-chat-bubble-color);
         border-radius: calc(var(--skeleton-chat-message-height) / 2);
         color: white;
         display: inline-block;
-        width: auto;
         max-width: 100%;
+        width: auto;
         transition: max-width ease 0.5s;
       }
 
       .bubble-content {
         position: relative;
-        padding: calc(calc(var(--skeleton-chat-message-height) - var(--skeleton-chat-message-font-size)) / 2) calc(var(--skeleton-chat-message-height) / 2);
+        max-width: 100%;
       }
 
       .bubble-text {
+        max-width: 100%;
         color: var(--skeleton-chat-message-font-color);
-        -webkit-font-smoothing: antialiased;
-        line-height: calc(var(--skeleton-chat-message-height) / 2);
-        font-size: var(--skeleton-chat-message-font-size);
-        font-weight: var(--skeleton-chat-message-font-weight);
       }
 
       [owner] .bubble-text {
         color: var(--paper-grey-900);
       }
 
-      .time {
-        @apply --paper-font-caption;
-        color: var(--paper-grey-500);
+      [owner] #bubble-container {
+        text-align: right;
       }
 
-      [owner] .container {
+      .bubble-text > * {
+        display: inline-block;
+        word-wrap: break-word;
+        -webkit-font-smoothing: antialiased;
+        line-height: calc(var(--skeleton-chat-message-height) / 2);
+        font-size: var(--skeleton-chat-message-font-size);
+        font-weight: var(--skeleton-chat-message-font-weight);
+        padding: calc(calc(var(--skeleton-chat-message-height) - var(--skeleton-chat-message-font-size)) / 2) calc(var(--skeleton-chat-message-height) / 2);
+      }
+
+      .time {
+        padding-top: 3px;
+        @apply --paper-font-caption;
+        color: var(--paper-grey-500);
+        @apply --layout-flex-none;
+      }
+
+      [owner] paper-icon-item {
         text-align: right;
       }
 
@@ -150,10 +177,6 @@
       }
     </style>
 
-    <firebase-auth
-      signed-in="{{signedIn}}"
-      user="{{user}}">
-    </firebase-auth>
     <paper-icon-item owner$="[[isOwner]]">
       <div class="icon-container" slot="item-icon">
         <template is="dom-if" if="[[!isOwner]]">
@@ -167,7 +190,7 @@
           </div>
         </template>
       </div>
-      <div class="container">
+      <div id="bubble-container">
         <div class="bubble" on-down="_bubbleDown" on-up="_bubbleUp">
           <div class="bubble-content">
             <template is="dom-if" if="[[originalText]]">
@@ -178,7 +201,7 @@
             </template>
           </div>
         </div>
-        <div class="time" hidden$="[[!time]]">
+        <div class="time" hidden$="[[!time]]" secondary>
           <from-now time="[[time]]"></from-now>
         </div>
       </div>
@@ -276,6 +299,7 @@
           message: {
             type: Object,
             value: {},
+            observer: '_messageChange',
           },
 
           /**
@@ -347,7 +371,7 @@
       static get observers() {
         return [
           '_checkBasics(signedIn, user.*, message)',
-          '_messageChange(message, message.*)',
+//          '_messageChange(message, message.*)',
         ];
       }
 
@@ -404,10 +428,16 @@
        */
       _messageChange(message) {
         if (!message) return;
+        this._setOriginalText(message.text);
+        this._setText(message.text);
 
-        if (message.text) this._returnFinalMessage(message.text);
-        if (message.timestamp && message.timestamp.created) {
-          this._setTime(message.timestamp.created);
+        if (message.text && message.locales) {
+          this._returnFinalMessage(message.text, message.locales);
+        }
+        if (message.created) {
+          this._setTime(message.created);
+        } else {
+          this._setTime(Date.now());
         }
         if (message.user) this._messageUser(message.user);
       }
@@ -433,14 +463,13 @@
       /**
        * Set final message text
        *
-       * @param {object} message
+       * @param {string} text
+       * @param {object} locales
        * @private
        */
-      _returnFinalMessage(message) {
+      _returnFinalMessage(text, locales) {
         const language = this._getBrowserLanguage();
-        const original = message.original ? message.original : null;
-        this._setOriginalText(original);
-        let finalMessage = message[language] ? message[language] : original;
+        let finalMessage = locales[language] ? locales[language] : text;
         this._setText(finalMessage);
       }
 

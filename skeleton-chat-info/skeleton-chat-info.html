@@ -1,6 +1,6 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../polymerfire/firebase-auth.html">
-<link rel="import" href="../../polymerfire/firebase-document.html">
+<link rel="import" href="../../polymerfire/firebase-firestore-script.html">
 
 <dom-module id="skeleton-chat-info">
   <template>
@@ -12,11 +12,6 @@
     <firebase-auth
       user="{{user}}">
     </firebase-auth>
-    <firebase-document
-      disabled$="[[!group]]"
-      path$="/chats/groups/[[group]]"
-      data="{{data}}">
-    </firebase-document>
   </template>
 
   <script>
@@ -80,6 +75,15 @@
       }
 
       /**
+       * @return {array}
+       */
+      static get observers() {
+        return [
+          '_groupObserver(user, group)',
+        ];
+      }
+
+      /**
        *
        * @param {object} textObject
        * @return {null}
@@ -138,16 +142,15 @@
           finalData.image = objectUser.image;
         }
 
-        if (data.info) {
-          if (data.info.title) {
-            finalData.title = this._returnFinalText(data.info.title);
+        if (data) {
+          finalData.title = data.title ? data.title : null;
+          if (data.title) {
+//            finalData.title = this._returnFinalText(data.info.title);
           }
-          if (data.info.description) {
-            finalData.description = this._returnFinalText(data.info.description);
+          if (data.description) {
+//            finalData.description = this._returnFinalText(data.description);
           }
-          if (data.info.image) {
-            finalData.image = data.info.image;
-          }
+          finalData.image = data.image ? data.image : null;
         }
 
         return finalData;
@@ -227,6 +230,24 @@
           user.uid = key;
           return users[key];
         });
+      }
+
+      /**
+       * Group observer
+       *
+       * @param {object} user
+       * @param {string} group
+       * @private
+       */
+      _groupObserver(user, group) {
+        if (!user || !group) this.data = {};
+        const db = firebase.firestore();
+        db.collection('chat').doc(group)
+          .onSnapshot((doc) => {
+            this.data = doc.data();
+          }, (error) => {
+            console.log(error);
+          });
       }
     }
 

@@ -1,41 +1,44 @@
 <link rel="import" href="../../polymer/polymer-element.html">
-<link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../../paper-input/paper-textarea.html">
 <link rel="import" href="../../polymerfire/firebase-auth.html">
-<link rel="import" href="../../polymerfire/firebase-database-script.html">
+<link rel="import" href="../../polymerfire/firebase-firestore-script.html">
 <link rel="import" href="../../paper-styles/shadow.html">
 <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
 <link rel="import" href="../../iron-icons/image-icons.html">
 <link rel="import" href="../../iron-icons/av-icons.html">
 
 <dom-module id="skeleton-chat-input">
   <template>
+    <!--suppress CssInvalidPseudoSelector -->
+    <!--suppress CssUnresolvedCustomProperty -->
+    <!--suppress CssUnresolvedCustomPropertySet -->
     <style>
       :host {
+        @apply --shadow-elevation-2dp;
         display: block;
-        --skeleton-chat-input: {
-        };
+        overflow-x: hidden;
+        position: relative;
+        margin: 1rem;
+        /*width: 100%;*/
+        box-sizing: border-box;
+        /*border-top: 1px solid var(--skeleton-chat-input-border-color, var(--paper-grey-50));*/
+        @apply --layout-inline;
+        @apply --layout-horizontal;
+        -ms-flex-wrap: nowrap;
+        -webkit-flex-wrap: nowrap;
+        border-radius: 28px;
+        /*border: 1px solid red;*/
         @apply --skeleton-chat-input;
 
-        /* Default mixin */
-        --skeleton-chat-input-input: {
-        };
-        --skeleton-chat-input-icon: {
-        };
-        --skeleton-chat-input-icon-emoji: {
-        };
-        --skeleton-chat-input-icon-camera: {
-        };
-        --skeleton-chat-input-icon-mic: {
-        };
-
+        /*-webkit-box-shadow: 0 -2px 3px -1px rgba(0, 0, 0, 0.14);*/
+        /*box-shadow: 0 -1px 1px -2px rgba(0, 0, 0, 0.14),*/
+        /*0 -2px 2px -2px rgba(0, 0, 0, 0.12),*/
+        /*0 -3px 3px -2px rgba(0, 0, 0, 0.2);*/
         --skeleton-chat-input-container: {
-          border-radius: 30px;
-          padding-left: 1rem;
-          padding-right: 0.5rem;
-          @apply --shadow-elevation-2dp;
+          box-sizing: border-box;
         };
-
         /*Default reset*/
         --paper-input-container-underline: {
           display: none;
@@ -44,19 +47,53 @@
           display: none;
         };
         --paper-input-container: {
-          background-color: white;
+          padding: 0;
           @apply --skeleton-chat-input-container;
         };
-
+        --paper-input-container-label: {
+          /*padding: .5rem calc(40px + 0.5rem) .5rem .6rem;*/
+          padding: 14px 10px;
+        };
+        --iron-autogrow-textarea: {
+          box-sizing: border-box;
+          padding: 14px 10px;
+          word-break: break-all;
+          min-height: 20px;
+          max-height: 120px;
+        };
+        --paper-input-container-underline: {
+          display: none;
+        };
+        --iron-autogrow-textarea-placeholder: {
+          padding: 1rem;
+          margin: 1rem;
+          line-height: 56px;
+        };
         --paper-icon-button: {
           border-radius: 50%;
-          margin-left: 2px;
+          /*margin-left: 2px;*/
+        };
+        background-color: var(--skeleton-chat-bg-color, var(--paper-grey-50));
+
+        --no-select: {
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
         };
       }
 
+      :host > * {
+        @apply --no-select;
+        @apply --layout-end-aligned;
+      }
+
       :host([theme="dark"]) {
+        /*border-top-color: var(--skeleton-chat-input-border-color-dark, var(--paper-grey-700));*/
+        /*background-color: var(--skeleton-chat-bg-color-dark, var(--paper-grey-800));*/
+        background-color: var(--paper-grey-700);
         --paper-input-container: {
-          background-color: var(--paper-grey-700);
+          padding: 0;
           @apply --skeleton-chat-input-container;
         };
         --skeleton-chat-input-icon: {
@@ -68,13 +105,45 @@
         --paper-input-container-color: var(--paper-grey-50);
       }
 
-      paper-input {
-        margin: 0 1rem 1rem 1rem;
+      :host > * {
+        max-width: 100%;
+      }
+
+      [hide] {
+        opacity: 0;
+      }
+
+      [hidden] {
+        display: none;
+      }
+
+      #input {
+        @apply --layout-flex-auto;
+        box-sizing: border-box;
+        position: relative;
+        display: flex;
+      }
+
+      paper-textarea {
+        box-sizing: border-box;
+        @apply --layout-flex-none;
+        width: 100%;
+        max-width: 100%;
         @apply --skeleton-chat-input-input;
       }
 
       paper-icon-button {
+        transition: all .3s ease-in-out;
+      }
+
+      paper-icon-button {
         color: var(--paper-grey-800);
+        margin: .5rem .5rem .5rem 0;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        flex-grow: 0;
+        @apply --layout-self-end;
         @apply --skeleton-chat-input-icon;
       }
 
@@ -86,10 +155,25 @@
         @apply --skeleton-chat-input-icon-camera;
       }
 
+      .icon-mic,
+      .icon-send {
+        background-color: var(--skeleton-chat-input-action-bg, var(--accent-color));
+        color: var(--skeleton-chat-input-action-color, #ffffff);
+        --paper-icon-button: {
+          padding: 5px;
+          border-radius: 50%;
+        };
+      }
+
       .icon-mic {
-        background-color: var(--paper-grey-800);
-        color: white;
+        /*background-color: var(--paper-grey-800);*/
+        /*color: white;*/
         @apply --skeleton-chat-input-icon-mic;
+      }
+
+      .icon-send {
+        /*color: var(--accent-color);*/
+        @apply --skeleton-chat-input-icon-send;
       }
     </style>
 
@@ -97,27 +181,36 @@
       signed-in="{{signedIn}}"
       user="{{user}}">
     </firebase-auth>
-    <paper-input label="Say something..."
-                 value="{{text}}"
-                 on-keydown="_checkForEnter"
-                 no-label-float
-                 disabled$="[[!allowed]]">
-      <template is="dom-if" if="[[camera]]">
-        <paper-icon-button icon="image:photo-camera"
-                           class="icon-camera"
-                           slot="suffix"></paper-icon-button>
-      </template>
-      <template is="dom-if" if="[[emoji]]">
-        <paper-icon-button icon="image:tag-faces"
-                           class="icon-emoji"
-                           slot="suffix"></paper-icon-button>
-      </template>
-      <template is="dom-if" if="[[mic]]">
-        <paper-icon-button icon="av:mic"
-                           class="icon-mic"
-                           slot="suffix"></paper-icon-button>
-      </template>
-    </paper-input>
+    <div id="input">
+      <paper-textarea label="Say something..."
+                      value="{{text}}"
+                      on-keydown="_checkForEnter"
+                      no-label-float
+                      autofocus
+                      max-rows="0"
+                      placeholder$="[[placeholder]]"
+                      maxlength$="[[maxlength]]"
+                      disabled$="[[!allowed]]">
+      </paper-textarea>
+    </div>
+    <paper-icon-button icon="image:tag-faces"
+                       class="icon-emoji"
+                       hidden$="[[!emoji]]"
+    ></paper-icon-button>
+    <paper-icon-button icon="image:photo-camera"
+                       class="icon-camera"
+                       hidden$="[[!camera]]"
+    ></paper-icon-button>
+    <paper-icon-button icon="arrow-upward"
+                       class="icon-send"
+                       on-tap="_sendMessage"
+                       hidden$="[[_showMic]]"
+                       hide$="[[!text]]"
+                       disabled$="[[!text]]"></paper-icon-button>
+    <paper-icon-button icon="av:mic"
+                       class="icon-mic"
+                       hidden$="[[!_showMic]]"
+    ></paper-icon-button>
   </template>
 
   <script>
@@ -149,7 +242,6 @@
             type: Boolean,
             value: false,
           },
-
           /**
            * The user Object.
            */
@@ -157,7 +249,6 @@
             type: Object,
             value: {},
           },
-
           /**
            * The component theme.
            */
@@ -165,7 +256,6 @@
             type: String,
             value: 'light',
           },
-
           /**
            * The message to send
            */
@@ -173,7 +263,6 @@
             type: String,
             value: null,
           },
-
           /**
            * The chat group.
            */
@@ -181,7 +270,6 @@
             type: String,
             value: null,
           },
-
           /**
            * Displays emoji
            */
@@ -189,7 +277,6 @@
             type: Boolean,
             value: false,
           },
-
           /**
            * Displays camera
            */
@@ -197,7 +284,6 @@
             type: Boolean,
             value: false,
           },
-
           /**
            * Displays microphone
            */
@@ -205,13 +291,50 @@
             type: Boolean,
             value: false,
           },
-
+          /**
+           * max length
+           */
+          maxlength: {
+            type: Number,
+          },
+          /**
+           * Chat input placeholder
+           */
+          placeholder: {
+            type: String,
+          },
+          /**
+           * Displays send button
+           */
+          send: {
+            type: Boolean,
+            value: false,
+          },
+          /**
+           * The user is allowed on this chat
+           */
           allowed: {
             type: Boolean,
             value: false,
             readOnly: true,
             notify: true,
             reflectToAttribute: true,
+          },
+          /**
+           * Data object
+           */
+          data: {
+            type: Object,
+            value: {},
+            observer: '_dataObserver',
+          },
+          /**
+           * Show mic computed
+           */
+          _showMic: {
+            type: Boolean,
+            value: false,
+            computed: '_computeShowMic(mic, text)',
           },
         };
       }
@@ -221,7 +344,7 @@
        */
       static get observers() {
         return [
-          '_checkUserPermissions(user, group)',
+          '_getGroupData(user, group)',
         ];
       }
 
@@ -229,15 +352,12 @@
        * Function to send message on Enter key press.
        *
        * @param {object} event
-       * @return {*}
        * @private
        */
       _checkForEnter(event) {
         // check if 'enter' was pressed
         if (event.keyCode === 13) {
-          if (!this.text) {
-            return this._dispatchEvent('error', 'Empty.');
-          }
+          event.preventDefault();
           this._sendMessage();
         }
       }
@@ -252,14 +372,20 @@
         if (!this.group) {
           return this._dispatchEvent('error', 'Define the group first.');
         }
+        if (!this.user) {
+          return this._dispatchEvent('error', 'You need to sign in first.');
+        }
+
+        if (!this.text) {
+          return this._dispatchEvent('error', 'Empty message.');
+        }
+
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
         const message = {
-          text: {
-            original: this.text,
-          },
-          timestamp: {
-            created: firebase.database.ServerValue.TIMESTAMP,
-            updated: firebase.database.ServerValue.TIMESTAMP,
-          },
+          text: this.text,
+          created: timestamp,
+          updated: timestamp,
           user: {
             uid: this.user.uid,
             isAnonymous: this.user.isAnonymous,
@@ -268,14 +394,23 @@
           },
         };
 
-        const chatRef = `chats/messages/${this.group}`;
-        return firebase.database().ref(chatRef).push(message)
+        const input = this.shadowRoot.querySelector('paper-textarea');
+
+        const chatRef = `chat/${this.group}/messages`;
+        const db = firebase.firestore();
+        const baseText = this.text;
+        this.text = null;
+        db.collection(chatRef).add(message)
           .then(() => {
+            input.focus();
+            input.blur();
             this.text = null;
             this._dispatchEvent('message', 'ok');
             this._updateGroupTimestamp();
           })
           .catch((err) => {
+            this.text = baseText;
+            console.error(err);
             this._dispatchEvent('error', err);
           });
       }
@@ -301,10 +436,17 @@
        * @private
        */
       _updateGroupTimestamp() {
-        const chatRef = `chats/groups/${this.group}/timestamp/updated`;
-        firebase.database().ref(chatRef)
-          .push(firebase.database.ServerValue.TIMESTAMP)
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        const data = {
+          updated: timestamp,
+        };
+        const db = firebase.firestore();
+        db.collection('chat').doc(this.group).set(data, {merge: true})
+          .then(() => {
+//            console.log('updated');
+          })
           .catch((err) => {
+            console.error(err);
             this._dispatchEvent('error', err);
           });
       }
@@ -316,19 +458,40 @@
        * @param {string} group
        * @private
        */
-      _checkUserPermissions(user, group) {
-        this._setAllowed(false);
+      _getGroupData(user, group) {
         if (!user || !user.uid || !group) return;
-        const chatRef = `chats/groups/${group}/users`;
-        const userRef = firebase.database().ref(chatRef);
-        userRef.on('value', (snapshot) => {
-          if (snapshot.hasChild(user.uid)) {
-            this._setAllowed(true);
-          }
-        }, (err) => {
-          this._setAllowed(false);
-          this._dispatchEvent('error', err);
-        });
+        const db = firebase.firestore();
+        db.collection('chat').doc(group)
+          .onSnapshot((doc) => {
+            this.data = doc.data();
+          }, (error) => {
+            this.data = {};
+            this._dispatchEvent('error', error);
+          });
+      }
+
+      /**
+       * Data observer
+       *
+       * @param {object} data
+       * @private
+       */
+      _dataObserver(data) {
+        this._setAllowed(false);
+        if (!data || !data.users || !data.users[this.user.uid]) return;
+        this._setAllowed(true);
+      }
+
+      /**
+       * Show/hide mic
+       *
+       * @param {boolean} mic
+       * @param {boolean} text
+       * @return {boolean}
+       * @private
+       */
+      _computeShowMic(mic, text) {
+        return mic && !text;
       }
     }
 
