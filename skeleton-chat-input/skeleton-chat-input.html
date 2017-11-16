@@ -134,9 +134,6 @@
 
       paper-icon-button {
         transition: all .3s ease-in-out;
-      }
-
-      paper-icon-button {
         color: var(--paper-grey-800);
         margin: .5rem .5rem .5rem 0;
         width: 40px;
@@ -182,13 +179,12 @@
       user="{{user}}">
     </firebase-auth>
     <div id="input">
-      <paper-textarea label="Say something..."
+      <paper-textarea label$="[[label]]"
                       value="{{text}}"
                       on-keydown="_checkForEnter"
                       no-label-float
                       autofocus
                       max-rows="0"
-                      placeholder$="[[placeholder]]"
                       maxlength$="[[maxlength]]"
                       disabled$="[[!allowed]]">
       </paper-textarea>
@@ -298,17 +294,10 @@
             type: Number,
           },
           /**
-           * Chat input placeholder
+           * Chat input label
            */
-          placeholder: {
+          label: {
             type: String,
-          },
-          /**
-           * Displays send button
-           */
-          send: {
-            type: Boolean,
-            value: false,
           },
           /**
            * The user is allowed on this chat
