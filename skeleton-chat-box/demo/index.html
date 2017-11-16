@@ -19,12 +19,18 @@
 
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
+      html {
+        --demo-snippet-demo: {
+          padding: 0;
+        };
+      }
       body {
         height: 100vh;
+        padding: 0;
       }
       skeleton-chat-box {
         --skeleton-chat-box: {
-          min-height: 500px;
+          min-height: 400px;
         };
       }
     </style>
@@ -54,6 +60,9 @@
   <demo-snippet>
     <template>
       <skeleton-chat-box group="testing"
+                         label="Type something"
+                         mic
+                         emoji
       ></skeleton-chat-box>
     </template>
   </demo-snippet>
@@ -62,6 +71,9 @@
     <template>
       <skeleton-chat-box group="testing"
                          theme="dark"
+                         label="Type something"
+                         mic
+                         emoji
       ></skeleton-chat-box>
     </template>
   </demo-snippet>

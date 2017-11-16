@@ -28,10 +28,11 @@
     </style>
     <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]">
       <skeleton-chat-input theme$="[[theme]]" group$="[[group]]"
-                           mic
-                           camera
-                           emoji
-                           send></skeleton-chat-input>
+                           mic$="[[mic]]"
+                           camera$="[[camera]]"
+                           emoji$="[[emoji]]"
+                           maxlength$="[[maxlength]]"
+                           label$="[[label]]"></skeleton-chat-input>
     </skeleton-chat-messages>
   </template>
 
@@ -71,6 +72,39 @@
           group: {
             type: String,
             value: null,
+          },
+          /**
+           * Displays emoji
+           */
+          emoji: {
+            type: Boolean,
+            value: false,
+          },
+          /**
+           * Displays camera
+           */
+          camera: {
+            type: Boolean,
+            value: false,
+          },
+          /**
+           * Displays microphone
+           */
+          mic: {
+            type: Boolean,
+            value: false,
+          },
+          /**
+           * max length
+           */
+          maxlength: {
+            type: Number,
+          },
+          /**
+           * Chat input label
+           */
+          label: {
+            type: String,
           },
         };
       }
