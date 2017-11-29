@@ -20,10 +20,8 @@
     "new-cap": [
       "error",
       {
-        "capIsNewExceptions": [
-          "Polymer",
-          "Polymer.GestureEventListeners"
-        ]
+        "newIsCap": true,
+        "properties": false
       }
     ],
     "no-var": "error",
@@ -49,6 +47,8 @@
     ]
   },
   "globals": {
+    "a11ySuite": true,
+    "Fabric": true,
     "firebase": true,
     "fixture": true,
     "flush": true,

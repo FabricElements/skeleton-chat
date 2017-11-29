@@ -1,5 +1,5 @@
 {
-  "name": "skeleton-chat",
+  "name": "name",
   "version": "0.0.1",
   "license": "BSD-3-Clause",
   "devDependencies": {
@@ -11,9 +11,8 @@
     "lint": "npm run lint:javascript && polymer lint",
     "lint:javascript": "eslint . --ext js,html --ignore-path .gitignore",
     "test": "polymer test",
-    "test:integration": "polymer build # test that psk builds without error with the CLI"
+    "test:integration": "polymer build # test that psk builds without error with the CLI",
+    "serve": "polymer serve -H 0.0.0.0"
   },
-  "dependencies": {
-    "gulp": "^3.9.1"
-  }
+  "dependencies": {}
 }
