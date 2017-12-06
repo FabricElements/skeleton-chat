@@ -1,10 +1,9 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../iron-scroll-threshold/iron-scroll-threshold.html">
 <link rel="import" href="../../iron-list/iron-list.html">
-<link rel="import" href="../../polymerfire/firebase-database-script.html">
-<link rel="import" href="../../polymerfire/firebase-query.html">
+<link rel="import" href="../../polymerfire/firebase-auth-script.html">
+<link rel="import" href="../../polymerfire/firebase-firestore-script.html">
 <link rel="import" href="../skeleton-chat-groups-item/skeleton-chat-groups-item.html">
-<link rel="import" href="../../polymerfire/firebase-auth.html">
 
 <dom-module id="skeleton-chat-groups">
   <template>
@@ -28,30 +27,19 @@
       }
     </style>
 
-    <firebase-auth
-      signed-in="{{signedIn}}"
-      user="{{user}}">
-    </firebase-auth>
-
-    <firebase-query
-      disabled$="[[!user.uid]]"
-      path="chats/groups"
-      order-by-child$="users/[[user.uid]]"
-      start-at$="[[user.uid]]"
-      limit-to-last="50"
-      data="{{data}}">
-    </firebase-query>
-
-    <iron-scroll-threshold id="threshold">
-      <iron-list items="[[groups]]" scroll-target="threshold">
+    <iron-scroll-threshold id="threshold"
+                           lower-threshold="0">
+      <iron-list items="[[list]]"
+                 max-physical-count="50"
+                 scroll-offset="100"
+                 scroll-target="threshold">
         <template>
           <skeleton-chat-groups-item theme$="[[theme]]"
-                                     group$="[[item.$key]]"
+                                     group$="[[item]]"
           ></skeleton-chat-groups-item>
         </template>
       </iron-list>
     </iron-scroll-threshold>
-
   </template>
 
   <script>
@@ -78,14 +66,6 @@
       static get properties() {
         return {
           /**
-           * A value to check if the user is signed in.
-           */
-          signedIn: {
-            type: Boolean,
-            value: false,
-          },
-
-          /**
            * The user Object.
            */
           user: {
@@ -102,19 +82,12 @@
           },
 
           /**
-           * groups
+           * List of messages
            */
-          data: {
+          list: {
             type: Array,
-          },
-
-          /**
-           * groups
-           */
-          groups: {
-            type: Array,
-            readOnly: true,
-            computed: '_sortData(data, data.*)',
+            notify: true,
+            value: Array,
           },
 
           /**
@@ -128,26 +101,13 @@
       }
 
       /**
-       * Sort data
-       *
-       * @param {array} data
-       * @return {array}
-       * @private
+       * connectedCallback
        */
-      _sortData(data) {
-        let sorted = Array;
-        if (!data) return sorted;
-        // Return array from object
-        const dataArray = Object.keys(data).map((key) => {
-          return data[key];
+      connectedCallback() {
+        super.connectedCallback();
+        firebase.auth().onAuthStateChanged((user) => {
+          this._getData(user.uid);
         });
-        // Sort the data
-        sorted = dataArray.sort((a, b) => {
-          const aTime = this._getTime(a);
-          const bTime = this._getTime(b);
-          return bTime - aTime;
-        });
-        return sorted;
       }
 
       /**
@@ -162,6 +122,59 @@
           return Date.now();
         }
         return times.timestamp.updated;
+      }
+
+      /**
+       * Get data
+       *
+       * @param {string} uid
+       * @return {Array}
+       * @private
+       */
+      _getData(uid) {
+        if (!uid) return this.set('list', []);
+
+        const db = firebase.firestore();
+        db.collection('chat')
+        // .orderBy(`users.${uid}`)
+        // .where(`users.${uid}`, '>', 1)
+          .orderBy('updated', 'desc')
+          .limit(30)
+          .onSnapshot((querySnapshot) => {
+            this.set('list', []);
+            querySnapshot.forEach((doc) => {
+              this.unshift('list', doc.id);
+              this._notifyListResize();
+            });
+          }, (error) => {
+            console.error(error);
+            this._dispatchEvent('error', error);
+          });
+      }
+
+      /**
+       * Notify iron-list that the list has been updated
+       *
+       * @private
+       */
+      _notifyListResize() {
+        const list = this.shadowRoot.querySelector('iron-list');
+        list.fire('resize');
+      }
+
+      /**
+       * Dispatch event
+       *
+       * @param {string} event
+       * @param  {string} detail
+       * @private
+       */
+      _dispatchEvent(event, detail) {
+        this.dispatchEvent(new CustomEvent(event, {
+          detail: detail,
+          bubbles: true,
+          composed: true,
+        }));
       }
     }
 

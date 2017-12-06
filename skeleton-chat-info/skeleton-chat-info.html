@@ -240,14 +240,17 @@
        * @private
        */
       _groupObserver(user, group) {
-        if (!user || !group) this.data = {};
-        const db = firebase.firestore();
-        db.collection('chat').doc(group)
-          .onSnapshot((doc) => {
-            this.data = doc.data();
-          }, (error) => {
-            console.log(error);
-          });
+        let data = {};
+        if (user && group) {
+          const db = firebase.firestore();
+          db.collection('chat').doc(group)
+            .onSnapshot((doc) => {
+              this.data = doc.data();
+            }, (error) => {
+              console.error(error);
+            });
+        }
+        this.data = data;
       }
     }
 

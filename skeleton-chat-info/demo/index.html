@@ -10,11 +10,7 @@
 
   <link rel="import" href="../../../iron-demo-helpers/demo-pages-shared-styles.html">
   <link rel="import" href="../../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../../polymer/lib/elements/dom-bind.html">
-  <link rel="import" href="../../../polymer/lib/elements/dom-repeat.html">
-  <link rel="import" href="../../../polymer/lib/elements/dom-if.html">
-  <link rel="import" href="../../../polymerfire/polymerfire.html">
-  <link rel="import" href="../../../skeleton-auth/skeleton-auth.html">
+  <link rel="import" href="../../demo/shared.html">
   <link rel="import" href="../skeleton-chat-info.html">
 
   <custom-style>
@@ -26,12 +22,6 @@
   </custom-style>
 </head>
 <body>
-<firebase-app project-id="fabricelements"
-              auth-domain="fabricelements.firebaseapp.com"
-              database-url="https://fabricelements.firebaseio.com"
-              api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
-              storage-bucket="fabricelements.appspot.com"
-              messaging-sender-id="908593247251"></firebase-app>
 <div class="vertical-section-container centered">
   <h3>Basic skeleton-chat-info demo</h3>
   <dom-bind>
@@ -50,14 +40,12 @@
     <template>
       <dom-bind>
         <template>
-          <skeleton-chat-info group="demo" info="{{info}}"></skeleton-chat-info>
+          <skeleton-chat-info group="testing" info="{{info}}"></skeleton-chat-info>
           <ul>
             <li><strong>Title:</strong> [[info.title]]</li>
             <li><strong>Description:</strong> [[info.description]]</li>
           </ul>
           <hr>
-
-
           <article>
             <h3>Users</h3>
             <p>Total users: [[info.total]]</p>

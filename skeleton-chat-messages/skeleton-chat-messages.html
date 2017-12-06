@@ -136,7 +136,6 @@
           group: {
             type: String,
             value: null,
-            observer: '_groupObserver',
           },
         };
       }
@@ -147,31 +146,29 @@
       connectedCallback() {
         super.connectedCallback();
         firebase.auth().onAuthStateChanged((user) => {
-          this._getData(this.group);
+          this.user = user;
         });
       }
 
       /**
-       * Group observer
-       *
-       * @param {string} group
-       * @private
+       * @return {array}
        */
-      _groupObserver(group) {
-        if (!group) return;
-        this._getData(group);
+      static get observers() {
+        return [
+          '_getData(user, group)',
+        ];
       }
 
       /**
        * Get data
        *
+       * @param {object} user
        * @param {string} group
        * @return {Array}
        * @private
        */
-      _getData(group) {
-        if (!group) return this.set('list', []);
-
+      _getData(user, group) {
+        if (!user || !group) return this.set('list', []);
         const chatRef = `chat/${group}/messages`;
         const db = firebase.firestore();
         db.collection(chatRef)
@@ -222,6 +219,21 @@
        */
       _getIndexFromObject(data) {
         return this.list.findIndex((i) => i.key === data.key);
+      }
+
+      /**
+       * Dispatch event
+       *
+       * @param {string} event
+       * @param  {string} detail
+       * @private
+       */
+      _dispatchEvent(event, detail) {
+        this.dispatchEvent(new CustomEvent(event, {
+          detail: detail,
+          bubbles: true,
+          composed: true,
+        }));
       }
     }
 
