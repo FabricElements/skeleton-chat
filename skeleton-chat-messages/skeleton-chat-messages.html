@@ -126,8 +126,8 @@
            */
           list: {
             type: Array,
-            notify: true,
             value: Array,
+            observer: '_notifyListResize',
           },
 
           /**
@@ -164,11 +164,13 @@
        *
        * @param {object} user
        * @param {string} group
-       * @return {Array}
        * @private
        */
       _getData(user, group) {
-        if (!user || !group) return this.set('list', []);
+        this.set('list', []);
+        this.notifyPath('list');
+        this._notifyListResize();
+        if (!user || !group) return;
         const chatRef = `chat/${group}/messages`;
         const db = firebase.firestore();
         db.collection(chatRef)
@@ -176,17 +178,25 @@
           .limit(30)
           .onSnapshot((querySnapshot) => {
             this.set('list', []);
+            this.notifyPath('list');
+            this._notifyListResize();
+
+            let base = [];
             querySnapshot.forEach((doc) => {
-              this.unshift('list', doc.data());
+              this.set('list', []);
+              this.notifyPath('list');
               this._notifyListResize();
-              this._scrollToLast();
+              base.unshift(doc.data());
             });
+            setTimeout(this.set('list', base));
+            // this.set('list', base);
           }, (err) => {
             console.error(err);
             this._dispatchEvent('error', err);
+            this.set('list', []);
           }, () => {
-//            this.list = list;
-            this._scrollToLast();
+            this.notifyPath('list');
+            this._notifyListResize();
           });
       }
 
@@ -208,6 +218,9 @@
       _notifyListResize() {
         const list = this.shadowRoot.querySelector('iron-list');
         list.fire('resize');
+        list.fire('iron-resize');
+        list.notifyResize();
+        this._scrollToLast();
       }
 
       /**
