@@ -88,6 +88,7 @@
             type: Array,
             notify: true,
             value: Array,
+            observer: '_notifyListResize',
           },
 
           /**
@@ -111,20 +112,6 @@
       }
 
       /**
-       * Get the time from timestamp
-       *
-       * @param {object} times
-       * @return {*}
-       * @private
-       */
-      _getTime(times) {
-        if (!times || !times.timestamp || !times.timestamp.updated) {
-          return Date.now();
-        }
-        return times.timestamp.updated;
-      }
-
-      /**
        * Get data
        *
        * @param {string} uid
@@ -133,19 +120,28 @@
        */
       _getData(uid) {
         if (!uid) return this.set('list', []);
-
         const db = firebase.firestore();
         db.collection('chat')
-        // .orderBy(`users.${uid}`)
-        // .where(`users.${uid}`, '>', 1)
-          .orderBy('updated', 'desc')
-          .limit(30)
+          .orderBy(`users.${uid}`)
+          .limit(100)
           .onSnapshot((querySnapshot) => {
             this.set('list', []);
+            let sortable = [];
             querySnapshot.forEach((doc) => {
-              this.unshift('list', doc.id);
-              this._notifyListResize();
+              const data = doc.data();
+              const item = {
+                id: doc.id,
+                timestamp: data.updated ? data.updated : Date.now(),
+              };
+              sortable.push(item);
             });
+            sortable.sort((a, b) => {
+              return a.timestamp - b.timestamp;
+            });
+            const finalList = Object.keys(sortable).map((key) => {
+              return sortable[key].id;
+            });
+            this.set('list', finalList);
           }, (error) => {
             console.error(error);
             this._dispatchEvent('error', error);
