@@ -133,14 +133,6 @@
       _computeInfo(data, user) {
         let finalData = {};
         if (!data) return finalData;
-        if (data.users) {
-          const usersArray = this._usersToArray(data.users);
-          finalData.users = usersArray;
-          finalData.total = Object.keys(data.users).length;
-          const objectUser = this._getObjectUsers(data.users, user);
-          finalData.title = objectUser.name;
-          finalData.image = objectUser.image;
-        }
 
         if (data) {
           finalData.title = data.title ? data.title : null;
@@ -151,6 +143,15 @@
 //            finalData.description = this._returnFinalText(data.description);
           }
           finalData.image = data.image ? data.image : null;
+        }
+
+        if (data.users) {
+          const usersArray = this._usersToArray(data.users);
+          finalData.users = usersArray;
+          finalData.total = Object.keys(data.users).length;
+          const objectUser = this._getObjectUsers(data.users, user);
+          finalData.title = objectUser.name;
+          finalData.image = objectUser.image;
         }
 
         return finalData;
@@ -178,7 +179,7 @@
        */
       _getObjectUsers(users, user) {
         let finalObject = {
-          name: null,
+          name: '...',
           image: null,
         };
 
