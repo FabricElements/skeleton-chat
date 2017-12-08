@@ -56,19 +56,21 @@
 
     <iron-scroll-threshold id="threshold"
                            lower-threshold="0">
-      <iron-list items="[[list]]"
-                 as="message"
-                 max-physical-count="50"
-                 scroll-offset="100"
-                 scroll-target="threshold">
-        <template>
-          <skeleton-chat-message theme="[[theme]]"
-                                 message="[[message]]"
-                                 user="[[user]]"
-                                 signed-in$="[[signedIn]]"
-          ></skeleton-chat-message>
-        </template>
-      </iron-list>
+      <template is="dom-if" if="{{!empty}}" restamp="true">
+        <iron-list items="[[list]]"
+                   as="message"
+                   max-physical-count="50"
+                   scroll-offset="100"
+                   scroll-target="threshold">
+          <template>
+            <skeleton-chat-message theme="[[theme]]"
+                                   message="[[message]]"
+                                   user="[[user]]"
+                                   signed-in$="[[signedIn]]"
+            ></skeleton-chat-message>
+          </template>
+        </iron-list>
+      </template>
     </iron-scroll-threshold>
     <div id="input-box">
       <slot></slot>
@@ -120,16 +122,21 @@
             type: String,
             value: 'light',
           },
-
           /**
            * List of messages
            */
           list: {
             type: Array,
-            value: Array,
-            observer: '_notifyListResize',
+            notify: true,
           },
-
+          /**
+           * List is empty
+           */
+          empty: {
+            type: Boolean,
+            value: false,
+            computed: '_computeEmpty(list, list.*)',
+          },
           /**
            * Group id
            */
@@ -148,6 +155,8 @@
         firebase.auth().onAuthStateChanged((user) => {
           this.user = user;
         });
+        this.addEventListener('list-changed', (e) => this._notifyResize(), true);
+        this.addEventListener('iron-resize', (e) => this._scrollToLast(), true);
       }
 
       /**
@@ -168,35 +177,22 @@
        */
       _getData(user, group) {
         this.set('list', []);
-        this.notifyPath('list');
-        this._notifyListResize();
         if (!user || !group) return;
         const chatRef = `chat/${group}/messages`;
         const db = firebase.firestore();
         db.collection(chatRef)
           .orderBy('created', 'desc')
-          .limit(30)
+          .limit(200)
           .onSnapshot((querySnapshot) => {
-            this.set('list', []);
-            this.notifyPath('list');
-            this._notifyListResize();
-
             let base = [];
             querySnapshot.forEach((doc) => {
-              this.set('list', []);
-              this.notifyPath('list');
-              this._notifyListResize();
               base.unshift(doc.data());
             });
-            setTimeout(this.set('list', base));
-            // this.set('list', base);
+            this.set('list', base);
           }, (err) => {
             console.error(err);
             this._dispatchEvent('error', err);
             this.set('list', []);
-          }, () => {
-            this.notifyPath('list');
-            this._notifyListResize();
           });
       }
 
@@ -207,6 +203,7 @@
        */
       _scrollToLast() {
         const list = this.shadowRoot.querySelector('iron-list');
+        if (!list) return;
         list.scrollToIndex(this.list.length - 1);
       }
 
@@ -215,23 +212,21 @@
        *
        * @private
        */
-      _notifyListResize() {
+      _notifyResize() {
         const list = this.shadowRoot.querySelector('iron-list');
-        list.fire('resize');
+        if (!list) return;
         list.fire('iron-resize');
-        list.notifyResize();
-        this._scrollToLast();
       }
 
       /**
-       * Get Index from list array
+       * Compute empty
        *
-       * @param {object} data
-       * @return {number}
+       * @param {Array} list
+       * @return {boolean}
        * @private
        */
-      _getIndexFromObject(data) {
-        return this.list.findIndex((i) => i.key === data.key);
+      _computeEmpty(list) {
+        return list.length < 1;
       }
 
       /**

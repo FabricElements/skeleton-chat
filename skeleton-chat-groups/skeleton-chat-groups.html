@@ -29,16 +29,18 @@
 
     <iron-scroll-threshold id="threshold"
                            lower-threshold="0">
-      <iron-list items="[[list]]"
-                 max-physical-count="50"
-                 scroll-offset="100"
-                 scroll-target="threshold">
-        <template>
-          <skeleton-chat-groups-item theme$="[[theme]]"
-                                     group$="[[item]]"
-          ></skeleton-chat-groups-item>
-        </template>
-      </iron-list>
+      <template is="dom-if" if="{{!empty}}" restamp="true">
+        <iron-list items="[[list]]"
+                   max-physical-count="50"
+                   scroll-offset="100"
+                   scroll-target="threshold">
+          <template>
+            <skeleton-chat-groups-item theme$="[[theme]]"
+                                       group$="[[item]]"
+            ></skeleton-chat-groups-item>
+          </template>
+        </iron-list>
+      </template>
     </iron-scroll-threshold>
   </template>
 
@@ -87,16 +89,14 @@
           list: {
             type: Array,
             notify: true,
-            value: Array,
-            observer: '_notifyListResize',
           },
-
           /**
-           * Group id
+           * List is empty
            */
-          group: {
-            type: String,
-            value: null,
+          empty: {
+            type: Boolean,
+            value: false,
+            computed: '_computeEmpty(list, list.*)',
           },
         };
       }
@@ -109,23 +109,23 @@
         firebase.auth().onAuthStateChanged((user) => {
           this._getData(user.uid);
         });
+        this.addEventListener('list-changed', (e) => this._notifyResize(), true);
       }
 
       /**
        * Get data
        *
        * @param {string} uid
-       * @return {Array}
        * @private
        */
       _getData(uid) {
-        if (!uid) return this.set('list', []);
+        this.set('list', []);
+        if (!uid) return;
         const db = firebase.firestore();
         db.collection('chat')
           .orderBy(`users.${uid}`)
           .limit(100)
           .onSnapshot((querySnapshot) => {
-            this.set('list', []);
             let sortable = [];
             querySnapshot.forEach((doc) => {
               const data = doc.data();
@@ -153,9 +153,21 @@
        *
        * @private
        */
-      _notifyListResize() {
+      _notifyResize() {
         const list = this.shadowRoot.querySelector('iron-list');
-        list.fire('resize');
+        if (!list) return;
+        list.fire('iron-resize');
+      }
+
+      /**
+       * Compute empty
+       *
+       * @param {Array} list
+       * @return {boolean}
+       * @private
+       */
+      _computeEmpty(list) {
+        return list.length < 1;
       }
 
       /**
