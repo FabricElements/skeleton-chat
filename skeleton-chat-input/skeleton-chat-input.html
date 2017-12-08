@@ -183,10 +183,8 @@
                       value="{{text}}"
                       on-keydown="_checkForEnter"
                       no-label-float
-                      autofocus
                       max-rows="0"
-                      maxlength$="[[maxlength]]"
-                      disabled$="[[!allowed]]">
+                      maxlength$="[[maxlength]]">
       </paper-textarea>
     </div>
     <paper-icon-button icon="image:tag-faces"
@@ -298,24 +296,7 @@
            */
           label: {
             type: String,
-          },
-          /**
-           * The user is allowed on this chat
-           */
-          allowed: {
-            type: Boolean,
-            value: false,
-            readOnly: true,
-            notify: true,
-            reflectToAttribute: true,
-          },
-          /**
-           * Data object
-           */
-          data: {
-            type: Object,
-            value: {},
-            observer: '_dataObserver',
+            value: 'Say something...',
           },
           /**
            * Show mic computed
@@ -326,15 +307,6 @@
             computed: '_computeShowMic(mic, text)',
           },
         };
-      }
-
-      /**
-       * @return {array}
-       */
-      static get observers() {
-        return [
-          '_getGroupData(user, group)',
-        ];
       }
 
       /**
@@ -364,13 +336,14 @@
         if (!this.user) {
           return this._dispatchEvent('error', 'You need to sign in first.');
         }
-
         if (!this.text) {
           return this._dispatchEvent('error', 'Empty message.');
         }
 
         const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-
+        /**
+         * Format message
+         */
         const message = {
           text: this.text,
           created: timestamp,
@@ -383,17 +356,12 @@
           },
         };
 
-        const input = this.shadowRoot.querySelector('paper-textarea');
-
-        const chatRef = `chat/${this.group}/messages`;
-        const db = firebase.firestore();
         const baseText = this.text;
         this.text = null;
+        const chatRef = `chat/${this.group}/messages`;
+        const db = firebase.firestore();
         db.collection(chatRef).add(message)
           .then(() => {
-            input.focus();
-            input.blur();
-            this.text = null;
             this._dispatchEvent('message', 'ok');
             this._updateGroupTimestamp();
           })
@@ -438,37 +406,6 @@
             console.error(err);
             this._dispatchEvent('error', err);
           });
-      }
-
-      /**
-       * Check if the user has permissions for a group
-       *
-       * @param {object} user
-       * @param {string} group
-       * @private
-       */
-      _getGroupData(user, group) {
-        if (!user || !user.uid || !group) return;
-        const db = firebase.firestore();
-        db.collection('chat').doc(group)
-          .onSnapshot((doc) => {
-            this.data = doc.data();
-          }, (error) => {
-            this.data = {};
-            this._dispatchEvent('error', error);
-          });
-      }
-
-      /**
-       * Data observer
-       *
-       * @param {object} data
-       * @private
-       */
-      _dataObserver(data) {
-        this._setAllowed(false);
-        // if (!data || !data.users || !data.users[this.user.uid]) return;
-        this._setAllowed(true);
       }
 
       /**
