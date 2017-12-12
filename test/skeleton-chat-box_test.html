@@ -19,6 +19,7 @@
     <template>
       <div>
         <firebase-app 
+          project-id="fabricelements"
           auth-domain="fabricelements.firebaseapp.com"
           database-url="https://fabricelements.firebaseio.com"
           api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
@@ -71,10 +72,15 @@
       const keyCode = {
         'enter': 13,
       };
+      const skeletonChatBox = element.querySelector('skeleton-chat-box');
+      const skeletonMessages = skeletonChatBox
+        .shadowRoot
+        .querySelector(
+          'skeleton-chat-messages'
+        );
 
       flush(() => {
         const skeletonAuth = element.querySelector('skeleton-auth');
-        const skeletonChatBox = element.querySelector('skeleton-chat-box');
 
         // Select the email button
         const emailButton = skeletonAuth.shadowRoot.querySelector('.email');
@@ -91,7 +97,7 @@
         // Select the sign in email button
         const emailSignin = skeletonAuth
           .shadowRoot
-          .querySelector('#email-login-box .email');
+          .querySelector('[name="email-login"] .email');
 
         // Click to sign in
         MockInteractions.tap(emailSignin);
@@ -107,71 +113,63 @@
           // Select the sign in password button
           const passSignin = skeletonAuth
             .shadowRoot
-            .querySelector('#email-providers-box .email');
+            .querySelector('[name="email-providers"] .email');
 
           // Click to sign in
           MockInteractions.tap(passSignin);
 
-          const skeletonMessages = skeletonChatBox
-            .shadowRoot
-            .querySelector(
-              'skeleton-chat-messages'
-            );
-
           // Wait for Firebase API response
           return oncePropChanged(
-              skeletonMessages,
-              'list'
-            );
-          })
-          .then(() => {
-            const skeletonMessages = skeletonChatBox
-              .shadowRoot
-              .querySelector(
-                'skeleton-chat-messages'
-              );
+            skeletonMessages,
+            'empty'
+          );
+        })
+        .then(() => {
+          const testMessage = skeletonMessages.list.find(
+            (el) => el.text === 'testing'
+          );
 
-            const testMessage = skeletonMessages.list.find(
-              (el) => el.key === '-Kw0ptoLrZkar3ih1OU-'
-            );
+          expect(
+            testMessage.text
+          ).to.equal('testing');
 
-            expect(
-              testMessage.text.original
-            ).to.equal('hey');
+          expect(
+            testMessage.user.name
+          ).to.equal('Fabric Elements');
 
-            expect(
-              testMessage.user.name
-            ).to.equal('Fabric Elements');
+          expect(
+            testMessage.user.uid
+          ).to.be.ok;
 
-            expect(
-              testMessage.user.uid
-            ).to.be.ok;
+          const skeletonInput = skeletonChatBox
+          .shadowRoot
+          .querySelector(
+            'skeleton-chat-input'
+          );
 
-            const skeletonInput = skeletonChatBox
+          // Set default value on the chat input
+          const chatInput = skeletonInput
             .shadowRoot
-            .querySelector(
-              'skeleton-chat-input'
-            );
+            .querySelector('paper-textarea');
 
-            // Set default value on the chat input
-            const chatInput = skeletonInput
-              .shadowRoot
-              .querySelector('paper-input');
+          const textChat = Math.random().toString(36).slice(2);
 
-            chatInput.value = 'testing';
+          chatInput.value = textChat;
 
-            MockInteractions.pressAndReleaseKeyOn(chatInput, keyCode.enter);
+          MockInteractions.pressAndReleaseKeyOn(chatInput, keyCode.enter);
 
+          oncePropChanged(skeletonMessages, 'list').then(() => {
             expect(
               skeletonMessages
               .list[skeletonMessages.list.length - 1]
               .text
-              .original
-            ).to.equal('testing');
+            ).to.equal(textChat);
 
             done();
           })
           .catch(done);
+        })
+        .catch(done);
       });
     });
   });
