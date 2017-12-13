@@ -1,6 +1,7 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../iron-scroll-threshold/iron-scroll-threshold.html">
 <link rel="import" href="../../iron-list/iron-list.html">
+<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../../polymerfire/firebase-firestore-script.html">
 <link rel="import" href="../../polymerfire/firebase-auth.html">
 <link rel="import" href="../skeleton-chat-message/skeleton-chat-message.html">
@@ -85,9 +86,12 @@
      * @license Copyright (c) 2017 FabricElements. All rights reserved.
      * @customElement
      * @polymer
+     * @extends Polymer.Element
      * @demo demo/index.html
      */
-    class SkeletonChatMessages extends Polymer.Element {
+    class SkeletonChatMessages extends Polymer.mixinBehaviors([
+      Polymer.IronResizableBehavior,
+    ], Polymer.Element) {
       /**
        * @return {string}
        */
