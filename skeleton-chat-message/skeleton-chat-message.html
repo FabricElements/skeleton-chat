@@ -32,7 +32,7 @@
         };
         /* Font styles */
         --skeleton-chat-message-font-family: 'Roboto', 'Noto', sans-serif;
-        --skeleton-chat-message-font-size: 14px;
+        --skeleton-chat-message-font-size: 15px;
         --skeleton-chat-message-font-weight: 400;
         --skeleton-chat-message-font-color: white;
         --skeleton-chat-message-font-color-dark: var(--paper-grey-200);
@@ -47,10 +47,21 @@
         --skeleton-chat-message-font-color: var(--skeleton-chat-message-font-color-dark);
       }
 
+      :host,
+      :host > * {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+
       paper-icon-item {
         box-sizing: border-box;
         margin-bottom: 0.5rem;
         --paper-item-focused-before: {
+          background-color: transparent;
+        };
+        --paper-item-selected: {
+          background-color: transparent;
+        };
+        --paper-item-focused: {
           background-color: transparent;
         };
         --paper-icon-item: {
@@ -130,7 +141,7 @@
         box-sizing: border-box;
         max-width: 100%;
         -webkit-font-smoothing: antialiased;
-        line-height: calc(var(--skeleton-chat-message-height) / 2);
+        line-height: calc(var(--skeleton-chat-message-font-size) * 1.4);
         font-size: var(--skeleton-chat-message-font-size);
         font-weight: var(--skeleton-chat-message-font-weight);
         padding: calc(calc(var(--skeleton-chat-message-height) - var(--skeleton-chat-message-font-size)) / 2) calc(var(--skeleton-chat-message-height) / 2);
@@ -152,7 +163,7 @@
       }
 
       [owner] .bubble {
-        background-color: var(--paper-grey-300);
+        background-color: var(--paper-grey-100);
       }
 
       [hidden] {

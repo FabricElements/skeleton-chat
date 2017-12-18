@@ -21,7 +21,7 @@
       }
 
       :host([theme="dark"]) {
-        background-color: var(--skeleton-chat-bg-color-dark, var(--paper-grey-800));
+        background-color: var(--skeleton-chat-bg-color-dark, var(--paper-grey-900));
       }
 
       :host > * {
@@ -46,7 +46,12 @@
       }
 
       #input-box {
+        background-color: var(--skeleton-chat-input-box-color, var(--paper-grey-50));
         @apply --skeleton-chat-messages-input;
+      }
+
+      :host([theme="dark"]) #input-box {
+        background-color: var(--skeleton-chat-input-box-color-dark, var(--paper-grey-800));
       }
     </style>
 
