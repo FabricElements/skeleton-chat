@@ -1,0 +1,96 @@
+<link rel="import" href="../../../polymer/polymer-element.html">
+<link rel="import" href="../../../paper-input/paper-input.html">
+<link rel="import" href="../../../paper-button/paper-button.html">
+<link rel="import" href="../chat-mixin.html">
+
+<dom-module id="demo-element">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <paper-input value="{{myUid}}"
+                 type="text"
+                 label="Insert your user uid">
+    </paper-input>
+
+    <paper-input value="{{friendUid}}"
+                 type="text"
+                 label="Insert your friend uid">
+    </paper-input>
+
+    <paper-button class="email" on-tap="onCreate">
+      <span>Create Chat</span>
+    </paper-button>
+
+    <paper-input value="{{chatId}}"
+                 type="text"
+                 label="Insert chat ID">
+    </paper-input>
+
+    <paper-button class="email" on-tap="onRemove">
+        <span>Remove Chat</span>
+      </paper-button>
+  </template>
+
+  <script>
+    /**
+     * `demo-element`
+     *
+     * @customElement
+     * @polymer
+     * @constructor
+     * @appliesMixin Fabric.ChatMixin
+     * @extends Polymer.Element
+     * @demo demo/index.html
+     */
+    class DemoElement extends Fabric.ChatMixin(Polymer.Element) {
+      /**
+       * @return {string}
+       */
+      static get is() {
+        return 'demo-element';
+      }
+
+      /**
+       * @return {object}
+       */
+      static get properties() {
+        return {
+          myUid: {
+            type: String,
+            value: null,
+          },
+          friendUid: {
+            type: String,
+            value: null,
+          },
+          chatId: {
+            type: String,
+            value: null,
+          },
+        };
+      }
+
+      /**
+       * onCreate
+       */
+      onCreate() {
+        this.create([this.myUid, this.friendUid]);
+        console.log('Chat created');
+      }
+
+      /**
+       * onRemove
+       */
+      onRemove() {
+        this.remove(this.chatId);
+        console.log('Chat removed');
+      }
+    }
+
+    window.customElements.define(DemoElement.is, DemoElement);
+  </script>
+</dom-module>
