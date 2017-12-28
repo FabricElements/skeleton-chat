@@ -31,8 +31,22 @@
     </paper-input>
 
     <paper-button class="email" on-tap="onRemove">
-        <span>Remove Chat</span>
-      </paper-button>
+      <span>Remove Chat</span>
+    </paper-button>
+
+    <paper-input value="{{achatId}}"
+                 type="text"
+                 label="Insert chat ID">
+    </paper-input>
+
+    <paper-input value="{{userUid}}"
+                 type="text"
+                 label="Insert user uid">
+    </paper-input>
+
+    <paper-button class="email" on-tap="onRemoveUser">
+      <span>Remove user</span>
+    </paper-button>
   </template>
 
   <script>
@@ -71,6 +85,14 @@
             type: String,
             value: null,
           },
+          achatId: {
+            type: String,
+            value: null,
+          },
+          userUid: {
+            type: String,
+            value: null,
+          },
         };
       }
 
@@ -88,6 +110,14 @@
       onRemove() {
         this.remove(this.chatId);
         console.log('Chat removed');
+      }
+
+      /**
+       * onRemoveUser
+       */
+       onRemoveUser() {
+        this.removeUserFromChat(this.achatId, this.userUid);
+        console.log('User removed');
       }
     }
 

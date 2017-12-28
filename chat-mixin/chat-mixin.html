@@ -70,6 +70,35 @@
           .then(console.log)
           .catch(console.error);
       }
+
+      /**
+       * Remove user from chat
+       *
+       * @param {string} chatId
+       * @param {string} uid
+       */
+       removeUserFromChat(chatId, uid) {
+        const db = firebase.firestore();
+        const docRef = db.collection('chat').doc(chatId);
+
+        docRef.get()
+          .then((doc) => {
+            let data = doc.data();
+            const restOfUsers = Object
+              .keys(data.users)
+              .reduce((acc, key) => {
+                if (key === uid) return acc;
+
+                acc[key] = true;
+
+                return acc;
+              }, {});
+
+            return docRef.update({users: restOfUsers});
+          })
+          .then(console.log)
+          .catch(console.error);
+      }
     };
   };
 </script>
