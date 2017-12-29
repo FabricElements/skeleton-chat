@@ -34,7 +34,7 @@
       <span>Remove Chat</span>
     </paper-button>
 
-    <paper-input value="{{achatId}}"
+    <paper-input value="{{chat}}"
                  type="text"
                  label="Insert chat ID">
     </paper-input>
@@ -44,7 +44,7 @@
                  label="Insert user uid">
     </paper-input>
 
-    <paper-button class="email" on-tap="onRemoveUser">
+    <paper-button class="email" on-tap="onLeave">
       <span>Remove user</span>
     </paper-button>
   </template>
@@ -85,7 +85,7 @@
             type: String,
             value: null,
           },
-          achatId: {
+          chat: {
             type: String,
             value: null,
           },
@@ -113,10 +113,10 @@
       }
 
       /**
-       * onRemoveUser
+       * onLeave
        */
-       onRemoveUser() {
-        this.removeUserFromChat(this.achatId, this.userUid);
+       onLeave() {
+        this.leave(this.chat, this.userUid);
         console.log('User removed');
       }
     }
