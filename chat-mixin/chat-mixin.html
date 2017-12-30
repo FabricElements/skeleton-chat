@@ -67,8 +67,22 @@
         const db = firebase.firestore();
         const docRef = db.collection('chat').doc(id);
         return docRef.delete()
-          .then(console.log)
-          .catch(console.error);
+          .then((docRef) => {
+            window.dispatchEvent(new CustomEvent('location-changed'));
+            window.history.pushState({}, null, `/chats`);
+          })
+          .catch((error) => {
+            console.error(error);
+            this.dispatchEvent(new CustomEvent('alert', {
+              detail: {
+                text: 'There was a problem deleting your chat',
+                time: 3000,
+                type: 'error',
+              },
+              bubbles: true,
+              composed: true,
+            }));
+          });
       }
 
       /**
@@ -84,8 +98,22 @@
           .update({
             [`users.${uid}`]: firebase.firestore.FieldValue.delete(),
           })
-          .then(console.log)
-          .catch(console.error);
+          .then((docRef) => {
+            window.dispatchEvent(new CustomEvent('location-changed'));
+            window.history.pushState({}, null, `/chats`);
+          })
+          .catch((error) => {
+            console.error(error);
+            this.dispatchEvent(new CustomEvent('alert', {
+              detail: {
+                text: 'There was a problem leaving your chat',
+                time: 3000,
+                type: 'error',
+              },
+              bubbles: true,
+              composed: true,
+            }));
+          });
       }
     };
   };
