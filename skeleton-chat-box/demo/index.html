@@ -33,38 +33,27 @@
   </custom-style>
 </head>
 <body>
-<div class="vertical-section-container centered">
-  <h3>Basic skeleton-chat-box demo</h3>
-  <dom-bind>
-    <template>
-      <firebase-auth signed-in="{{signedIn}}"
-                     user="{{user}}">
-      </firebase-auth>
-      <dom-if if="[[!signedIn]]">
-        <template>
-          <skeleton-auth google></skeleton-auth>
-        </template>
-      </dom-if>
-    </template>
-  </dom-bind>
-  <demo-snippet>
-    <template>
-      <skeleton-chat-box group="testing"
-                         mic
-                         emoji
-      ></skeleton-chat-box>
-    </template>
-  </demo-snippet>
-
-  <demo-snippet>
-    <template>
-      <skeleton-chat-box group="testing"
-                         theme="dark"
-                         mic
-                         emoji
-      ></skeleton-chat-box>
-    </template>
-  </demo-snippet>
-</div>
+  <div class="vertical-section-container centered">
+    <demo-snippet>
+      <template>
+        <skeleton-chat-box  group="testing"
+                            mic
+                            emoji
+        ></skeleton-chat-box>
+      </template>
+    </demo-snippet>
+    <dom-bind>
+      <template>
+        <firebase-auth signed-in="{{signedIn}}"
+                        user="{{user}}">
+        </firebase-auth>
+        <dom-if if="[[!signedIn]]">
+          <template>
+            <skeleton-auth google></skeleton-auth>
+          </template>
+        </dom-if>
+      </template>
+    </dom-bind>
+  </div>
 </body>
 </html>

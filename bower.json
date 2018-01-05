@@ -15,7 +15,10 @@
     "iron-scroll-threshold": "PolymerElements/iron-scroll-threshold#^2.0.0",
     "iron-test-helpers": "PolymerElements/iron-test-helpers#^2.0.0",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^2.0.1",
-    "iron-input": "PolymerElements/iron-input#^2.0.1"
+    "iron-input": "PolymerElements/iron-input#^2.0.1",
+    "app-layout": "PolymerElements/app-layout#^2.0.4",
+    "paper-menu-button": "PolymerElements/paper-menu-button#^2.0.0",
+    "paper-listbox": "PolymerElements/paper-listbox#^2.0.0"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
