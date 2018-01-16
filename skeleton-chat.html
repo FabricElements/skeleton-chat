@@ -1,9 +1,85 @@
 <!--
 @license
-Copyright (c) 2017 FabricElements. All rights reserved.
+Copyright (c) 2018 FabricElements. All rights reserved.
 
 @group Skeleton Chat
 @pseudoElement skeleton-chat
 @demo demo/index.html
 -->
-<link rel="import" href="./skeleton-chat-input/skeleton-chat-input.html">
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="./chat-mixin/chat-mixin.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../app-route/app-location.html">
+<link rel="import" href="../app-route/app-route.html">
+<link rel="import" href="./skeleton-chat-groups/skeleton-chat-groups.html">
+<link rel="import" href="./skeleton-chat-box/skeleton-chat-box.html">
+
+<dom-module id="skeleton-chat">
+  <template>
+    <style>
+      :host {
+        display: block;
+        @apply --layout-fit;
+      }
+    </style>
+    <app-location route="{{route}}"></app-location>
+    <app-route
+      route="{{route}}"
+      pattern="/:page"
+      data="{{routeData}}"
+      tail="{{routeTail}}"></app-route>
+    <app-route
+      route="{{routeTail}}"
+      pattern="/:id"
+      data="{{subrouteData}}"></app-route>
+
+    <skeleton-chat-groups></skeleton-chat-groups>
+    <skeleton-chat-box group$="[[id]]"></skeleton-chat-box>
+  </template>
+
+  <script>
+    /**
+     * `skeleton-chat`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class SkeletonChat extends Polymer.Element {
+      /**
+       * @return {string}
+       */
+      static get is() {
+        return 'skeleton-chat';
+      }
+
+      /**
+       * @return {object}
+       */
+      static get properties() {
+        return {
+          /** Route */
+          route: {
+            type: Object,
+          },
+          /** Route data */
+          routeData: {
+            type: Object,
+            value: {
+              page: null,
+            },
+          },
+          subrouteData: {
+            type: Object,
+            value: {
+              id: null,
+            },
+          },
+        };
+      }
+    }
+
+    window.customElements.define(SkeletonChat.is, SkeletonChat);
+  </script>
+</dom-module>

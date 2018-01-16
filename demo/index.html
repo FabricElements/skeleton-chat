@@ -8,65 +8,35 @@
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+  <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+  <link rel="import" href="../../polymer/lib/elements/dom-if.html">
+  <link rel="import" href="./shared.html">
+  <link rel="import" href="../skeleton-chat.html">
 
-  <custom-style>
-    <style is="custom-style" include="demo-pages-shared-styles">
-      a {
-        display: block;
-        padding: 1rem;
-        text-decoration: none;
-        color: blue;
-      }
-    </style>
-  </custom-style>
+  <style>
+    html,
+    body {
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+    }
+  </style>
 </head>
 <body>
-<div class="vertical-section-container centered">
-  <h3>Basic skeleton-chat demos</h3>
-  <ul>
-    <li>
-      <a href="../skeleton-chat-box/demo/index.html" target="_blank">
-        skeleton-chat-box
-      </a>
-    </li>
-    <li>
-      <a href="../skeleton-chat-input/demo/index.html" target="_blank">
-        skeleton-chat-input
-      </a>
-    </li>
-    <li>
-      <a href="../skeleton-chat-messages/demo/index.html" target="_blank">
-        skeleton-chat-messages
-      </a>
-    </li>
-    <li>
-      <a href="../skeleton-chat-message/demo/index.html" target="_blank">
-        skeleton-chat-message
-      </a>
-    </li>
-    <li>
-      <a href="../skeleton-chat-info/demo/index.html" target="_blank">
-        skeleton-chat-info
-      </a>
-    </li>
-    <li>
-      <a href="../skeleton-chat-groups/demo/index.html" target="_blank">
-        skeleton-chat-groups
-      </a>
-    </li>
-    <li>
-      <a href="../skeleton-chat-groups-item/demo/index.html" target="_blank">
-        skeleton-chat-groups-item
-      </a>
-    </li>
-    <li>
-      <a href="../chat-mixin/demo/index.html" target="_blank">
-        chat-mixin
-      </a>
-    </li>
-  </ul>
-</div>
+<dom-bind>
+  <template>
+    <firebase-auth signed-in="{{signedIn}}"></firebase-auth>
+    <dom-if if="[[!signedIn]]">
+      <template>
+        <skeleton-auth google></skeleton-auth>
+      </template>
+    </dom-if>
+    <dom-if if="[[signedIn]]">
+      <template>
+        <skeleton-chat></skeleton-chat>
+      </template>
+    </dom-if>
+  </template>
+</dom-bind>
 </body>
 </html>
