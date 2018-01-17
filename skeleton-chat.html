@@ -3,7 +3,6 @@
 Copyright (c) 2018 FabricElements. All rights reserved.
 
 @group Skeleton Chat
-@pseudoElement skeleton-chat
 @demo demo/index.html
 -->
 <link rel="import" href="../polymer/polymer-element.html">
@@ -20,21 +19,31 @@ Copyright (c) 2018 FabricElements. All rights reserved.
       :host {
         display: block;
         @apply --layout-fit;
+        height: 100%;
+        font-family: 'Roboto', 'Noto', sans-serif;
       }
     </style>
     <app-location route="{{route}}"></app-location>
     <app-route
       route="{{route}}"
-      pattern="/:page"
-      data="{{routeData}}"
-      tail="{{routeTail}}"></app-route>
+      pattern="/chat"
+      active="{{chatViewActive}}"
+      tail="{{chatRouteTail}}"></app-route>
     <app-route
-      route="{{routeTail}}"
+      route="{{chatRouteTail}}"
       pattern="/:id"
+      active="{{chatBoxActive}}"
       data="{{subrouteData}}"></app-route>
 
-    <skeleton-chat-groups></skeleton-chat-groups>
-    <skeleton-chat-box group$="[[id]]"></skeleton-chat-box>
+    <template is="dom-if" if="[[chatViewActive]]">
+      <template is="dom-if" if="[[!chatBoxActive]]">
+        <skeleton-chat-groups></skeleton-chat-groups>
+      </template>
+      <template is="dom-if" if="[[chatBoxActive]]">
+        <skeleton-chat-box group$="[[subrouteData.id]]"></skeleton-chat-box>
+      </template>
+    </template>
+
   </template>
 
   <script>
@@ -44,9 +53,10 @@ Copyright (c) 2018 FabricElements. All rights reserved.
      *
      * @customElement
      * @polymer
+     * @appliesMixin Fabric.ChatMixin
      * @demo demo/index.html
      */
-    class SkeletonChat extends Polymer.Element {
+    class SkeletonChat extends Fabric.ChatMixin(Polymer.Element) {
       /**
        * @return {string}
        */

@@ -69,7 +69,7 @@
         return docRef.delete()
           .then((docRef) => {
             window.dispatchEvent(new CustomEvent('location-changed'));
-            window.history.pushState({}, null, `/chats`);
+            window.history.pushState({}, null, `/chat`);
           })
           .catch((error) => {
             console.error(error);
@@ -100,7 +100,7 @@
           })
           .then((docRef) => {
             window.dispatchEvent(new CustomEvent('location-changed'));
-            window.history.pushState({}, null, `/chats`);
+            window.history.pushState({}, null, `/chat`);
           })
           .catch((error) => {
             console.error(error);

@@ -22,6 +22,7 @@
         display: block;
         position: relative;
         min-height: 200px;
+        height: 100%;
         background-color: var(--skeleton-chat-bg-color, #ffffff);
         @apply --skeleton-chat-box;
       }
@@ -93,6 +94,10 @@
     <app-header-layout fullbleed>
       <app-header slot="header" shadow>
         <app-toolbar sticky>
+          <a href="/chat" tabindex="-1">
+            <paper-icon-button icon="close"
+                               class="main-action"></paper-icon-button>
+          </a>
           <div class="image-container">
             <template is="dom-if" if="[[info.image]]">
               <iron-image fade
@@ -105,8 +110,8 @@
           <div id="status" online></div>
 
           <paper-menu-button vertical-align="top"
-                              vertical-offset="70"
-                              horizontal-align="right">
+                             vertical-offset="70"
+                             horizontal-align="right">
             <paper-icon-button icon="icons:more-vert" slot="dropdown-trigger"></paper-icon-button>
             <paper-listbox slot="dropdown-content">
               <paper-icon-item on-tap="_leaveChat">
