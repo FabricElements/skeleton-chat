@@ -1,5 +1,4 @@
 <link rel="import" href="../../polymer/polymer-element.html">
-<link rel="import" href="../../app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../app-layout/app-header/app-header.html">
 <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../neon-animation/web-animations.html">
@@ -9,8 +8,10 @@
 <link rel="import" href="../skeleton-chat-info/skeleton-chat-info.html">
 <link rel="import" href="../skeleton-chat-messages/skeleton-chat-messages.html">
 <link rel="import" href="../skeleton-chat-input/skeleton-chat-input.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
 <link rel="import" href="../../iron-icons/social-icons.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
 
 <dom-module id="skeleton-chat-box">
   <template>
@@ -23,11 +24,21 @@
         position: relative;
         min-height: 200px;
         height: 100%;
+        overflow: hidden;
         background-color: var(--skeleton-chat-bg-color, #ffffff);
+        @apply --layout-vertical;
         @apply --skeleton-chat-box;
       }
 
-      app-header app-toolbar > * {
+      :host([fullbleed]) {
+        @apply --layout-fit;
+      }
+
+      app-toolbar > * {
+        margin-left: .5rem;
+      }
+
+      app-toolbar > *:first-child {
         margin-left: .5rem;
       }
 
@@ -64,7 +75,6 @@
       }
 
       skeleton-chat-messages {
-        padding-top: 1rem;
         @apply --layout-flex-auto;
         --skeleton-chat-box-bottom: 78px;
       }
@@ -90,57 +100,54 @@
       }
     </style>
     <skeleton-chat-info group$="[[group]]" info="{{info}}"></skeleton-chat-info>
+    <app-header shadow>
+      <app-toolbar>
+        <a href="/chat" tabindex="-1">
+          <paper-icon-button icon="close"
+                             class="main-action"></paper-icon-button>
+        </a>
+        <div class="image-container">
+          <template is="dom-if" if="[[info.image]]">
+            <iron-image fade
+                        sizing="cover"
+                        src$="[[info.image]]"></iron-image>
+          </template>
+          <iron-icon icon$="social:[[icon]]"></iron-icon>
+        </div>
+        <div main-title class="title">[[info.title]]</div>
+        <div id="status" online></div>
 
-    <app-header-layout fullbleed>
-      <app-header slot="header" shadow>
-        <app-toolbar sticky>
-          <a href="/chat" tabindex="-1">
-            <paper-icon-button icon="close"
-                               class="main-action"></paper-icon-button>
-          </a>
-          <div class="image-container">
-            <template is="dom-if" if="[[info.image]]">
-              <iron-image fade
-                          sizing="cover"
-                          src$="[[info.image]]"></iron-image>
-            </template>
-            <iron-icon icon$="social:[[icon]]"></iron-icon>
-          </div>
-          <div main-title class="title">[[info.title]]</div>
-          <div id="status" online></div>
-
-          <paper-menu-button vertical-align="top"
-                             vertical-offset="70"
-                             horizontal-align="right">
-            <paper-icon-button icon="icons:more-vert" slot="dropdown-trigger"></paper-icon-button>
-            <paper-listbox slot="dropdown-content">
-              <paper-icon-item on-tap="_leaveChat">
+        <paper-menu-button vertical-align="top"
+                           vertical-offset="70"
+                           horizontal-align="right">
+          <paper-icon-button icon="icons:more-vert" slot="dropdown-trigger"></paper-icon-button>
+          <paper-listbox slot="dropdown-content">
+            <paper-icon-item on-tap="_leaveChat">
+              <iron-icon icon="icons:cancel" slot="item-icon"></iron-icon>
+              <paper-item-body>
+                Exit chat
+              </paper-item-body>
+            </paper-icon-item>
+            <template is="dom-if" if="[[canDelete]]">
+              <paper-icon-item on-tap="_deleteChat">
                 <iron-icon icon="icons:cancel" slot="item-icon"></iron-icon>
                 <paper-item-body>
-                  Exit chat
+                  Delete chat
                 </paper-item-body>
               </paper-icon-item>
-              <template is="dom-if" if="[[canDelete]]">
-                <paper-icon-item on-tap="_deleteChat">
-                  <iron-icon icon="icons:cancel" slot="item-icon"></iron-icon>
-                  <paper-item-body>
-                    Delete chat
-                  </paper-item-body>
-                </paper-icon-item>
-              </template>
-            </paper-listbox>
-          </paper-menu-button>
-        </app-toolbar>
-      </app-header>
-      <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]">
-        <skeleton-chat-input  theme$="[[theme]]" group$="[[group]]"
-                              mic$="[[mic]]"
-                              camera$="[[camera]]"
-                              emoji$="[[emoji]]"
-                              maxlength$="[[maxlength]]"
-                              label$="[[label]]"></skeleton-chat-input>
-      </skeleton-chat-messages>
-    </app-header-layout>
+            </template>
+          </paper-listbox>
+        </paper-menu-button>
+      </app-toolbar>
+    </app-header>
+    <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]">
+      <skeleton-chat-input theme$="[[theme]]" group$="[[group]]"
+                           mic$="[[mic]]"
+                           camera$="[[camera]]"
+                           emoji$="[[emoji]]"
+                           maxlength$="[[maxlength]]"
+                           label$="[[label]]"></skeleton-chat-input>
+    </skeleton-chat-messages>
   </template>
 
   <script>
@@ -252,7 +259,7 @@
        *
        * @private
        */
-       _deleteChat() {
+      _deleteChat() {
         const skeletonMessages = this
           .shadowRoot
           .querySelector(
@@ -269,7 +276,7 @@
        * @return {string}
        * @private
        */
-       _computeIcon(info) {
+      _computeIcon(info) {
         let icon = 'person';
         if (!info) return icon;
         const total = info.total;

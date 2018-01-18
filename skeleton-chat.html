@@ -18,32 +18,37 @@ Copyright (c) 2018 FabricElements. All rights reserved.
     <style>
       :host {
         display: block;
-        @apply --layout-fit;
+        position: relative;
         height: 100%;
-        font-family: 'Roboto', 'Noto', sans-serif;
+        overflow: hidden;
+        @apply --layout-fit;
+      }
+
+      skeleton-chat-box {
+        z-index: 100;
+        transition: all ease-in-out 300ms;
+        transform: translateY(120%);
+        top: 100%;
+      }
+
+      skeleton-chat-box[opened] {
+        transform: translateY(0);
+        height: 100%;
+        top: 0;
       }
     </style>
     <app-location route="{{route}}"></app-location>
-    <app-route
-      route="{{route}}"
-      pattern="/chat"
-      active="{{chatViewActive}}"
-      tail="{{chatRouteTail}}"></app-route>
-    <app-route
-      route="{{chatRouteTail}}"
-      pattern="/:id"
-      active="{{chatBoxActive}}"
-      data="{{subrouteData}}"></app-route>
-
-    <template is="dom-if" if="[[chatViewActive]]">
-      <template is="dom-if" if="[[!chatBoxActive]]">
-        <skeleton-chat-groups></skeleton-chat-groups>
-      </template>
-      <template is="dom-if" if="[[chatBoxActive]]">
-        <skeleton-chat-box group$="[[subrouteData.id]]"></skeleton-chat-box>
-      </template>
-    </template>
-
+    <app-route route="{{route}}"
+               pattern="/chat"
+               tail="{{chatRouteTail}}"></app-route>
+    <app-route route="{{chatRouteTail}}"
+               pattern="/:id"
+               active="{{chatBoxActive}}"
+               data="{{subrouteData}}"></app-route>
+    <skeleton-chat-groups></skeleton-chat-groups>
+    <skeleton-chat-box fullbleed
+                       group$="[[subrouteData.id]]"
+                       opened$="[[chatBoxActive]]"></skeleton-chat-box>
   </template>
 
   <script>
@@ -85,6 +90,10 @@ Copyright (c) 2018 FabricElements. All rights reserved.
             value: {
               id: null,
             },
+          },
+          chatBoxActive: {
+            type: Boolean,
+            value: false,
           },
         };
       }

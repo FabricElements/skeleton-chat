@@ -18,8 +18,7 @@
        * @return {object}
        */
       static get properties() {
-        return {
-        };
+        return {};
       }
 
       /**
@@ -91,7 +90,7 @@
        * @param {string} chatId
        * @param {string} uid
        */
-       leave(chatId, uid) {
+      leave(chatId, uid) {
         const db = firebase.firestore();
         const docRef = db.collection('chat').doc(chatId);
         docRef
