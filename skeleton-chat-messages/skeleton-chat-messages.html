@@ -5,6 +5,8 @@
 <link rel="import" href="../../polymerfire/firebase-firestore-script.html">
 <link rel="import" href="../../polymerfire/firebase-auth.html">
 <link rel="import" href="../skeleton-chat-message/skeleton-chat-message.html">
+<link rel="import" href="../../paper-card/paper-card.html">
+<link rel="import" href="../../iron-icons/social-icons.html">
 
 <dom-module id="skeleton-chat-messages">
   <template>
@@ -54,6 +56,17 @@
       :host([theme="dark"]) #input-box {
         background-color: var(--skeleton-chat-input-box-color-dark, var(--paper-grey-800));
       }
+
+      .start-texting {
+        max-width: 15em;
+        margin: 0 auto;
+        text-align: center;
+        color:  var(--paper-pink-a200);
+        background-color: white;
+        border: 5px solid var(--paper-grey-100);
+        border-radius: 2em;
+        font-family: 'Roboto', 'Noto', sans-serif;
+      }
     </style>
 
     <firebase-auth
@@ -77,6 +90,11 @@
             ></skeleton-chat-message>
           </template>
         </iron-list>
+      </template>
+      <template is="dom-if" if="[[showPlaceholder]]">
+        <div class="start-texting">
+          <p>Say hello <iron-icon icon="social:mood"></iron-icon></p>
+        </div>
       </template>
     </iron-scroll-threshold>
     <div id="input-box">
@@ -136,6 +154,7 @@
            */
           list: {
             type: Array,
+            value: [],
             notify: true,
           },
           /**
@@ -143,7 +162,7 @@
            */
           empty: {
             type: Boolean,
-            value: false,
+            value: true,
             notify: true,
             computed: '_computeEmpty(list, list.*)',
           },
@@ -154,6 +173,21 @@
             type: String,
             value: null,
           },
+          /**
+           * List is loaded
+           */
+          loaded: {
+            type: Boolean,
+            value: false,
+          },
+          /**
+           * Show placeholder
+           */
+          showPlaceholder: {
+            type: Boolean,
+            value: false,
+            computed: '_computePlaceholder(empty, loaded)',
+          },
         };
       }
 
@@ -163,6 +197,7 @@
       connectedCallback() {
         super.connectedCallback();
         firebase.auth().onAuthStateChanged((user) => {
+          if (!user) return;
           this.user = user;
         });
         this.addEventListener('list-changed', (e) => this._notifyResize(), true);
@@ -199,11 +234,24 @@
               base.unshift(doc.data());
             });
             this.set('list', base);
+            this.loaded = true;
           }, (err) => {
             console.error(err);
             this._dispatchEvent('error', err);
             this.set('list', []);
           });
+      }
+
+      /**
+       * Compute placeholder
+       *
+       * @param {Boolean} empty
+       * @param {Boolean} loaded
+       * @return {*}
+       * @private
+       */
+      _computePlaceholder(empty, loaded) {
+        return this.empty && this.loaded;
       }
 
       /**
@@ -236,7 +284,7 @@
        * @private
        */
       _computeEmpty(list) {
-        return list.length < 1;
+        return !list.length;
       }
 
       /**

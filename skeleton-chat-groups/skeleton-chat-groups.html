@@ -182,6 +182,7 @@
            */
           list: {
             type: Array,
+            value: [],
             notify: true,
           },
           /**
@@ -189,13 +190,19 @@
            */
           empty: {
             type: Boolean,
-            value: false,
+            value: true,
             computed: '_computeEmpty(list, list.*)',
           },
+          /**
+           * List is loaded
+           */
           loaded: {
             type: Boolean,
             value: false,
           },
+          /**
+           * Show placeholder
+           */
           showPlaceholder: {
             type: Boolean,
             value: false,
@@ -210,6 +217,7 @@
       connectedCallback() {
         super.connectedCallback();
         firebase.auth().onAuthStateChanged((user) => {
+          if (!user) return;
           this._getData(user.uid);
         });
         this.addEventListener('list-changed', (e) => this._notifyResize(), true);
@@ -271,11 +279,19 @@
        * @private
        */
       _computeEmpty(list) {
-        return list.length < 1;
+        return !list.length;
       }
 
+      /**
+       * Compute placeholder
+       *
+       * @param {Boolean} empty
+       * @param {Boolean} loaded
+       * @return {*}
+       * @private
+       */
       _computePlaceholder(empty, loaded) {
-        return (this.empty && this.loaded ? this.showPlaceholder = true : this.showPlaceholder = false);
+        return this.empty && this.loaded;
       }
 
       /**
