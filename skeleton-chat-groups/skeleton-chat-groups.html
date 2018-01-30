@@ -66,21 +66,17 @@
         flex-direction: column;
         align-content: flex-end;
         height: 100%;
+        text-align: center;
       }
 
       .start-chat a {
-        padding: 2em;
+        padding-bottom: 2em;
         text-decoration: none;
         color: white;
-        align-self: flex-end;
       }
 
       .start-chat paper-button {
         background-color: var(--paper-pink-a200);
-      }
-
-      .card-content {
-        text-align: center;
       }
 
       .card-title {
@@ -130,10 +126,9 @@
             smart
             crop="entropy"
             class="divider"></fabric-imgix>
-          <div class="card-content">
-            <h2 class="card-title paper-font-headline">Start chatting with friends</h2>
-            <p class="paper-font-subhead light">Get started by texting your friends, click on the button bellow.</p>
-            <footer></footer>
+          <div>
+            <h2 class="card-title">Start chatting with friends</h2>
+            <p class="card-text">Get started by texting your friends, click on the button bellow.</p>
           </div>
           <a href="/friends" tabindex="-1">
             <paper-button raised><iron-icon icon="communication:chat"></iron-icon>Start Chat</paper-button>
