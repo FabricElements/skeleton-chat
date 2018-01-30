@@ -29,7 +29,7 @@
     <firebase-auth signed-in="{{signedIn}}"></firebase-auth>
     <dom-if if="[[!signedIn]]">
       <template>
-        <skeleton-auth google></skeleton-auth>
+        <skeleton-auth google email></skeleton-auth>
       </template>
     </dom-if>
     <dom-if if="[[signedIn]]">

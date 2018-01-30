@@ -8,7 +8,10 @@
 <link rel="import" href="../../polymerfire/firebase-auth-script.html">
 <link rel="import" href="../../polymerfire/firebase-firestore-script.html">
 <link rel="import" href="../skeleton-chat-groups-item/skeleton-chat-groups-item.html">
+<link rel="import" href="../../fabric-imgix/fabric-imgix.html">
+<link rel="import" href="../../paper-button/paper-button.html">
 <link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../iron-icons/communication-icons.html">
 <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
 
 <dom-module id="skeleton-chat-groups">
@@ -24,6 +27,11 @@
         height: 100%;
         overflow: hidden;
         @apply --layout-vertical;
+        font-family: 'Roboto', 'Noto', sans-serif;
+      }
+
+      :host * {
+        box-sizing: border-box;
       }
 
       :host([fullbleed]) {
@@ -32,8 +40,9 @@
 
       .container {
         @apply --layout-flex-auto;
-        height: 100%;
+        height: calc(100% - 64px);
         position: relative;
+
       }
 
       skeleton-chat-groups {
@@ -50,6 +59,44 @@
           @apply --skeleton-chat-groups-list;
         };
       }
+
+      .start-chat {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        align-content: flex-end;
+        height: 100%;
+      }
+
+      .start-chat a {
+        padding: 2em;
+        text-decoration: none;
+        color: white;
+        align-self: flex-end;
+      }
+
+      .start-chat paper-button {
+        background-color: var(--paper-pink-a200);
+      }
+
+      .card-content {
+        text-align: center;
+      }
+
+      .card-title {
+        color: var(--paper-blue-a700);
+      }
+
+      iron-icon {
+        margin-right: .7em;
+      }
+
+      fabric-imgix {
+        display: block;
+        min-height: 70%;
+        padding: none;
+      }
+
     </style>
     <app-header shadow>
       <app-toolbar>
@@ -76,6 +123,23 @@
           </iron-list>
         </template>
       </iron-scroll-threshold>
+      <template is="dom-if" if="[[showPlaceholder]]">
+        <div class="start-chat">
+          <fabric-imgix
+            src="https://images.unsplash.com/photo-1488509082528-cefbba5ad692"
+            smart
+            crop="entropy"
+            class="divider"></fabric-imgix>
+          <div class="card-content">
+            <h2 class="card-title paper-font-headline">Start chatting with friends</h2>
+            <p class="paper-font-subhead light">Get started by texting your friends, click on the button bellow.</p>
+            <footer></footer>
+          </div>
+          <a href="/friends" tabindex="-1">
+            <paper-button raised><iron-icon icon="communication:chat"></iron-icon>Start Chat</paper-button>
+          </a>
+        </div>
+      </template>
     </div>
   </template>
 
@@ -90,7 +154,7 @@
      * @demo demo/index.html
      */
     class SkeletonChatGroups extends Polymer.Element {
-      /**
+      /** len
        * @return {string}
        */
       static get is() {
@@ -132,6 +196,15 @@
             type: Boolean,
             value: false,
             computed: '_computeEmpty(list, list.*)',
+          },
+          loaded: {
+            type: Boolean,
+            value: false,
+          },
+          showPlaceholder: {
+            type: Boolean,
+            value: false,
+            computed: '_computePlaceholder(empty, loaded)',
           },
         };
       }
@@ -177,6 +250,7 @@
               return sortable[key].id;
             });
             this.set('list', finalList);
+            this.loaded = true;
           }, (error) => {
             console.error(error);
             this._dispatchEvent('error', error);
@@ -203,6 +277,10 @@
        */
       _computeEmpty(list) {
         return list.length < 1;
+      }
+
+      _computePlaceholder(empty, loaded) {
+        return (this.empty && this.loaded ? this.showPlaceholder = true : this.showPlaceholder = false);
       }
 
       /**

@@ -19,7 +19,9 @@
     "app-layout": "PolymerElements/app-layout#^2.0.4",
     "paper-menu-button": "PolymerElements/paper-menu-button#^2.0.0",
     "paper-listbox": "PolymerElements/paper-listbox#^2.0.0",
-    "app-route": "PolymerElements/app-route#^2.0.3"
+    "app-route": "PolymerElements/app-route#^2.0.3",
+    "paper-fab": "PolymerElements/paper-fab#^2.0.0",
+    "fabric-imgix": "FabricElements/fabric-imgix"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
