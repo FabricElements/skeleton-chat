@@ -348,9 +348,10 @@
         const message = {
           text: this.text,
           created: timestamp,
+          uid: this.user.uid,
+          type: 'default',
           updated: timestamp,
           user: {
-            uid: this.user.uid,
             isAnonymous: this.user.isAnonymous,
             name: this.user.displayName ? this.user.displayName : null,
             image: this.user.photoURL ? this.user.photoURL : null,
@@ -364,7 +365,6 @@
         db.collection(chatRef).add(message)
           .then(() => {
             this._dispatchEvent('message', 'ok');
-            this._updateGroupTimestamp();
           })
           .catch((err) => {
             this.text = baseText;
@@ -386,27 +386,6 @@
           bubbles: true,
           composed: true,
         }));
-      }
-
-      /**
-       * Update timestamp
-       *
-       * @private
-       */
-      _updateGroupTimestamp() {
-        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-        const data = {
-          updated: timestamp,
-        };
-        const db = firebase.firestore();
-        db.collection('chat').doc(this.group).set(data, {merge: true})
-          .then(() => {
-//            console.log('updated');
-          })
-          .catch((err) => {
-            console.error(err);
-            this._dispatchEvent('error', err);
-          });
       }
 
       /**

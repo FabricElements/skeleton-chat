@@ -1,4 +1,5 @@
 <link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../polymerfire/firebase-firestore-script.html">
 <link rel="import" href="../../paper-styles/typography.html">
 <link rel="import" href="../../paper-item/paper-icon-item.html">
 <link rel="import" href="../../paper-item/paper-item-body.html">
@@ -430,7 +431,7 @@
         /**
          * Check if is the message owner
          */
-        this._setIsOwner(this.user.uid === message.user.uid);
+        this._setIsOwner(this.uid === message.uid);
       }
 
       /**
@@ -452,7 +453,22 @@
         } else {
           this._setTime(Date.now());
         }
-        if (message.user) this._messageUser(message.user);
+        if (message.user) {
+          this._messageUser(message.user);
+        } else if (message.uid) {
+          firebase
+            .firestore()
+            .collection('users')
+            .doc(message.uid)
+            .get()
+            .then((doc) => {
+              return doc.data();
+            })
+            .then((data) => {
+              this._messageUser(data);
+            })
+            .catch(console.error);
+        }
       }
 
       /**
@@ -465,7 +481,7 @@
         /**
          * Set Image
          */
-        const image = user.image ? user.image : null;
+        const image = user.avatar ? user.avatar : null;
         this._setImage(image);
 
         const name = user.name ? user.name : '';
