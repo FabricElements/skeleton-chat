@@ -346,15 +346,15 @@
          * Format message
          */
         const message = {
-          text: this.text,
           created: timestamp,
-          uid: this.user.uid,
+          isAnonymous: this.user.isAnonymous,
+          text: this.text,
           type: 'default',
+          uid: this.user.uid,
           updated: timestamp,
           user: {
-            isAnonymous: this.user.isAnonymous,
             name: this.user.displayName ? this.user.displayName : null,
-            image: this.user.photoURL ? this.user.photoURL : null,
+            avatar: this.user.photoURL ? this.user.photoURL : null,
           },
         };
 

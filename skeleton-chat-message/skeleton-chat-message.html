@@ -413,13 +413,13 @@
         /**
          * Return if the message has no user
          */
-        if (!message.user) {
+        if (!message.uid) {
           return false;
         }
         /**
          * Check if is an anonymous user
          */
-        this._setIsAnonymous(!!message.user.isAnonymous);
+        this._setIsAnonymous(!!message.isAnonymous);
 
         /**
          * Check if the user is signed in
@@ -431,7 +431,7 @@
         /**
          * Check if is the message owner
          */
-        this._setIsOwner(this.uid === message.uid);
+        this._setIsOwner(this.user.uid === message.uid);
       }
 
       /**
@@ -456,8 +456,7 @@
         if (message.user) {
           this._messageUser(message.user);
         } else if (message.uid) {
-          firebase
-            .firestore()
+          firebase.firestore()
             .collection('users')
             .doc(message.uid)
             .get()
@@ -512,7 +511,7 @@
         const language = (navigator.language || navigator.userLanguage) ?
           navigator.language : navigator.userLanguage;
         const separator = language.indexOf('-');
-        return language.substring(0, separator != -1 ? separator : language.length);
+        return language.substring(0, separator !== -1 ? separator : language.length);
       }
 
       /**
