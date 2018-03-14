@@ -150,7 +150,7 @@
           finalData.users = usersArray;
           finalData.total = Object.keys(data.users).length;
           const objectUser = this._getObjectUsers(data.users, user);
-          finalData.title = objectUser.name;
+          finalData.title = objectUser.name || '###';
           finalData.image = objectUser.image;
         }
 
@@ -200,8 +200,10 @@
               fullNames.push(userItem.name);
             }
             // Set names array
-            const fistName = this._returnFistWord(userItem.name);
-            names.push(fistName);
+            const firstName = userItem.name
+              ? this._returnFistWord(userItem.name)
+              : '###';
+            names.push(firstName);
           }
         }
 
