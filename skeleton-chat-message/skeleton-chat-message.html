@@ -1,5 +1,4 @@
 <link rel="import" href="../../polymer/polymer-element.html">
-<link rel="import" href="../../polymerfire/firebase-firestore-script.html">
 <link rel="import" href="../../paper-styles/typography.html">
 <link rel="import" href="../../paper-item/paper-icon-item.html">
 <link rel="import" href="../../paper-item/paper-item-body.html">
@@ -455,18 +454,6 @@
         }
         if (message.user) {
           this._messageUser(message.user);
-        } else if (message.uid) {
-          firebase.firestore()
-            .collection('users')
-            .doc(message.uid)
-            .get()
-            .then((doc) => {
-              return doc.data();
-            })
-            .then((data) => {
-              this._messageUser(data);
-            })
-            .catch(console.error);
         }
       }
 
