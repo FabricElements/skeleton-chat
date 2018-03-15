@@ -41,6 +41,7 @@
       a {
         color: inherit;
         text-decoration: none;
+        display: block;
       }
 
       [hidden] {
@@ -91,7 +92,7 @@
       }
     </style>
 
-    <skeleton-chat-info group$="[[group]]" info="{{info}}"></skeleton-chat-info>
+    <skeleton-chat-info group$="[[group]]" info="{{info}}" hidden></skeleton-chat-info>
 
     <a href$="[[path]]/[[group]]" tabindex="-1">
       <paper-icon-item>
