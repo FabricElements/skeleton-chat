@@ -14,38 +14,38 @@
   <link rel="import" href="../../skeleton-auth/skeleton-auth.html">
 </head>
 <body>
-  <test-fixture id="basicInfo">
-    <template>
-      <div>
-        <firebase-app 
-          project-id="fabricelements"
-          auth-domain="fabricelements.firebaseapp.com"
-          database-url="https://fabricelements.firebaseio.com"
-          api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
-          storage-bucket="fabricelements.appspot.com"
-          messaging-sender-id="908593247251"
-        ></firebase-app>
+<test-fixture id="basicInfo">
+  <template>
+    <div>
+      <firebase-app
+        project-id="fabricelements"
+        auth-domain="fabricelements.firebaseapp.com"
+        database-url="https://fabricelements.firebaseio.com"
+        api-key="AIzaSyCJRNdR0eodnswyi8MHCtF1YOjY235mhM8"
+        storage-bucket="fabricelements.appspot.com"
+        messaging-sender-id="908593247251"
+      ></firebase-app>
 
-        <dom-bind>
-          <template>
-            <firebase-auth signed-in="{{signedIn}}"
-                            user="{{user}}">
-            </firebase-auth>
-            <dom-if if="[[!signedIn]]">
-              <template>
-                <skeleton-auth email></skeleton-auth>
-              </template>
-            </dom-if>
-          </template>
-        </dom-bind>
+      <dom-bind>
+        <template>
+          <firebase-auth signed-in="{{signedIn}}"
+                         user="{{user}}">
+          </firebase-auth>
+          <dom-if if="[[!signedIn]]">
+            <template>
+              <skeleton-auth email></skeleton-auth>
+            </template>
+          </dom-if>
+        </template>
+      </dom-bind>
 
-        <skeleton-chat-info 
-          group="testing" 
-          info="{{info}}"
-        ></skeleton-chat-info>
-      </div>
-    </template>
-  </test-fixture>
+      <skeleton-chat-info
+        group="testing"
+        info="{{info}}"
+      ></skeleton-chat-info>
+    </div>
+  </template>
+</test-fixture>
 <script>
   const oncePropChanged = (el, prop) => {
     return new Promise((resolve, reject) => {
@@ -115,30 +115,30 @@
             'info'
           );
         })
-        .then(() => {
-          expect(
-            skeletonInfo.info.title
-          ).to.equal('Julia, Erny');
+          .then(() => {
+            expect(
+              skeletonInfo.info.title
+            ).to.equal('Julia, Erny');
 
-          expect(
-            skeletonInfo.info.users.length
-          ).to.be.above(0);
+            expect(
+              skeletonInfo.info.users.length
+            ).to.be.above(0);
 
-          const testId = skeletonInfo.info.users.find(
-            (el) => el.uid === '7O7aM76Yr6YURJpqs23WcNlhgdM2'
-          );
+            const testId = skeletonInfo.info.users.find(
+              (el) => el.uid === '7O7aM76Yr6YURJpqs23WcNlhgdM2'
+            );
 
-          expect(
-            testId.name
-          ).to.equal('Fabric Elements');
+            expect(
+              testId.name
+            ).to.equal('Fabric Elements');
 
-          expect(
-            testId.acronym
-          ).to.equal('FE');
+            expect(
+              testId.acronym
+            ).to.equal('FE');
 
-          done();
-        })
-        .catch(done);
+            done();
+          })
+          .catch(done);
       });
     });
   });

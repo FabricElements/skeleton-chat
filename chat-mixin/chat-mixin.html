@@ -96,11 +96,13 @@
         const docRef = db.collection('chat').doc(chatId);
         docRef
           .update({
+            pending: false,
             [`users.${uid}`]: firebase.firestore.FieldValue.delete(),
           })
           .then((docRef) => {
-            window.dispatchEvent(new CustomEvent('location-changed'));
-            window.history.pushState({}, null, `/chat`);
+            // window.dispatchEvent(new CustomEvent('location-changed'));
+            // window.history.pushState({}, null, `/chat`);
+            location.replace('/chat');
           })
           .catch((error) => {
             console.error(error);

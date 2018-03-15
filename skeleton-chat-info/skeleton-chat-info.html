@@ -142,7 +142,7 @@
           if (data.description) {
 //            finalData.description = this._returnFinalText(data.description);
           }
-          finalData.image = data.image ? data.image : null;
+          finalData.avatar = data.avatar ? data.avatar : null;
         }
 
         if (data.users) {
@@ -151,7 +151,7 @@
           finalData.total = Object.keys(data.users).length;
           const objectUser = this._getObjectUsers(data.users, user);
           finalData.title = objectUser.name || '###';
-          finalData.image = objectUser.image;
+          finalData.image = objectUser.avatar;
           finalData.isOwner = user.uid === data.owner;
         }
 
@@ -195,7 +195,7 @@
             const userItem = users[key];
             // Set basic person
             person.name = userItem.name ? userItem.name : null;
-            person.image = userItem.image ? userItem.image : null;
+            person.avatar = userItem.avatar ? userItem.avatar : null;
             // Set fullNames array
             if (userItem.name) {
               fullNames.push(userItem.name);
@@ -210,10 +210,10 @@
 
         if (fullNames.length <= 1) {
           finalObject.name = person.name;
-          finalObject.image = person.image;
+          finalObject.avatar = person.avatar;
         } else {
           finalObject.name = names.join(', ');
-          finalObject.image = null;
+          finalObject.avatar = null;
         }
         return finalObject;
       }
