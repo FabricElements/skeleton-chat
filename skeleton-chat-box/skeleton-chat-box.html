@@ -34,6 +34,10 @@
         @apply --layout-fit;
       }
 
+      app-header {
+        z-index: 1;
+      }
+
       app-toolbar > * {
         margin-left: .5rem;
       }
@@ -128,7 +132,7 @@
                 Exit chat
               </paper-item-body>
             </paper-icon-item>
-            <template is="dom-if" if="[[canDelete]]">
+            <template is="dom-if" if="[[info.isOwner]]">
               <paper-icon-item on-tap="_deleteChat">
                 <iron-icon icon="icons:cancel" slot="item-icon"></iron-icon>
                 <paper-item-body>

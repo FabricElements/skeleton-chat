@@ -152,6 +152,7 @@
           const objectUser = this._getObjectUsers(data.users, user);
           finalData.title = objectUser.name || '###';
           finalData.image = objectUser.image;
+          finalData.isOwner = user.uid === data.owner;
         }
 
         return finalData;
