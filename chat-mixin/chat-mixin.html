@@ -94,29 +94,27 @@
       leave(chatId, uid) {
         const db = firebase.firestore();
         const docRef = db.collection('chat').doc(chatId);
-        docRef
-          .update({
-            pending: false,
-            [`users.${uid}`]: firebase.firestore.FieldValue.delete(),
-          })
-          .then((docRef) => {
-            this.dispatchEvent(new CustomEvent('close-chat', {
-              bubbles: true,
-              composed: true,
-            }));
-          })
-          .catch((error) => {
-            console.error(error);
-            this.dispatchEvent(new CustomEvent('alert', {
-              detail: {
-                text: 'There was a problem leaving your chat',
-                time: 3000,
-                type: 'error',
-              },
-              bubbles: true,
-              composed: true,
-            }));
-          });
+        docRef.update({
+          pending: false,
+          agent: false,
+          [`users.${uid}`]: firebase.firestore.FieldValue.delete(),
+        }).then((docRef) => {
+          this.dispatchEvent(new CustomEvent('close-chat', {
+            bubbles: true,
+            composed: true,
+          }));
+        }).catch((error) => {
+          console.error(error);
+          this.dispatchEvent(new CustomEvent('alert', {
+            detail: {
+              text: 'There was a problem leaving your chat',
+              time: 3000,
+              type: 'error',
+            },
+            bubbles: true,
+            composed: true,
+          }));
+        });
       }
     };
   };
