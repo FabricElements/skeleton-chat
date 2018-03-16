@@ -45,7 +45,7 @@ Copyright (c) 2018 FabricElements. All rights reserved.
                pattern="/:id"
                active="{{chatBoxActive}}"
                data="{{subrouteData}}"></app-route>
-    <skeleton-chat-groups></skeleton-chat-groups>
+    <skeleton-chat-groups link-back$="[[linkBack]]"></skeleton-chat-groups>
     <skeleton-chat-box fullbleed
                        group$="[[subrouteData.id]]"
                        opened$="[[chatBoxActive]]"></skeleton-chat-box>
@@ -96,6 +96,10 @@ Copyright (c) 2018 FabricElements. All rights reserved.
             value: false,
             notify: true,
           },
+          linkBack: {
+            type: String,
+            value: "/"
+          }
         };
       }
     }
