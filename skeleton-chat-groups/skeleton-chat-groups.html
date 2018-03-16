@@ -54,7 +54,7 @@
     </style>
     <app-header shadow>
       <app-toolbar>
-        <a href="/" tabindex="-1">
+        <a href$="[[linkBack]]" tabindex="-1">
           <paper-icon-button icon="arrow-back"
                              class="main-action"></paper-icon-button>
         </a>
@@ -131,6 +131,10 @@
             type: Boolean,
             value: false,
             computed: '_computeEmpty(list, list.*)',
+          },
+          linkBack: {
+            type: String,
+            value: '/',
           },
         };
       }
