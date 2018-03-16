@@ -39,7 +39,7 @@ Copyright (c) 2018 FabricElements. All rights reserved.
     </style>
     <app-location route="{{route}}"></app-location>
     <app-route route="{{route}}"
-               pattern="/chat"
+               pattern$="/[[routeChat]]"
                tail="{{chatRouteTail}}"></app-route>
     <app-route route="{{chatRouteTail}}"
                pattern="/:id"
@@ -100,7 +100,28 @@ Copyright (c) 2018 FabricElements. All rights reserved.
             type: String,
             value: '/',
           },
+          routeChat: {
+            type: String,
+            value: 'chat',
+          },
+          routeLeave: {
+            type: String,
+            value: null,
+          },
         };
+      }
+
+      /**
+       * Connected callback
+       */
+       connectedCallback() {
+        super.connectedCallback();  
+        this.addEventListener('close-chat', () => {
+          this.routeData.page = this.routeLeave ? this.routeLeave : this.routeChat;
+          this.notifyPath('routeData');
+          this.notifyPath('routeData.page');
+          this.chatBoxActive = false;
+        }, true);
       }
     }
 
