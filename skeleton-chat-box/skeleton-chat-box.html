@@ -1,4 +1,5 @@
 <link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../polymerfire/firebase-auth.html">
 <link rel="import" href="../../app-layout/app-header/app-header.html">
 <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../neon-animation/web-animations.html">
@@ -103,6 +104,9 @@
         background-color: var(--skeleton-chat-bg-color-dark, var(--paper-grey-800));
       }
     </style>
+
+    <firebase-auth user="{{user}}"></firebase-auth>
+
     <skeleton-chat-info group$="[[group]]" info="{{info}}"></skeleton-chat-info>
     <app-header shadow>
       <app-toolbar>
@@ -240,6 +244,13 @@
             readOnly: true,
             computed: '_computeIcon(info, info.*)',
           },
+          /**
+           * The user Object.
+           */
+           user: {
+            type: Object,
+            value: {},
+          },
         };
       }
 
@@ -249,13 +260,7 @@
        * @private
        */
       _leaveChat() {
-        const skeletonMessages = this
-          .shadowRoot
-          .querySelector(
-            'skeleton-chat-messages'
-          );
-
-        this.leave(skeletonMessages.group, skeletonMessages.user.uid);
+        this.leave(this.group, this.user.uid);
       }
 
       /**
@@ -264,13 +269,7 @@
        * @private
        */
       _deleteChat() {
-        const skeletonMessages = this
-          .shadowRoot
-          .querySelector(
-            'skeleton-chat-messages'
-          );
-
-        this.remove(skeletonMessages.group);
+        this.remove(this.group);
       }
 
       /**
