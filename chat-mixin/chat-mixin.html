@@ -100,9 +100,10 @@
             [`users.${uid}`]: firebase.firestore.FieldValue.delete(),
           })
           .then((docRef) => {
-            // window.dispatchEvent(new CustomEvent('location-changed'));
-            // window.history.pushState({}, null, `/chat`);
-            location.replace('/chat');
+            this.dispatchEvent(new CustomEvent('close-chat', {
+              bubbles: true,
+              composed: true,
+            }));
           })
           .catch((error) => {
             console.error(error);
