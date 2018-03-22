@@ -3,11 +3,10 @@
 <link rel="import" href="../../paper-item/paper-item-body.html">
 <link rel="import" href="../../iron-image/iron-image.html">
 <link rel="import" href="../../paper-styles/typography.html">
-<link rel="import" href="../../iron-icons/social-icons.html">
-<link rel="import" href="../../iron-icons/iron-icons.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../paper-styles/color.html">
 <link rel="import" href="../skeleton-chat-info/skeleton-chat-info.html">
+<link rel="import" href="../icons.html">
 
 <dom-module id="skeleton-chat-groups-item">
   <template>
@@ -97,12 +96,12 @@
     <a href$="[[path]]/[[group]]" tabindex="-1">
       <paper-icon-item>
         <div class="image-container" slot="item-icon">
-          <template is="dom-if" if="[[info.image]]">
+          <template is="dom-if" if="[[info.avatar]]">
             <iron-image fade
                         sizing="cover"
-                        src$="[[info.image]]"></iron-image>
+                        src$="[[info.avatar]]"></iron-image>
           </template>
-          <iron-icon icon$="social:[[icon]]"></iron-icon>
+          <iron-icon icon$="chat-icon:[[icon]]"></iron-icon>
         </div>
         <paper-item-body>
           <div class="title">[[info.title]]</div>

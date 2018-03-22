@@ -95,8 +95,6 @@
         const db = firebase.firestore();
         const docRef = db.collection('chat').doc(chatId);
         docRef.update({
-          pending: false,
-          agent: false,
           [`users.${uid}`]: firebase.firestore.FieldValue.delete(),
         }).then((docRef) => {
           this.dispatchEvent(new CustomEvent('close-chat', {

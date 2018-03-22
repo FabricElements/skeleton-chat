@@ -9,10 +9,9 @@
 <link rel="import" href="../skeleton-chat-info/skeleton-chat-info.html">
 <link rel="import" href="../skeleton-chat-messages/skeleton-chat-messages.html">
 <link rel="import" href="../skeleton-chat-input/skeleton-chat-input.html">
-<link rel="import" href="../../iron-icons/iron-icons.html">
-<link rel="import" href="../../iron-icons/social-icons.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../icons.html">
 
 <dom-module id="skeleton-chat-box">
   <template>
@@ -111,7 +110,7 @@
     <app-header shadow>
       <app-toolbar>
         <a href="/chat" tabindex="-1">
-          <paper-icon-button icon="close"
+          <paper-icon-button icon="chat-icon:close"
                              class="main-action"></paper-icon-button>
         </a>
         <div class="image-container">
@@ -128,7 +127,7 @@
         <paper-menu-button vertical-align="top"
                            vertical-offset="70"
                            horizontal-align="right">
-          <paper-icon-button icon="icons:more-vert" slot="dropdown-trigger"></paper-icon-button>
+          <paper-icon-button icon="chat-icon:more-vert" slot="dropdown-trigger"></paper-icon-button>
           <paper-listbox slot="dropdown-content">
             <paper-icon-item on-tap="_leaveChat">
               <iron-icon icon="icons:cancel" slot="item-icon"></iron-icon>
@@ -138,7 +137,7 @@
             </paper-icon-item>
             <template is="dom-if" if="[[info.isOwner]]">
               <paper-icon-item on-tap="_deleteChat">
-                <iron-icon icon="icons:cancel" slot="item-icon"></iron-icon>
+                <iron-icon icon="chat-icon:cancel" slot="item-icon"></iron-icon>
                 <paper-item-body>
                   Delete chat
                 </paper-item-body>
