@@ -292,6 +292,15 @@
       }
 
       /**
+       * @return {array}
+       */
+      static get observers() {
+        return [
+          '_resetOnChange(user, group)',
+        ];
+      }
+
+      /**
        * Function to send message on Enter key press.
        *
        * @param {object} event
@@ -323,25 +332,26 @@
         }
 
         const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        const baseText = this.text;
+        const group = this.group;
+        const user = this.user;
         /**
          * Format message
          */
         const message = {
           created: timestamp,
-          isAnonymous: this.user.isAnonymous,
-          text: this.text,
+          isAnonymous: user.isAnonymous,
+          text: baseText,
           type: 'default',
-          uid: this.user.uid,
+          uid: user.uid,
           updated: timestamp,
           user: {
-            name: this.user.displayName ? this.user.displayName : null,
-            avatar: this.user.photoURL ? this.user.photoURL : null,
+            name: user.displayName ? user.displayName : null,
+            avatar: user.photoURL ? user.photoURL : null,
           },
         };
-
-        const baseText = this.text;
         this.text = null;
-        const chatRef = `chat/${this.group}/messages`;
+        const chatRef = `chat/${group}/messages`;
         const db = firebase.firestore();
         db.collection(chatRef).add(message)
           .then(() => {
@@ -403,6 +413,17 @@
        */
       _computeShowMic(mic, text) {
         return mic && !text;
+      }
+
+      /**
+       * Reset on change
+       *
+       * @param {string|null} user
+       * @param {string|null} group
+       * @private
+       */
+      _resetOnChange(user, group) {
+        this.text = null;
       }
     }
 
