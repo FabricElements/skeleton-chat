@@ -6,6 +6,7 @@
 <link rel="import" href="../../iron-image/iron-image.html">
 <link rel="import" href="../../from-now/from-now.html">
 <link rel="import" href="../../polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../icons.html">
 
 <dom-module id="skeleton-chat-message">
   <template>
@@ -178,6 +179,10 @@
         display: none !important;
       }
 
+      .icon-option {
+        padding: 3px;
+      }
+
       #acronym {
         @apply --paper-font-subhead;
         @apply --paper-font-common-nowrap;
@@ -193,14 +198,18 @@
     <paper-icon-item owner$="[[isOwner]]">
       <div class="icon-container" slot="item-icon">
         <template is="dom-if" if="[[!isOwner]]">
-          <template is="dom-if" if="[[image]]">
             <iron-image fade
                         sizing="cover"
-                        src$="[[image]]"></iron-image>
-          </template>
-          <div id="acronym">
-            [[acronym]]
-          </div>
+                        src$="[[image]]"
+                        hidden$="[[!image]]"></iron-image>
+
+            <div id="acronym" hidden$="[[!acronym]]">
+              [[acronym]]
+            </div>
+
+            <iron-icon icon$="chat-icon:[[icon]]"
+                       class="icon-option"
+                       hidden$="[[!icon]]"></iron-icon>
         </template>
       </div>
       <div id="bubble-container">
@@ -375,6 +384,16 @@
             readOnly: true,
             notify: true,
           },
+
+          /**
+           * Icon
+           */
+          icon: {
+            type: String,
+            value: null,
+            readOnly: true,
+            computed: '_computeIcon(image, acronym)',
+          },
         };
       }
 
@@ -471,7 +490,7 @@
         this._setImage(image);
 
         const name = user.name ? user.name : '';
-        const acronym = name ? this._acronym(name) : '?';
+        const acronym = name ? this._acronym(name) : null;
         this._setAcronym(acronym);
       }
 
@@ -559,6 +578,18 @@
           this._setTimePressed(time++);
         }, 1000);
         this._setTimer(timer);
+      }
+
+      /**
+       * Compute icon
+       *
+       * @param {string} image
+       * @param {string} acronym
+       * @return {string}
+       * @private
+       */
+       _computeIcon(image, acronym) {
+        return !image && !acronym ? 'person' : null;
       }
     }
 

@@ -190,6 +190,7 @@
                        disabled$="[[!text]]"></paper-icon-button>
     <paper-icon-button icon="chat-icon:mic"
                        class="icon-mic"
+                       on-tap="handleTap"
                        hidden$="[[!_showMic]]"
     ></paper-icon-button>
   </template>
@@ -362,6 +363,22 @@
       _dispatchEvent(event, detail) {
         this.dispatchEvent(new CustomEvent(event, {
           detail: detail,
+          bubbles: true,
+          composed: true,
+        }));
+      }
+
+      /**
+       * Handle tap
+       *
+       * @param {Object} e
+       * @private
+       */
+      handleTap(e) {
+        this.dispatchEvent(new CustomEvent('micPressed', {
+          detail: {
+            chatId: this.group,
+          },
           bubbles: true,
           composed: true,
         }));

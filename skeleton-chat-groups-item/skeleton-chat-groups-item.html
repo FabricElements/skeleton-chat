@@ -96,12 +96,12 @@
     <a href$="[[path]]/[[group]]" tabindex="-1">
       <paper-icon-item>
         <div class="image-container" slot="item-icon">
-          <template is="dom-if" if="[[info.avatar]]">
-            <iron-image fade
-                        sizing="cover"
-                        src$="[[info.avatar]]"></iron-image>
-          </template>
-          <iron-icon icon$="chat-icon:[[icon]]"></iron-icon>
+          <iron-image fade
+                      sizing="cover"
+                      src$="[[info.avatar]]"
+                      hidden$="[[!info.avatar]]"></iron-image>
+          <iron-icon icon$="chat-icon:[[icon]]"
+                     hidden$="[[info.avatar]]"></iron-icon>
         </div>
         <paper-item-body>
           <div class="title">[[info.title]]</div>
@@ -205,14 +205,9 @@
        */
       _computeIcon(info) {
         let icon = 'person';
+        let groupIcon = 'group';
         if (!info) return icon;
-        const total = info.total;
-        if (total) {
-          if (total >= 3) {
-            icon = 'group';
-          }
-        }
-        return icon;
+        return info.total >= 3 ? groupIcon : icon;
       }
     }
 

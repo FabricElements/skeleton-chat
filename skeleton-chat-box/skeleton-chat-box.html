@@ -102,6 +102,10 @@
       :host([theme="dark"]) {
         background-color: var(--skeleton-chat-bg-color-dark, var(--paper-grey-800));
       }
+
+      [hidden] {
+        display: none;
+      }
     </style>
 
     <firebase-auth user="{{user}}"></firebase-auth>
@@ -114,12 +118,12 @@
                              class="main-action"></paper-icon-button>
         </a>
         <div class="image-container">
-          <template is="dom-if" if="[[info.image]]">
-            <iron-image fade
-                        sizing="cover"
-                        src$="[[info.image]]"></iron-image>
-          </template>
-          <iron-icon icon$="social:[[icon]]"></iron-icon>
+          <iron-image fade
+                      sizing="cover"
+                      src$="[[info.image]]"
+                      hidden$="[[!info.image]]"></iron-image>
+          <iron-icon icon$="chat-icon:[[icon]]"
+                     hidden$="[[info.image]]"></iron-icon>
         </div>
         <div main-title class="title">[[info.title]]</div>
         <div id="status" online></div>
@@ -130,7 +134,7 @@
           <paper-icon-button icon="chat-icon:more-vert" slot="dropdown-trigger"></paper-icon-button>
           <paper-listbox slot="dropdown-content">
             <paper-icon-item on-tap="_leaveChat">
-              <iron-icon icon="icons:cancel" slot="item-icon"></iron-icon>
+              <iron-icon icon="chat-icon:cancel" slot="item-icon"></iron-icon>
               <paper-item-body>
                 Exit chat
               </paper-item-body>
@@ -280,14 +284,9 @@
        */
       _computeIcon(info) {
         let icon = 'person';
+        let groupIcon = 'group';
         if (!info) return icon;
-        const total = info.total;
-        if (total) {
-          if (total >= 3) {
-            icon = 'group';
-          }
-        }
-        return icon;
+        return info.total >= 3 ? groupIcon : icon;
       }
     }
 

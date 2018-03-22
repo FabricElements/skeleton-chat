@@ -115,7 +115,7 @@ Copyright (c) 2018 FabricElements. All rights reserved.
        * Connected callback
        */
        connectedCallback() {
-        super.connectedCallback();  
+        super.connectedCallback();
         this.addEventListener('close-chat', () => {
           this.routeData.page = this.routeLeave ? this.routeLeave : this.routeChat;
           this.notifyPath('routeData');
