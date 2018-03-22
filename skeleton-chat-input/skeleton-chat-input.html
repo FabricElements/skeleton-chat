@@ -190,7 +190,8 @@
                        disabled$="[[!text]]"></paper-icon-button>
     <paper-icon-button icon="chat-icon:mic"
                        class="icon-mic"
-                       on-tap="handleTap"
+                       on-down="_inputAudioStarts"
+                       on-up="_inputAudioEnds"
                        hidden$="[[!_showMic]]"
     ></paper-icon-button>
   </template>
@@ -369,19 +370,27 @@
       }
 
       /**
-       * Handle tap
+       * Input audio starts
        *
        * @param {Object} e
        * @private
        */
-      handleTap(e) {
-        this.dispatchEvent(new CustomEvent('micPressed', {
-          detail: {
-            chatId: this.group,
-          },
-          bubbles: true,
-          composed: true,
-        }));
+      _inputAudioStarts(e) {
+        this._dispatchEvent('capture-audio-starts', {
+          chatId: this.group,
+        });
+      }
+
+      /**
+       * Input audio ends
+       *
+       * @param {Object} e
+       * @private
+       */
+      _inputAudioEnds(e) {
+        this._dispatchEvent('capture-audio-ends', {
+          chatId: this.group,
+        });
       }
 
       /**

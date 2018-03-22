@@ -63,7 +63,7 @@
 
     <iron-scroll-threshold id="threshold"
                            lower-threshold="0">
-      <template is="dom-if" if="{{!empty}}" restamp="true">
+      <!--<template is="dom-if" if="{{!empty}}" restamp="true">-->
         <iron-list items="[[list]]"
                    as="message"
                    max-physical-count="50"
@@ -77,7 +77,7 @@
             ></skeleton-chat-message>
           </template>
         </iron-list>
-      </template>
+      <!--</template>-->
     </iron-scroll-threshold>
     <div id="input-box">
       <slot></slot>
