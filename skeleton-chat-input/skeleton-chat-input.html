@@ -5,9 +5,7 @@
 <link rel="import" href="../../paper-styles/shadow.html">
 <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../iron-icons/iron-icons.html">
-<link rel="import" href="../../iron-icons/image-icons.html">
-<link rel="import" href="../../iron-icons/av-icons.html">
+<link rel="import" href="../icons.html">
 
 <dom-module id="skeleton-chat-input">
   <template>
@@ -145,10 +143,6 @@
         @apply --skeleton-chat-input-icon;
       }
 
-      .icon-emoji {
-        @apply --skeleton-chat-input-icon-emoji;
-      }
-
       .icon-camera {
         @apply --skeleton-chat-input-icon-camera;
       }
@@ -164,13 +158,10 @@
       }
 
       .icon-mic {
-        /*background-color: var(--paper-grey-800);*/
-        /*color: white;*/
         @apply --skeleton-chat-input-icon-mic;
       }
 
       .icon-send {
-        /*color: var(--accent-color);*/
         @apply --skeleton-chat-input-icon-send;
       }
     </style>
@@ -188,21 +179,16 @@
                       maxlength$="[[maxlength]]">
       </paper-textarea>
     </div>
-    <paper-icon-button icon="image:tag-faces"
-                       class="icon-emoji"
-                       hidden$="[[!emoji]]"
-    ></paper-icon-button>
-    <paper-icon-button icon="image:photo-camera"
+    <paper-icon-button icon="chat-icon:photo-camera"
                        class="icon-camera"
                        hidden$="[[!camera]]"
     ></paper-icon-button>
-    <paper-icon-button icon="arrow-upward"
+    <paper-icon-button icon="chat-icon:arrow-upward"
                        class="icon-send"
                        on-tap="_sendMessage"
-                       hidden$="[[_showMic]]"
-                       hide$="[[!text]]"
+                       hidden$="[[!text]]"
                        disabled$="[[!text]]"></paper-icon-button>
-    <paper-icon-button icon="av:mic"
+    <paper-icon-button icon="chat-icon:mic"
                        class="icon-mic"
                        hidden$="[[!_showMic]]"
     ></paper-icon-button>
@@ -264,13 +250,6 @@
           group: {
             type: String,
             value: null,
-          },
-          /**
-           * Displays emoji
-           */
-          emoji: {
-            type: Boolean,
-            value: false,
           },
           /**
            * Displays camera
