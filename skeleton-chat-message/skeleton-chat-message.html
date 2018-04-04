@@ -41,6 +41,12 @@
         /* theme colors */
         --skeleton-chat-bubble-color: var(--paper-blue-500);
         --skeleton-chat-bubble-color-dark: var(--paper-blue-700);
+
+        /* Message images */
+        --skeleton-chat-message-image-width: 18rem;
+        --skeleton-chat-message-image-height: 13rem;
+        --skeleton-chat-message-container-width: 18rem;
+        --skeleton-chat-message-container-height: 13rem;
       }
 
       :host([theme="dark"]) {
@@ -85,7 +91,7 @@
         background-color: transparent !important;
       }
 
-      iron-image {
+      #owner-img {
         width: var(--skeleton-chat-message-height);
         height: var(--skeleton-chat-message-height);
         border-radius: 50%;
@@ -121,6 +127,14 @@
       .bubble-content {
         position: relative;
         max-width: 100%;
+      }
+
+      .bubble-content[with-media] {
+        max-width: var(--skeleton-chat-message-container-width);
+      }
+
+      .bubble-content[no-caption] {
+        max-height: var(--skeleton-chat-message-container-height);
       }
 
       .bubble-text {
@@ -159,7 +173,7 @@
         text-align: right;
       }
 
-      [owner] iron-image {
+      [owner] #owner-img {
         display: none !important;
       }
 
@@ -193,6 +207,17 @@
         z-index: 1;
         @apply --skeleton-chat-message-icon-acronym;
       }
+
+      .messageImg {
+        border-radius: 1rem;
+        height: var(--skeleton-chat-message-image-height);
+        width: var(--skeleton-chat-message-image-width);
+        background-color: var(--paper-grey-200);
+      }
+
+      .messageImg[with-caption] {
+        border-radius: 1rem 1rem 0 0;
+      }
     </style>
 
     <paper-icon-item owner$="[[isOwner]]">
@@ -201,7 +226,8 @@
             <iron-image fade
                         sizing="cover"
                         src$="[[image]]"
-                        hidden$="[[!image]]"></iron-image>
+                        hidden$="[[!image]]"
+                        id="owner-img"></iron-image>
 
             <div id="acronym" hidden$="[[!acronym]]">
               [[acronym]]
@@ -214,7 +240,15 @@
       </div>
       <div id="bubble-container">
         <div class="bubble" on-down="_bubbleDown" on-up="_bubbleUp">
-          <div class="bubble-content">
+          <div class="bubble-content" with-media$="[[message.image]]" no-caption$="[[!originalText]]">
+            <template is="dom-if" if="[[message.image]]">
+              <iron-image class="messageImg"
+                          fade
+                          preload
+                          sizing="cover"
+                          with-caption$="[[originalText]]"
+                          src="[[message.image]]"></iron-image>
+            </template>
             <template is="dom-if" if="[[originalText]]">
               <div class="bubble-text">
                 <div class="text-original" hidden$="[[!showOriginal]]">[[originalText]]</div>
