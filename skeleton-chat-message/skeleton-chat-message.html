@@ -636,7 +636,7 @@
         if (!time) return;
         // Check if time is bigger than 24h from now
         if (moment().diff(time, 'days') > 0) {
-          return moment(time).format('DD/MM/YYYY');
+          return moment(time).format('DD/MM/YYYY h:mm a');
         } else {
           return moment(time).fromNow();
         }
