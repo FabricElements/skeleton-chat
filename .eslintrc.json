@@ -54,6 +54,7 @@
     "flush": true,
     "MockInteractions": true,
     "Polymer": true,
-    "WCT": true
+    "WCT": true,
+    "moment": true
   }
 }

@@ -4,8 +4,8 @@
 <link rel="import" href="../../paper-item/paper-item-body.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../iron-image/iron-image.html">
-<link rel="import" href="../../from-now/from-now.html">
 <link rel="import" href="../../polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../moment-import.html">
 <link rel="import" href="../icons.html">
 
 <dom-module id="skeleton-chat-message">
@@ -223,19 +223,19 @@
     <paper-icon-item owner$="[[isOwner]]">
       <div class="icon-container" slot="item-icon">
         <template is="dom-if" if="[[!isOwner]]">
-            <iron-image fade
-                        sizing="cover"
-                        src$="[[image]]"
-                        hidden$="[[!image]]"
-                        id="owner-img"></iron-image>
+          <iron-image fade
+                      sizing="cover"
+                      src$="[[image]]"
+                      hidden$="[[!image]]"
+                      id="owner-img"></iron-image>
 
-            <div id="acronym" hidden$="[[!acronym]]">
-              [[acronym]]
-            </div>
+          <div id="acronym" hidden$="[[!acronym]]">
+            [[acronym]]
+          </div>
 
-            <iron-icon icon$="chat-icon:[[icon]]"
-                       class="icon-option"
-                       hidden$="[[!icon]]"></iron-icon>
+          <iron-icon icon$="chat-icon:[[icon]]"
+                     class="icon-option"
+                     hidden$="[[!icon]]"></iron-icon>
         </template>
       </div>
       <div id="bubble-container">
@@ -258,7 +258,7 @@
           </div>
         </div>
         <div class="time" hidden$="[[!time]]" secondary>
-          <from-now time="[[time]]"></from-now>
+          <div>[[_getFullTime(time)]]</div>
         </div>
       </div>
     </paper-icon-item>
@@ -622,8 +622,24 @@
        * @return {string}
        * @private
        */
-       _computeIcon(image, acronym) {
+      _computeIcon(image, acronym) {
         return !image && !acronym ? 'person' : null;
+      }
+
+      /**
+       * Return real time
+       * @param {string|null} time
+       * @return {*}
+       * @private
+       */
+      _getFullTime(time) {
+        if (!time) return;
+        // Check if time is bigger than 24h from now
+        if (moment().diff(time, 'days') > 0) {
+          return moment(time).format('DD/MM/YYYY');
+        } else {
+          return moment(time).fromNow();
+        }
       }
     }
 
