@@ -7,7 +7,7 @@
 <link rel="import" href="../../polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../moment-import.html">
 <link rel="import" href="../icons.html">
-<link rel="import" href="./autolinker-lib.html">
+<link rel="import" href="../autolinker-lib.html">
 
 <dom-module id="skeleton-chat-message">
   <template>
@@ -687,7 +687,10 @@
        */
       _extractHyperlinks(text) {
         if (!text) return '';
-        return Autolinker.link(text);
+        if (typeof Autolinker === 'function') {
+          return Autolinker.link(text);
+        }
+        return text;
       }
     }
 
