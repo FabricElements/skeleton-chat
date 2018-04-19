@@ -55,6 +55,7 @@
     "MockInteractions": true,
     "Polymer": true,
     "WCT": true,
-    "moment": true
+    "moment": true,
+    "Autolinker": true
   }
 }

@@ -7,6 +7,7 @@
 <link rel="import" href="../../polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../moment-import.html">
 <link rel="import" href="../icons.html">
+<link rel="import" href="./autolinker-lib.html">
 
 <dom-module id="skeleton-chat-message">
   <template>
@@ -35,12 +36,19 @@
         --skeleton-chat-message-font-family: 'Roboto', 'Noto', sans-serif;
         --skeleton-chat-message-font-size: 15px;
         --skeleton-chat-message-font-weight: 400;
-        --skeleton-chat-message-font-color: white;
-        --skeleton-chat-message-font-color-dark: var(--paper-grey-200);
+        --skeleton-chat-message-font-color: var(--paper-grey-900);
+        --skeleton-chat-message-owner-font-color: white;
 
         /* theme colors */
-        --skeleton-chat-bubble-color: var(--paper-blue-500);
-        --skeleton-chat-bubble-color-dark: var(--paper-blue-700);
+        --skeleton-chat-message-font-color-dark: var(--paper-grey-200);
+        --skeleton-chat-message-owner-font-color-dark: var(--paper-grey-200);
+        --skeleton-chat-link-color: var(--paper-blue-a700);
+        --skeleton-chat-link-color-dark: var(--paper-blue-a100);
+        --skeleton-chat-bubble-color: var(--paper-grey-100);
+        --skeleton-chat-owner-bubble-color: var(--paper-blue-500);
+
+        --skeleton-chat-bubble-color-dark: var(--paper-grey-900);
+        --skeleton-chat-owner-bubble-color-dark: var(--paper-blue-700);
 
         /* Message images */
         --skeleton-chat-message-image-width: 18rem;
@@ -52,6 +60,8 @@
       :host([theme="dark"]) {
         --skeleton-chat-bubble-color: var(--skeleton-chat-bubble-color-dark);
         --skeleton-chat-message-font-color: var(--skeleton-chat-message-font-color-dark);
+        --skeleton-chat-message-owner-font-color: var(--skeleton-chat-message-owner-font-color-dark);
+        --skeleton-chat-link-color: var(--skeleton-chat-link-color-dark);
       }
 
       :host,
@@ -80,8 +90,8 @@
 
       .icon-container {
         background-color: var(--skeleton-chat-message-icon-color);
-        width: var(--skeleton-chat-message-height);
-        height: var(--skeleton-chat-message-height);
+        width: calc(var(--skeleton-chat-message-height) + (var(--skeleton-chat-message-font-size) / 4));
+        height: calc(var(--skeleton-chat-message-height) + (var(--skeleton-chat-message-font-size) / 4));
         border-radius: 50%;
         overflow: hidden;
         position: relative;
@@ -92,8 +102,8 @@
       }
 
       #owner-img {
-        width: var(--skeleton-chat-message-height);
-        height: var(--skeleton-chat-message-height);
+        width: 100%;
+        height: 100%;
         border-radius: 50%;
         overflow: hidden;
         @apply --layout-fit;
@@ -122,6 +132,11 @@
         max-width: 100%;
         width: auto;
         transition: max-width ease 0.5s;
+        box-shadow: inset 0 0 3px rgba(0, 0, 0, .02);
+      }
+
+      [owner] .bubble {
+        background-color: var(--skeleton-chat-owner-bubble-color);
       }
 
       .bubble-content {
@@ -138,12 +153,18 @@
       }
 
       .bubble-text {
+        min-width: 1rem;
         max-width: 100%;
         color: var(--skeleton-chat-message-font-color);
       }
 
+      .bubble-text a {
+        color: var(--skeleton-chat-link-color);
+        text-decoration: underline;
+      }
+
       [owner] .bubble-text {
-        color: var(--paper-grey-900);
+        color: var(--skeleton-chat-message-owner-font-color);
       }
 
       [owner] #bubble-container {
@@ -177,10 +198,6 @@
         display: none !important;
       }
 
-      [owner] .bubble {
-        background-color: var(--paper-grey-100);
-      }
-
       [hidden] {
         display: none;
       }
@@ -194,7 +211,14 @@
       }
 
       .icon-option {
-        padding: 3px;
+        display: block;
+        position: absolute;
+        top: 5px;
+        bottom: 5px;
+        left: 5px;
+        right: 5px;
+        height: auto;
+        width: auto;
       }
 
       #acronym {
@@ -228,11 +252,9 @@
                       src$="[[image]]"
                       hidden$="[[!image]]"
                       id="owner-img"></iron-image>
-
           <div id="acronym" hidden$="[[!acronym]]">
             [[acronym]]
           </div>
-
           <iron-icon icon$="chat-icon:[[icon]]"
                      class="icon-option"
                      hidden$="[[!icon]]"></iron-icon>
@@ -252,7 +274,7 @@
             <template is="dom-if" if="[[originalText]]">
               <div class="bubble-text">
                 <div class="text-original" hidden$="[[!showOriginal]]">[[originalText]]</div>
-                <div class="text-translation" hidden$="[[showOriginal]]">[[text]]</div>
+                <div class="text-translation" hidden$="[[showOriginal]]" inner-h-t-m-l="[[text]]">[[message.text]]</div>
               </div>
             </template>
           </div>
@@ -354,7 +376,19 @@
            */
           message: {
             type: Object,
-            value: {},
+            value: {
+              created: null,
+              image: null,
+              isAnonymous: true,
+              text: '...',
+              type: 'default',
+              uid: null,
+              updated: null,
+              user: {
+                avatar: null,
+                name: null,
+              },
+            },
             observer: '_messageChange',
           },
 
@@ -494,8 +528,10 @@
        */
       _messageChange(message) {
         if (!message) return;
+
         this._setOriginalText(message.text);
-        this._setText(message.text);
+        const baseMessage = this._extractHyperlinks(message.text);
+        this._setText(baseMessage);
 
         if (message.text && message.locales) {
           this._returnFinalMessage(message.text, message.locales);
@@ -640,6 +676,18 @@
         } else {
           return moment(time).fromNow();
         }
+      }
+
+      /**
+       * Extracts links from the message
+       *
+       * @param {string} text
+       * @return {string}
+       * @private
+       */
+      _extractHyperlinks(text) {
+        if (!text) return '';
+        return Autolinker.link(text);
       }
     }
 
