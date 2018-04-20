@@ -158,13 +158,18 @@
         color: var(--skeleton-chat-message-font-color);
       }
 
+      [owner] .bubble-text {
+        color: var(--skeleton-chat-message-owner-font-color);
+      }
+
       .bubble-text a {
         color: var(--skeleton-chat-link-color);
         text-decoration: underline;
       }
 
-      [owner] .bubble-text {
-        color: var(--skeleton-chat-message-owner-font-color);
+      [owner] .bubble-text a {
+        color: inherit;
+        text-decoration: underline;
       }
 
       [owner] #bubble-container {
@@ -273,7 +278,7 @@
             </template>
             <template is="dom-if" if="[[originalText]]">
               <div class="bubble-text">
-                <div class="text-original" hidden$="[[!showOriginal]]">[[originalText]]</div>
+                <div class="text-original" hidden$="[[!showOriginal]]" inner-h-t-m-l="[[originalText]]">[[message.text]]</div>
                 <div class="text-translation" hidden$="[[showOriginal]]" inner-h-t-m-l="[[text]]">[[message.text]]</div>
               </div>
             </template>
@@ -529,13 +534,17 @@
       _messageChange(message) {
         if (!message) return;
 
-        this._setOriginalText(message.text);
-        const baseMessage = this._extractHyperlinks(message.text);
-        this._setText(baseMessage);
+        let baseMessage = message.text;
 
         if (message.text && message.locales) {
-          this._returnFinalMessage(message.text, message.locales);
+          baseMessage = this._returnFinalMessage(message.text, message.locales);
         }
+
+        const originalText = this._extractHyperlinks(message.text);
+        this._setOriginalText(originalText);
+        let translatedMessage = this._extractHyperlinks(baseMessage);
+        this._setText(translatedMessage);
+
         if (message.created) {
           this._setTime(message.created);
         } else {
@@ -573,8 +582,7 @@
        */
       _returnFinalMessage(text, locales) {
         const language = this._getBrowserLanguage();
-        let finalMessage = locales[language] ? locales[language] : text;
-        this._setText(finalMessage);
+        return locales[language] ? locales[language] : text;
       }
 
       /**
