@@ -8,6 +8,7 @@
 <link rel="import" href="../moment-import.html">
 <link rel="import" href="../icons.html">
 <link rel="import" href="../autolinker-lib.html">
+<link rel="import" href="../fancybox-lib.html">
 
 <dom-module id="skeleton-chat-message">
   <template>
@@ -110,11 +111,6 @@
         z-index: 2;
       }
 
-      /*paper-icon-item {
-        display: block;
-        width: 100%;
-        min-height: var(--skeleton-chat-message-height);
-      }*/
       #bubble-container {
         @apply --layout-flex-auto;
         position: relative;
@@ -242,6 +238,7 @@
         height: var(--skeleton-chat-message-image-height);
         width: var(--skeleton-chat-message-image-width);
         background-color: var(--paper-grey-200);
+        cursor: pointer;
       }
 
       .messageImg[with-caption] {
@@ -274,11 +271,14 @@
                           preload
                           sizing="cover"
                           with-caption$="[[originalText]]"
-                          src="[[message.image]]"></iron-image>
+                          src="[[message.image]]"
+                          on-tap="_showFancybox"></iron-image>
             </template>
             <template is="dom-if" if="[[originalText]]">
               <div class="bubble-text">
-                <div class="text-original" hidden$="[[!showOriginal]]" inner-h-t-m-l="[[originalText]]">[[message.text]]</div>
+                <div class="text-original" hidden$="[[!showOriginal]]" inner-h-t-m-l="[[originalText]]">
+                  [[message.text]]
+                </div>
                 <div class="text-translation" hidden$="[[showOriginal]]" inner-h-t-m-l="[[text]]">[[message.text]]</div>
               </div>
             </template>
@@ -476,7 +476,6 @@
       static get observers() {
         return [
           '_checkBasics(signedIn, user.*, message)',
-//          '_messageChange(message, message.*)',
         ];
       }
 
@@ -700,6 +699,20 @@
         }
         return text;
       }
+
+      /**
+       * Shows FancyBox 3 modal.
+       * @private
+       */
+      _showFancybox() {
+        $.fancybox.open(
+          {
+            src: this.message.image, // Source of the content
+            type: 'image', // Content type: image|inline|ajax|iframe|html (optional)
+            opts: {}, // Object containing item options (optional)
+          });
+      }
+
     }
 
     window.customElements.define(SkeletonChatMessage.is, SkeletonChatMessage);
