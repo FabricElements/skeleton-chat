@@ -264,15 +264,17 @@
       </div>
       <div id="bubble-container">
         <div class="bubble" on-down="_bubbleDown" on-up="_bubbleUp">
-          <div class="bubble-content" with-media$="[[message.image]]" no-caption$="[[!originalText]]">
-            <template is="dom-if" if="[[message.image]]">
-              <iron-image class="messageImg"
-                          fade
-                          preload
-                          sizing="cover"
-                          with-caption$="[[originalText]]"
-                          src="[[message.image]]"
-                          on-tap="_showFancybox"></iron-image>
+          <div class="bubble-content" with-media$="[[message.media]]" no-caption$="[[!originalText]]">
+            <template is="dom-if" if="[[message.media]]">
+              <template is="dom-if" if="[[isImageMedia]]">
+                <iron-image class="messageImg"
+                            fade
+                            preload
+                            sizing="cover"
+                            with-caption$="[[originalText]]"
+                            src="[[message.media.url]]"
+                            on-tap="_showFancybox"></iron-image>
+              </template>
             </template>
             <template is="dom-if" if="[[originalText]]">
               <div class="bubble-text">
@@ -383,7 +385,7 @@
             type: Object,
             value: {
               created: null,
-              image: null,
+              media: null,
               isAnonymous: true,
               text: '...',
               type: 'default',
@@ -467,6 +469,14 @@
             readOnly: true,
             computed: '_computeIcon(image, acronym)',
           },
+          /**
+           * The media is an image
+           */
+           isImageMedia: {
+            type: Boolean,
+            value: false,
+            readOnly: true,
+          },
         };
       }
 
@@ -543,6 +553,12 @@
         this._setOriginalText(originalText);
         let translatedMessage = this._extractHyperlinks(baseMessage);
         this._setText(translatedMessage);
+
+        if (message.media) {
+          if (message.media.type.match(/image\/(gif|bmp|jpeg|png)$/i)) {
+            this._setIsImageMedia(message.media.type);
+          }
+        }
 
         if (message.created) {
           this._setTime(message.created);
@@ -707,12 +723,11 @@
       _showFancybox() {
         $.fancybox.open(
           {
-            src: this.message.image, // Source of the content
+            src: this.message.media.url, // Source of the content
             type: 'image', // Content type: image|inline|ajax|iframe|html (optional)
             opts: {}, // Object containing item options (optional)
           });
       }
-
     }
 
     window.customElements.define(SkeletonChatMessage.is, SkeletonChatMessage);
