@@ -265,7 +265,7 @@
       <div id="bubble-container">
         <div class="bubble" on-down="_bubbleDown" on-up="_bubbleUp">
           <div class="bubble-content" with-media$="[[message.media]]" no-caption$="[[!originalText]]">
-            <template is="dom-if" if="[[message.media]]">
+            <template is="dom-if" if="[[message.media.url]]">
               <template is="dom-if" if="[[isImageMedia]]">
                 <iron-image class="messageImg"
                             fade
