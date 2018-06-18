@@ -1,11 +1,11 @@
 <link rel="import" href="../../polymer/polymer-element.html">
 <link rel="import" href="../../paper-input/paper-textarea.html">
-<link rel="import" href="../../polymerfire/firebase-auth.html">
-<link rel="import" href="../../polymerfire/firebase-firestore-script.html">
 <link rel="import" href="../../paper-styles/shadow.html">
 <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../icons.html">
+<script src="../../firebase/firebase-auth.js"></script>
+<script src="../../firebase/firebase-firestore.js"></script>
 
 <dom-module id="skeleton-chat-input">
   <template>
@@ -166,10 +166,6 @@
       }
     </style>
 
-    <firebase-auth
-      signed-in="{{signedIn}}"
-      user="{{user}}">
-    </firebase-auth>
     <div id="input">
       <paper-textarea label$="[[label]]"
                       value="{{text}}"
@@ -289,6 +285,17 @@
             computed: '_computeShowMic(mic, text)',
           },
         };
+      }
+
+      /**
+       * Connected callback
+       */
+      connectedCallback() {
+        super.connectedCallback();
+        firebase.auth().onAuthStateChanged((user) => {
+          this.user = user;
+          this.signedIn = !(!user);
+        });
       }
 
       /**

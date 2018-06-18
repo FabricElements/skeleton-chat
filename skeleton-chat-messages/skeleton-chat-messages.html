@@ -2,9 +2,8 @@
 <link rel="import" href="../../iron-scroll-threshold/iron-scroll-threshold.html">
 <link rel="import" href="../../iron-list/iron-list.html">
 <link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../../polymerfire/firebase-firestore-script.html">
-<link rel="import" href="../../polymerfire/firebase-auth.html">
 <link rel="import" href="../skeleton-chat-message/skeleton-chat-message.html">
+<script src="../../firebase/firebase-firestore.js"></script>
 
 <dom-module id="skeleton-chat-messages">
   <template>
@@ -55,11 +54,6 @@
         background-color: var(--skeleton-chat-input-box-color-dark, var(--paper-grey-800));
       }
     </style>
-
-    <firebase-auth
-      signed-in="{{signedIn}}"
-      user="{{user}}">
-    </firebase-auth>
 
     <iron-scroll-threshold id="threshold"
                            lower-threshold="0">
