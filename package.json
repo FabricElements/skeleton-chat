@@ -1,11 +1,19 @@
 {
-  "name": "name",
+  "name": "@fabricelements/skeleton-chat",
   "version": "0.0.1",
   "license": "BSD-3-Clause",
   "devDependencies": {
+    "@fabricelements/firebase-config": "^0.0.1",
+    "@fabricelements/skeleton-auth": "^0.0.1",
+    "@polymer/iron-demo-helpers": "^3.0.0-pre.18",
+    "@polymer/iron-image": "^3.0.0-pre.18",
+    "@polymer/iron-test-helpers": "^3.0.0-pre.18",
+    "@polymer/paper-item": "^3.0.0-pre.18",
+    "@webcomponents/webcomponentsjs": "^2.0.0",
     "eslint": "^4.12.1",
     "eslint-config-google": "^0.9.1",
-    "eslint-plugin-html": "^3.2.2"
+    "eslint-plugin-html": "^4.0.3",
+    "wct-browser-legacy": "^1.0.0"
   },
   "scripts": {
     "lint": "npm run lint:javascript && polymer lint",
@@ -14,5 +22,36 @@
     "test:integration": "polymer build # test that psk builds without error with the CLI",
     "serve": "polymer serve -H 0.0.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@fancyapps/fancybox": "^3.3.5",
+    "@polymer/app-layout": "^3.0.0-pre.18",
+    "@polymer/app-route": "^3.0.0-pre.18",
+    "@polymer/iron-flex-layout": "^3.0.0-pre.18",
+    "@polymer/iron-icons": "^3.0.0-pre.18",
+    "@polymer/iron-image": "^3.0.0-pre.18",
+    "@polymer/iron-input": "^3.0.0-pre.18",
+    "@polymer/iron-list": "^3.0.0-pre.18",
+    "@polymer/iron-resizable-behavior": "^3.0.0-pre.18",
+    "@polymer/iron-scroll-threshold": "^3.0.0-pre.18",
+    "@polymer/iron-test-helpers": "^3.0.0-pre.18",
+    "@polymer/paper-icon-button": "^3.0.0-pre.18",
+    "@polymer/paper-input": "^3.0.0-pre.18",
+    "@polymer/paper-item": "^3.0.0-pre.18",
+    "@polymer/paper-listbox": "^3.0.0-pre.18",
+    "@polymer/paper-menu-button": "^3.0.0-pre.18",
+    "@polymer/polymer": "^3.0.0",
+    "@types/polymer": "^1.2.4",
+    "autolinker": "^1.6.2",
+    "firebase": "^5.0.4",
+    "jquery": "^3.3.1",
+    "moment": "^2.22.2",
+    "web-animations-js": "^2.3.1"
+  },
+  "resolutions": {
+    "inherits": "2.0.3",
+    "samsam": "1.1.3",
+    "supports-color": "3.1.2",
+    "type-detect": "1.0.0"
+  },
+  "main": "skeleton-chat.js"
 }

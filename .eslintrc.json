@@ -4,7 +4,8 @@
     "google"
   ],
   "parserOptions": {
-    "ecmaVersion": 6
+    "ecmaVersion": 6,
+    "sourceType": "module"
   },
   "env": {
     "browser": true,
@@ -18,7 +19,7 @@
   "rules": {
     "brace-style": "off",
     "new-cap": [
-      "error",
+      "warn",
       {
         "newIsCap": true,
         "properties": false
@@ -44,6 +45,14 @@
         "maxBOF": 0,
         "maxEOF": 1
       }
+    ],
+    "max-len": [
+      "error",
+      {
+        "ignoreTemplateLiterals": true,
+        "ignoreUrls": true,
+        "ignorePattern": "^import\\s.+\\sfrom\\s.+;$"
+      }
     ]
   },
   "globals": {
@@ -55,7 +64,6 @@
     "MockInteractions": true,
     "Polymer": true,
     "WCT": true,
-    "moment": true,
-    "Autolinker": true
+    "$": true
   }
 }
