@@ -7,13 +7,13 @@
 
   <title>skeleton-chat-test</title>
 
-  <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-  <script src="../../wct-browser-legacy/browser.js"></script>
-  <script src="../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
 
-  <script type="module" src="../../polymerfire/polymerfire.js"></script>
-  <script type="module" src="../../polymerfire/firebase-database-script.js"></script>
-  <script type="module" src="../skeleton-chat-groups-item/skeleton-chat-groups-item.js"></script>
+  <link rel="import" href="../../polymerfire/polymerfire.html">
+  <link rel="import" href="../../polymerfire/firebase-database-script.html">
+  <link rel="import" href="../skeleton-chat-groups-item/skeleton-chat-groups-item.html">
   <link rel="import" href="../../skeleton-auth/skeleton-auth.html">
 
 </head>
@@ -66,114 +66,111 @@
     </div>
   </template>
 </test-fixture>
-<script type="module">
-import 'polymerfire/polymerfire.js';
-import 'polymerfire/firebase-database-script.js';
-import '../skeleton-chat-groups-item/skeleton-chat-groups-item.js';
-const oncePropChanged = (el, prop) => {
-  return new Promise((resolve, reject) => {
-    const dashedPropName = prop
-      .replace(/[A-Z]/g, (match) => `-${match[0].toLowerCase()}`)
-      .concat('-changed');
+<script>
+  const oncePropChanged = (el, prop) => {
+    return new Promise((resolve, reject) => {
+      const dashedPropName = prop
+        .replace(/[A-Z]/g, (match) => `-${match[0].toLowerCase()}`)
+        .concat('-changed');
 
-    el.addEventListener(dashedPropName, listener);
+      el.addEventListener(dashedPropName, listener);
 
-    /**
-     * listener
-     * @param {Object} event
-     */
-    function listener(event) {
-      el.removeEventListener(dashedPropName, listener);
-      resolve(event);
-    }
-  });
-};
+      /**
+       * listener
+       * @param {Object} event
+       */
+      function listener(event) {
+        el.removeEventListener(dashedPropName, listener);
+        resolve(event);
+      }
+    });
+  };
 
-suite('Basic behaviour', () => {
-  test('Theme color should be light by default', () => {
-    const element = fixture('lightTheme');
-    expect(element.theme).to.equal('light');
-  });
-  test('Theme color should be dark if set by theme attribute', () => {
-    const element = fixture('darkTheme');
-    expect(element.theme).to.equal('dark');
-  });
-});
-
-suite('Data behavior', () => {
-  test('Should display group title', (done) => {
-    const element = fixture('dataFixture');
-
-    flush(() => {
-      const skeletonAuth = element.querySelector('skeleton-auth');
-
-      const skeletonGroups = element
-        .querySelector(
-          'skeleton-chat-groups-item'
-        );
-
-      const skeletonInfo = skeletonGroups
-        .shadowRoot
-        .querySelector(
-          'skeleton-chat-info'
-        );
-
-      // Select the email button
-      const emailButton = skeletonAuth.shadowRoot.querySelector('.email');
-
-      // Select the email/password auth method
-      MockInteractions.tap(emailButton);
-
-      // Set default value on the email input
-      const emailInput = skeletonAuth
-        .shadowRoot
-        .querySelector('#login-input-mail');
-      emailInput.value = 'fabricelements@mailinator.com';
-
-      // Select the sign in email button
-      const emailSignin = skeletonAuth
-        .shadowRoot
-        .querySelector('[name="email-login"] .email');
-
-      // Click to sign in
-      MockInteractions.tap(emailSignin);
-
-      // Wait for Firebase API response
-      oncePropChanged(skeletonAuth, 'availableProviders').then(() => {
-        // Set default value on the password input
-        const passInput = skeletonAuth
-          .shadowRoot
-          .querySelector('#login-input-pass');
-        passInput.value = 'fabricelements';
-
-        // Select the sign in password button
-        const passSignin = skeletonAuth
-          .shadowRoot
-          .querySelector('[name="email-providers"] .email');
-
-        // Click to sign in
-        MockInteractions.tap(passSignin);
-
-        // Wait for Firebase API response
-        return oncePropChanged(
-          skeletonInfo,
-          'info'
-        );
-      })
-        .then(() => {
-          return oncePropChanged(skeletonInfo, 'info');
-        })
-        .then(() => {
-          const title = skeletonGroups.shadowRoot.querySelector('.title');
-
-          expect(title.textContent).to.equal('Julia, Erny');
-
-          done();
-        })
-        .catch(done);
+  suite('Basic behaviour', () => {
+    test('Theme color should be light by default', () => {
+      const element = fixture('lightTheme');
+      expect(element.theme).to.equal('light');
+    });
+    test('Theme color should be dark if set by theme attribute', () => {
+      const element = fixture('darkTheme');
+      expect(element.theme).to.equal('dark');
     });
   });
-});
+
+  suite('Data behavior', () => {
+    test('Should display group title', (done) => {
+      const element = fixture('dataFixture');
+
+      flush(() => {
+        const skeletonAuth = element.querySelector('skeleton-auth');
+
+        const skeletonGroups = element
+          .querySelector(
+            'skeleton-chat-groups-item'
+          );
+
+        const skeletonInfo = skeletonGroups
+          .shadowRoot
+          .querySelector(
+            'skeleton-chat-info'
+          );
+
+        // Select the email button
+        const emailButton = skeletonAuth.shadowRoot.querySelector('.email');
+
+        // Select the email/password auth method
+        MockInteractions.tap(emailButton);
+
+        // Set default value on the email input
+        const emailInput = skeletonAuth
+          .shadowRoot
+          .querySelector('#login-input-mail');
+        emailInput.value = 'fabricelements@mailinator.com';
+
+        // Select the sign in email button
+        const emailSignin = skeletonAuth
+          .shadowRoot
+          .querySelector('[name="email-login"] .email');
+
+        // Click to sign in
+        MockInteractions.tap(emailSignin);
+
+        // Wait for Firebase API response
+        oncePropChanged(skeletonAuth, 'availableProviders').then(() => {
+          // Set default value on the password input
+          const passInput = skeletonAuth
+            .shadowRoot
+            .querySelector('#login-input-pass');
+          passInput.value = 'fabricelements';
+
+          // Select the sign in password button
+          const passSignin = skeletonAuth
+            .shadowRoot
+            .querySelector('[name="email-providers"] .email');
+
+          // Click to sign in
+          MockInteractions.tap(passSignin);
+
+          // Wait for Firebase API response
+          return oncePropChanged(
+            skeletonInfo,
+            'info'
+          );
+        })
+          .then(() => {
+            return oncePropChanged(skeletonInfo, 'info');
+          })
+          .then(() => {
+            const title = skeletonGroups.shadowRoot.querySelector('.title');
+
+            expect(title.textContent).to.equal('Julia, Erny');
+
+            done();
+          })
+          .catch(done);
+      });
+    });
+  });
 </script>
 </body>
 </html>
