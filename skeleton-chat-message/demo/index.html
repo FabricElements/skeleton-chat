@@ -5,13 +5,9 @@
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
   <title>skeleton-chat-message demo</title>
+  <script type="module" src="../../demo/shared.js"></script>
+  <script type="module" src="../skeleton-chat-message.js"></script>
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
-
-  <link rel="import" href="../../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="../../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../demo/shared.html">
-  <link rel="import" href="../skeleton-chat-message.html">
   <meta name="viewport" content="width=device-width">
 
   <custom-style>
@@ -59,20 +55,18 @@
     <template>
       <div class="container">
         <skeleton-chat-message time="1523894930496"
-                               message='{"created":"2018-04-04T12:35:24.984Z","media":{"type":"image/jpeg","url":"https://images.unsplash.com/photo-1516290881724-2230498ea247"},"isAnonymous":false,"text":"dfsjfada nsandjad dasdhad snsad sasoahda askfnad df kjsdbfds f jkdsfb dsfkdsbf d sfdkbfdsbfa djkabdas daskjbasduasbdsa djashodsabdbsajbdw nd jsahdjsa das http://test.com","type":"default","uid":"QegZyzof1BPhARdkvIUBYp2oxkE2","updated":"2018-04-04T12:35:24.984Z","user":{"avatar":"https://lh6.googleusercontent.com/-ciuP6RCh-wc/AAAAAAAAAAI/AAAAAAAAQZ8/m4E3KFgmQRw/photo.jpg","name":"Stívali Serna"}}'
-        ></skeleton-chat-message>
+                               message="{&quot;created&quot;:&quot;2018-04-04T12:35:24.984Z&quot;,&quot;media&quot;:{&quot;type&quot;:&quot;image/jpeg&quot;,&quot;url&quot;:&quot;https://images.unsplash.com/photo-1516290881724-2230498ea247&quot;},&quot;isAnonymous&quot;:false,&quot;text&quot;:&quot;dfsjfada nsandjad dasdhad snsad sasoahda askfnad df kjsdbfds f jkdsfb dsfkdsbf d sfdkbfdsbfa djkabdas daskjbasduasbdsa djashodsabdbsajbdw nd jsahdjsa das http://test.com&quot;,&quot;type&quot;:&quot;default&quot;,&quot;uid&quot;:&quot;QegZyzof1BPhARdkvIUBYp2oxkE2&quot;,&quot;updated&quot;:&quot;2018-04-04T12:35:24.984Z&quot;,&quot;user&quot;:{&quot;avatar&quot;:&quot;https://lh6.googleusercontent.com/-ciuP6RCh-wc/AAAAAAAAAAI/AAAAAAAAQZ8/m4E3KFgmQRw/photo.jpg&quot;,&quot;name&quot;:&quot;Stívali Serna&quot;}}"></skeleton-chat-message>
       </div>
     </template>
   </demo-snippet>
 
   <dom-bind>
     <template>
-      <firebase-auth signed-in="{{signedIn}}"
-                     user="{{user}}">
+      <firebase-auth signed-in="{{signedIn}}" user="{{user}}">
       </firebase-auth>
       <dom-if if="[[!signedIn]]">
         <template>
-          <skeleton-auth google></skeleton-auth>
+          <skeleton-auth google=""></skeleton-auth>
         </template>
       </dom-if>
     </template>
@@ -81,15 +75,13 @@
 
   <dom-bind>
     <template>
-      <firebase-document
-        path="/chat/messages/demo"
-        data="{{data}}">
+      <firebase-document path="/chat/messages/demo" data="{{data}}">
       </firebase-document>
       <h2>Light theme</h2>
       <div class="container light">
         <h3>Basic</h3>
-        <skeleton-chat-message message='{"created":"2018-04-04T12:35:24.984Z","media":{"type":"image/jpeg","url":"https://images.unsplash.com/photo-1516290881724-2230498ea247"},"isAnonymous":false,"text":"dfsjfada nsandjad dasdhad snsad sasoahda askfnad df kjsdbfds f jkdsfb dsfkdsbf d sfdkbfdsbfa djkabdas daskjbasduasbdsa djashodsabdbsajbdw nd jsahdjsa das http://test.com","type":"default","uid":"QegZyzof1BPhARdkvIUBYp2oxkE2","updated":"2018-04-04T12:35:24.984Z","user":{"avatar":"https://lh6.googleusercontent.com/-ciuP6RCh-wc/AAAAAAAAAAI/AAAAAAAAQZ8/m4E3KFgmQRw/photo.jpg","name":"Stívali Serna"}}'
-        ></skeleton-chat-message>
+        <skeleton-chat-message
+          message="{&quot;created&quot;:&quot;2018-04-04T12:35:24.984Z&quot;,&quot;media&quot;:{&quot;type&quot;:&quot;image/jpeg&quot;,&quot;url&quot;:&quot;https://images.unsplash.com/photo-1516290881724-2230498ea247&quot;},&quot;isAnonymous&quot;:false,&quot;text&quot;:&quot;dfsjfada nsandjad dasdhad snsad sasoahda askfnad df kjsdbfds f jkdsfb dsfkdsbf d sfdkbfdsbfa djkabdas daskjbasduasbdsa djashodsabdbsajbdw nd jsahdjsa das http://test.com&quot;,&quot;type&quot;:&quot;default&quot;,&quot;uid&quot;:&quot;QegZyzof1BPhARdkvIUBYp2oxkE2&quot;,&quot;updated&quot;:&quot;2018-04-04T12:35:24.984Z&quot;,&quot;user&quot;:{&quot;avatar&quot;:&quot;https://lh6.googleusercontent.com/-ciuP6RCh-wc/AAAAAAAAAAI/AAAAAAAAQZ8/m4E3KFgmQRw/photo.jpg&quot;,&quot;name&quot;:&quot;Stívali Serna&quot;}}"></skeleton-chat-message>
         <h3>Owner</h3>
         <skeleton-chat-message message="[[data.owner]]"></skeleton-chat-message>
         <h3>Anonymous</h3>
@@ -98,14 +90,13 @@
       <h2>Dark theme</h2>
       <div class="container dark">
         <h3>Basic</h3>
-        <skeleton-chat-message message='{"created":"2018-04-04T12:35:24.984Z","media":{"type":"image/jpeg","url":"https://images.unsplash.com/photo-1516290881724-2230498ea247"},"isAnonymous":false,"text":"dfsjfada nsandjad dasdhad snsad sasoahda askfnad df kjsdbfds f jkdsfb dsfkdsbf d sfdkbfdsbfa djkabdas daskjbasduasbdsa djashodsabdbsajbdw nd jsahdjsa das http://test.com","type":"default","uid":"QegZyzof1BPhARdkvIUBYp2oxkE2","updated":"2018-04-04T12:35:24.984Z","user":{"avatar":"https://lh6.googleusercontent.com/-ciuP6RCh-wc/AAAAAAAAAAI/AAAAAAAAQZ8/m4E3KFgmQRw/photo.jpg","name":"Stívali Serna"}}'
-                               theme="dark"></skeleton-chat-message>
+        <skeleton-chat-message
+          message="{&quot;created&quot;:&quot;2018-04-04T12:35:24.984Z&quot;,&quot;media&quot;:{&quot;type&quot;:&quot;image/jpeg&quot;,&quot;url&quot;:&quot;https://images.unsplash.com/photo-1516290881724-2230498ea247&quot;},&quot;isAnonymous&quot;:false,&quot;text&quot;:&quot;dfsjfada nsandjad dasdhad snsad sasoahda askfnad df kjsdbfds f jkdsfb dsfkdsbf d sfdkbfdsbfa djkabdas daskjbasduasbdsa djashodsabdbsajbdw nd jsahdjsa das http://test.com&quot;,&quot;type&quot;:&quot;default&quot;,&quot;uid&quot;:&quot;QegZyzof1BPhARdkvIUBYp2oxkE2&quot;,&quot;updated&quot;:&quot;2018-04-04T12:35:24.984Z&quot;,&quot;user&quot;:{&quot;avatar&quot;:&quot;https://lh6.googleusercontent.com/-ciuP6RCh-wc/AAAAAAAAAAI/AAAAAAAAQZ8/m4E3KFgmQRw/photo.jpg&quot;,&quot;name&quot;:&quot;Stívali Serna&quot;}}"
+          theme="dark"></skeleton-chat-message>
         <h3>Owner</h3>
-        <skeleton-chat-message message="[[data.owner]]"
-                               theme="dark"></skeleton-chat-message>
+        <skeleton-chat-message message="[[data.owner]]" theme="dark"></skeleton-chat-message>
         <h3>Anonymous</h3>
-        <skeleton-chat-message message="[[data.anonymous]]"
-                               theme="dark"></skeleton-chat-message>
+        <skeleton-chat-message message="[[data.anonymous]]" theme="dark"></skeleton-chat-message>
       </div>
       <hr>
     </template>

@@ -6,14 +6,25 @@
 
   <title>skeleton-chat-groups demo</title>
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-  <link rel="import" href="../../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="../../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../demo/shared.html">
-  <link rel="import" href="../skeleton-chat-groups.html">
+  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
+  <script type="module" src="../../demo/shared.js"></script>
+  <script type="module" src="../skeleton-chat-groups.js"></script>
 
-  <custom-style>
+  <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
       .container {
         background-color: var(--paper-grey-50);
@@ -23,23 +34,34 @@
         background-color: var(--paper-grey-800);
       }
     </style>
-  </custom-style>
+  </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </head>
 <body>
-<dom-bind>
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<dom-bind>
   <template>
-    <firebase-auth signed-in="{{signedIn}}"
-                   user="{{user}}">
+    <firebase-auth signed-in="{{signedIn}}" user="{{user}}">
     </firebase-auth>
     <dom-if if="[[!signedIn]]">
       <template>
-        <skeleton-auth google></skeleton-auth>
+        <skeleton-auth google=""></skeleton-auth>
       </template>
     </dom-if>
   </template>
-</dom-bind>
+</dom-bind>`;
 
-<div class="vertical-section-container centered">
+document.body.appendChild($_documentContainer.content);
+</script>
+
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
   <h3>Basic skeleton-chat-groups demo</h3>
   <demo-snippet>
     <template>
@@ -48,8 +70,14 @@
       </div>
     </template>
   </demo-snippet>
-</div>
-<div class="vertical-section-container centered">
+</div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
   <h3>Basic skeleton-chat-groups demo</h3>
   <demo-snippet>
     <template>
@@ -58,6 +86,9 @@
       </div>
     </template>
   </demo-snippet>
-</div>
+</div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </body>
 </html>
