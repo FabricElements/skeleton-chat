@@ -7,16 +7,12 @@
 
   <title>skeleton-chat demo</title>
 
-  <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <script type="module" src="../../@polymer/polymer/lib/elements/dom-bind.js"></script>
-  <script type="module" src="../../@polymer/polymer/lib/elements/dom-if.js"></script>
-  <script type="module" src="./shared.js"></script>
-  <!--<link rel="stylesheet" href="../../jquery/dist/jquery.min.js" />-->
-  <!--<link rel="stylesheet" href="../../@fancyapps/fancybox/dist/jquery.fancybox.min.js" />-->
-  <!--<link rel="stylesheet" href="../../@fancyapps/fancybox/dist/jquery.fancybox.min.css" />-->
-  <script type="module" src="../skeleton-chat.js"></script>
-
+  <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+  <link rel="import" href="../../polymer/lib/elements/dom-if.html">
+  <link rel="import" href="./shared.html">
+  <link rel="import" href="../skeleton-chat.html">
 
   <style>
     html,
@@ -43,12 +39,7 @@
     </dom-if>
   </template>
 </dom-bind>
-<script type="module">
-  import '@polymer/polymer/lib/elements/dom-bind.js';
-  import '@polymer/polymer/lib/elements/dom-if.js';
-  import './shared.js';
-  import '../skeleton-chat.js';
-
+<script>
   window.history.pushState({}, 'Chat', '/chat');
   window.dispatchEvent(new CustomEvent('location-changed'));
 </script>
