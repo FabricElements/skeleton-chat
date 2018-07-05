@@ -116,7 +116,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
           background-color: transparent;
         };
         --paper-icon-item: {
-          @apply --layout-start;
+          @apply --layout-end;
         };
         --paper-item-icon-width: calc(var(--skeleton-chat-message-height) * 1.5);
         --paper-item-min-height: var(--skeleton-chat-message-height);
@@ -129,6 +129,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         border-radius: 50%;
         overflow: hidden;
         position: relative;
+        margin-top: 25px;
       }
 
       [owner] .icon-container {
@@ -195,7 +196,10 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         color: var(--skeleton-chat-link-color);
         text-decoration: underline;
       }
-
+      [owner]{
+        @apply --layout-horizontal-reverse;
+      }
+      
       [owner] .bubble-text a {
         color: inherit;
         text-decoration: underline;
@@ -219,9 +223,20 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
 
       .time {
         padding-top: 3px;
+        margin-bottom: 5px;
         @apply --paper-font-caption;
         color: var(--paper-grey-500);
-        @apply --layout-flex-none;
+        @apply --layout-horizontal;
+        @apply --layout-justified;
+      }
+      
+      .time[type-media="image/jpeg"]{
+        width: 100%;
+        max-width: var(--skeleton-chat-message-container-width);
+      }
+      
+      [owner] .time[type-media="image/jpeg"]{
+        float: right;
       }
 
       [owner] paper-icon-item {
@@ -229,7 +244,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       }
 
       [owner] #owner-img {
-        display: none !important;
+        // display: none !important;
       }
 
       [hidden] {
@@ -281,15 +296,17 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
 
     <paper-icon-item owner$="[[isOwner]]">
       <div class="icon-container" slot="item-icon">
-        <template is="dom-if" if="[[!isOwner]]">
           <iron-image fade="" sizing="cover" src$="[[image]]" hidden$="[[!image]]" id="owner-img"></iron-image>
           <div id="acronym" hidden$="[[!acronym]]">
             [[acronym]]
           </div>
           <iron-icon icon$="chat-icon:[[icon]]" class="icon-option" hidden$="[[!icon]]"></iron-icon>
-        </template>
       </div>
       <div id="bubble-container">
+        <div class="time" hidden$="[[!time]]" secondary="" type-media$="[[isImageMedia]]">
+          <div class="user-name-string">[[message.user.name]]</div>
+          <div class="time-string">[[_getFullTime(time)]]</div>
+        </div>
         <div class="bubble" on-down="_bubbleDown" on-up="_bubbleUp">
           <div class="bubble-content" with-media$="[[message.media]]" no-caption$="[[!originalText]]">
             <template is="dom-if" if="[[message.media.url]]">
@@ -306,9 +323,6 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
               </div>
             </template>
           </div>
-        </div>
-        <div class="time" hidden$="[[!time]]" secondary="">
-          <div>[[_getFullTime(time)]]</div>
         </div>
       </div>
     </paper-icon-item>
