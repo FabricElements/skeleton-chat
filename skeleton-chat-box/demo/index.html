@@ -6,14 +6,25 @@
 
   <title>skeleton-chat-box demo</title>
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-  <link rel="import" href="../../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="../../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../demo/shared.html">
-  <link rel="import" href="../skeleton-chat-box.html">
+  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
+  <script type="module" src="../../demo/shared.js"></script>
+  <script type="module" src="../skeleton-chat-box.js"></script>
 
-  <custom-style>
+  <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
       html {
         --demo-snippet-demo: {
@@ -33,28 +44,33 @@
         };
       }
     </style>
-  </custom-style>
+  </custom-style>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </head>
 <body>
-<dom-bind>
+<script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<dom-bind>
   <template>
-    <firebase-auth signed-in="{{signedIn}}"
-                   user="{{user}}">
+    <firebase-auth signed-in="{{signedIn}}" user="{{user}}">
     </firebase-auth>
     <dom-if if="[[!signedIn]]">
       <template>
-        <skeleton-auth google></skeleton-auth>
+        <skeleton-auth google=""></skeleton-auth>
       </template>
     </dom-if>
     <dom-if if="[[signedIn]]">
       <template>
-        <skeleton-chat-box group="testing"
-                           mic
-                           emoji
-        ></skeleton-chat-box>
+        <skeleton-chat-box group="testing" mic="" emoji=""></skeleton-chat-box>
       </template>
     </dom-if>
   </template>
-</dom-bind>
+</dom-bind>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 </body>
 </html>

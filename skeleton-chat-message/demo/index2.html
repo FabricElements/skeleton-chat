@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <title>skeleton-chat-message demo</title>
+  <script type="module" src="../../demo/shared.js"></script>
+  <script type="module" src="../skeleton-chat-message.js"></script>
+
+  <meta name="viewport" content="width=device-width">
+
+  <custom-style>
+    <style is="custom-style" include="demo-pages-shared-styles">
+      html {
+        touch-action: manipulation;
+      }
+
+      .container {
+        background-color: var(--paper-grey-50);
+        padding: 3rem 1rem;
+      }
+
+      .light,
+      .dark {
+        border-bottom: 1px solid var(--paper-grey-900);
+        margin-bottom: 2rem;
+      }
+
+      .light {
+        border-bottom: 1px solid var(--paper-grey-900);
+      }
+
+      .dark {
+        background-color: var(--paper-grey-800);
+      }
+
+      h3 {
+        padding: 1rem 0;
+        border-top: 1px solid var(--paper-grey-300);
+      }
+
+      .dark h3 {
+        color: white;
+        border-top: 1px solid var(--paper-grey-600);
+      }
+    </style>
+  </custom-style>
+</head>
+<body>
+<div class="vertical-section-container centered">
+  <h3>skeleton-chat-message demo</h3>
+  <skeleton-chat-message message='{"text":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vel convallis turpis. Nulla a nunc ac nibh consequat pellentesque. Nulla efficitur pretium mauris, ac suscipit quam viverra nec. In tincidunt tortor a eros pulvinar, eget fermentum purus sollicitudin. Nunc porttitor nibh nibh, luctus consequat nisi rhoncus eleifend. Suspendisse massa risus, molestie vitae augue in, auctor eleifend nibh. Mauris est nisl, sodales nec dapibus eget, vehicula in magna. ","type":"default","user":{"name":"Jon Snow"}}'></skeleton-chat-message>
+
+
+
+</div>
+</body>
+</html>
