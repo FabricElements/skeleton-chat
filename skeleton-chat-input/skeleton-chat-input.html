@@ -339,9 +339,11 @@
          * Format message
          */
         const message = {
+          backup: false,
           created: timestamp,
           isAnonymous: user.isAnonymous,
           group: group,
+          processed: false,
           text: baseText,
           type: 'default',
           uid: user.uid,
