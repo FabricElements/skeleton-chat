@@ -6,11 +6,13 @@ import '@polymer/paper-item/paper-icon-item.js';
 import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-image/iron-image.js';
+import '@polymer/iron-icons/iron-icons.js';
 // import * as moment from 'moment';
 import moment from 'moment';
 // import * as Autolinker from 'autolinker/dist/Autolinker.min.js';
 import 'jquery';
 import '@fancyapps/fancybox';
+import '@fabricelements/skeleton-player/skeleton-player.js';
 import '../icons.js';
 
 /**
@@ -118,6 +120,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         --paper-icon-item: {
           @apply --layout-end;
         };
+        
         --paper-item-icon-width: calc(var(--skeleton-chat-message-height) * 1.5);
         --paper-item-min-height: var(--skeleton-chat-message-height);
       }
@@ -146,7 +149,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       }
 
       #bubble-container {
-        @apply --layout-flex-auto;
+        /*@apply --layout-flex-auto;*/
         position: relative;
         display: block;
         max-width: calc(100% - var(--paper-item-icon-width));
@@ -160,6 +163,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         color: white;
         display: inline-block;
         max-width: 100%;
+        min-width: 200px;
         width: auto;
         transition: max-width ease 0.5s;
         box-shadow: inset 0 0 3px rgba(0, 0, 0, .02);
@@ -172,6 +176,29 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       .bubble-content {
         position: relative;
         max-width: 100%;
+      }
+      
+      .audio-player-container{
+        @apply --layout-horizontal;
+      }
+      
+      skeleton-audio{
+        @apply --layout-flex-auto;
+        flex-shrink: 0;
+        --skeleton-player-slider-knob-color: transparent;
+        --skeleton-player-slider-active-color: var(--paper-blue-700);
+        --skeleton-player-slider-bar-color: var(--paper-gey-300);
+        --paper-icon-button: {
+          color: var(--paper-blue-700);
+        };
+      }
+      
+      [owner] skeleton-audio{
+        --skeleton-player-slider-active-color: white;
+        --skeleton-player-slider-container-color: var(--paper-blue-600);
+        --paper-icon-button: {
+          color: white;
+        };
       }
 
       .bubble-content[with-media] {
@@ -198,6 +225,9 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       }
       [owner]{
         @apply --layout-horizontal-reverse;
+        --paper-item-icon:{
+          @apply --layout-end-justified;
+        };
       }
       
       [owner] .bubble-text a {
@@ -230,12 +260,14 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         @apply --layout-justified;
       }
       
-      .time[type-media="image/jpeg"]{
+      .time[type-media="image/jpeg"],
+      .time[file-type]{
         width: 100%;
         max-width: var(--skeleton-chat-message-container-width);
       }
       
-      [owner] .time[type-media="image/jpeg"]{
+      [owner] .time[type-media="image/jpeg"],
+      [owner] .time[file-type]{
         float: right;
       }
 
@@ -292,9 +324,63 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       .messageImg[with-caption] {
         border-radius: 1rem 1rem 0 0;
       }
+      .bubble-file{
+        background-color: var(--paper-grey-300);
+        margin: 15px 15px 5px 15px;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      
+      .bubble-file iron-icon{
+        --iron-icon-fill-color: var(--paper-blue-500);
+        vertical-align: text-bottom;
+      }
+      
+      .bubble-file .bubble-file-name{
+        color: var(--paper-grey-900);
+      }
+      
+      .bubble-file-size{
+        margin: 0 15px 15px 15px;
+        color: var(--paper-grey-500);
+        font-size: 12px;
+        text-align: right;
+      }
+      
+      .player-progress{
+        color: var(--paper-grey-500);
+        font-size: 12px;
+        text-align: center;
+        flex-grow: 0;
+        width: 50px;
+        overflow: hidden;
+        line-height: 50px;
+      }
+      
+      [owner] .player-progress{
+        color: white;
+      }
+      
+      [owner] .bubble-file{
+        background-color: var(--paper-blue-600);
+      }
+      
+      [owner] .bubble-file iron-icon{
+        --iron-icon-fill-color: white;
+       }
+       
+      [owner] .bubble-file .bubble-file-name{
+        color: white;
+      }
+      
+      [owner] .bubble-file-size{
+       color: white;
+      }
+      
     </style>
 
-    <paper-icon-item owner$="[[isOwner]]">
+    <paper-icon-item owner$="[[isOwner]]" type-media$="[[message.media.type]]">
       <div class="icon-container" slot="item-icon">
           <iron-image fade="" sizing="cover" src$="[[image]]" hidden$="[[!image]]" id="owner-img"></iron-image>
           <div id="acronym" hidden$="[[!acronym]]">
@@ -303,18 +389,31 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
           <iron-icon icon$="chat-icon:[[icon]]" class="icon-option" hidden$="[[!icon]]"></iron-icon>
       </div>
       <div id="bubble-container">
-        <div class="time" hidden$="[[!time]]" secondary="" type-media$="[[isImageMedia]]">
+        <div class="time" hidden$="[[!time]]" secondary="" type-media$="[[isImageMedia]]" file-type$="[[isFileType]]">
           <div class="user-name-string">[[message.user.name]]</div>
           <div class="time-string">[[_getFullTime(time)]]</div>
         </div>
         <div class="bubble" on-down="_bubbleDown" on-up="_bubbleUp">
           <div class="bubble-content" with-media$="[[message.media]]" no-caption$="[[!originalText]]">
-            <template is="dom-if" if="[[message.media.url]]">
-              <template is="dom-if" if="[[isImageMedia]]">
+            <template is="dom-if" if="[[message.media.url]]" restamp="true">
+              <template is="dom-if" if="[[isImageMedia]]" restamp="true">
                 <iron-image class="messageImg" fade="" preload="" sizing="cover" with-caption$="[[originalText]]" src="[[message.media.url]]" on-tap="_showFancybox"></iron-image>
               </template>
             </template>
-            <template is="dom-if" if="[[originalText]]">
+            <template is="dom-if" if="[[isFileType]]" restamp="true">
+              <div class="bubble-file">
+                <iron-icon icon="description"></iron-icon>
+                <span class="bubble-file-name">[[message.media.name]]</span>
+              </div>
+              <div class="bubble-file-size">pdf · 2 mb</div>
+            </template>
+            <template is="dom-if" if="[[isAudioType]]" restamp="true">
+              <div class="audio-player-container">
+                <skeleton-audio src="http://nadikun.com/audio/pink-shades-o-pnr.mp3" controls="" preload="" autoplay="" time-left="{{playerProgress}}"></skeleton-audio>
+                <span class="player-progress">{{_formatPlayerTime(playerProgress)}}</span>
+              </div>
+            </template>
+            <template is="dom-if" if="[[originalText]]" restamp="true">
               <div class="bubble-text">
                 <div class="text-original" hidden$="[[!showOriginal]]" inner-h-t-m-l="[[originalText]]">
                   [[message.text]]
@@ -493,6 +592,24 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         value: false,
         readOnly: true,
       },
+      /**
+       * The media is a file
+       */
+      isFileType: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * The media is an audio file
+       */
+      isAudioType: {
+        type: Boolean,
+        value: false,
+      },
+      playerProgress: {
+        type: String,
+        value: null,
+      },
     };
   }
 
@@ -551,6 +668,28 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
   }
 
   /**
+   * Player time format
+   * @param {number} seconds
+   * @return {*}
+   * @private
+   */
+  _formatPlayerTime(seconds) {
+    // https://jsfiddle.net/okachynskyy/4ehb0L5p/
+    // https://stackoverflow.com/questions/5539028/converting-seconds-into-hhmmss
+    return this._secondsToHms(seconds);
+  }
+
+  _secondsToHms(d) {
+    d = Number(d);
+
+    // let h = Math.floor(d / 3600);
+    let m = Math.floor(d % 3600 / 60);
+    let s = Math.floor(d % 3600 % 60);
+
+    return ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2);
+  }
+
+  /**
    * Check message change
    *
    * @param {object} message
@@ -573,6 +712,10 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
     if (message.media) {
       if (message.media.type.match(/image\/(gif|bmp|jpeg|png)$/i)) {
         this._setIsImageMedia(message.media.type);
+      } else if (message.media.type.match(/audio\/(ogg|mp3|wav)$/i)) {
+        this.isAudioType = true;
+      } else {
+        this.isFileType = true;
       }
     }
 
