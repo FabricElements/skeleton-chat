@@ -6,7 +6,6 @@ import '@polymer/paper-item/paper-icon-item.js';
 import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-image/iron-image.js';
-import '@polymer/iron-icons/iron-icons.js';
 // import * as moment from 'moment';
 import moment from 'moment';
 // import * as Autolinker from 'autolinker/dist/Autolinker.min.js';
@@ -382,14 +381,14 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
 
     <paper-icon-item owner$="[[isOwner]]" type-media$="[[message.media.type]]">
       <div class="icon-container" slot="item-icon">
-          <iron-image fade="" sizing="cover" src$="[[image]]" hidden$="[[!image]]" id="owner-img"></iron-image>
+          <iron-image fade sizing="cover" src$="[[image]]" hidden$="[[!image]]" id="owner-img"></iron-image>
           <div id="acronym" hidden$="[[!acronym]]">
             [[acronym]]
           </div>
           <iron-icon icon$="chat-icon:[[icon]]" class="icon-option" hidden$="[[!icon]]"></iron-icon>
       </div>
       <div id="bubble-container">
-        <div class="time" hidden$="[[!time]]" secondary="" type-media$="[[isImageMedia]]" file-type$="[[isFileType]]">
+        <div class="time" hidden$="[[!time]]" secondary type-media$="[[isImageMedia]]" file-type$="[[isFileType]]">
           <div class="user-name-string">[[message.user.name]]</div>
           <div class="time-string">[[_getFullTime(time)]]</div>
         </div>
@@ -397,7 +396,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
           <div class="bubble-content" with-media$="[[message.media]]" no-caption$="[[!originalText]]">
             <template is="dom-if" if="[[message.media.url]]" restamp="true">
               <template is="dom-if" if="[[isImageMedia]]" restamp="true">
-                <iron-image class="messageImg" fade="" preload="" sizing="cover" with-caption$="[[originalText]]" src="[[message.media.url]]" on-tap="_showFancybox"></iron-image>
+                <iron-image class="messageImg" fade preload sizing="cover" with-caption$="[[originalText]]" src="[[message.media.url]]" on-tap="_showFancybox"></iron-image>
               </template>
             </template>
             <template is="dom-if" if="[[isFileType]]" restamp="true">
@@ -409,7 +408,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
             </template>
             <template is="dom-if" if="[[isAudioType]]" restamp="true">
               <div class="audio-player-container">
-                <skeleton-audio src="http://nadikun.com/audio/pink-shades-o-pnr.mp3" controls="" preload="" autoplay="" time-left="{{playerProgress}}"></skeleton-audio>
+                <skeleton-audio src$="[[message.media.url]]" controls preload time-left="{{playerProgress}}"></skeleton-audio>
                 <span class="player-progress">{{_formatPlayerTime(playerProgress)}}</span>
               </div>
             </template>

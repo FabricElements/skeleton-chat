@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "@fabricelements/firebase-config": "^0.0.1",
-    "@fabricelements/skeleton-auth": "^0.0.1",
+    "@fabricelements/firebase-config": "github:FabricElements/firebase-config",
+    "@fabricelements/skeleton-auth": "github:FabricElements/skeleton-auth",
     "@polymer/iron-demo-helpers": "^3.0.0-pre.21",
     "@polymer/iron-image": "^3.0.0-pre.21",
     "@polymer/iron-test-helpers": "^3.0.0-pre.21",

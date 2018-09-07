@@ -1,7 +1,6 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-input/paper-input.js';
 import '../chat-mixin.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 /**
  * `demo-element`
  *
@@ -13,6 +12,9 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
  * @demo demo/index.html
  */
 class DemoElement extends Fabric.ChatMixin(PolymerElement) {
+  /**
+   * @return {!HTMLTemplateElement}
+   */
   static get template() {
     return html`
     <style>

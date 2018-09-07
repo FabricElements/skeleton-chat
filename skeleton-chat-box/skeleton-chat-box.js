@@ -1,18 +1,17 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import {PolymerElement, html} from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/neon-animation/web-animations.js';
 import '@polymer/paper-menu-button/paper-menu-button.js';
 import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '../chat-mixin/chat-mixin.js';
 import '../skeleton-chat-info/skeleton-chat-info.js';
 import '../skeleton-chat-messages/skeleton-chat-messages.js';
 import '../skeleton-chat-input/skeleton-chat-input.js';
-import '@polymer/iron-flex-layout/iron-flex-layout.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
 import '../icons.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import 'firebase/firebase-auth.js';
+
+const firebase = window.firebase;
+
 /**
  * `skeleton-chat-box`
  *
@@ -22,6 +21,9 @@ import 'firebase/firebase-auth.js';
  * @demo demo/index.html
  */
 class SkeletonChatBox extends Fabric.ChatMixin(PolymerElement) {
+  /**
+   * @return {!HTMLTemplateElement}
+   */
   static get template() {
     return html`
     <!--suppress CssInvalidPseudoSelector -->
@@ -116,18 +118,18 @@ class SkeletonChatBox extends Fabric.ChatMixin(PolymerElement) {
         display: none;
       }
     </style>
-    <skeleton-chat-info group\$="[[group]]" info="{{info}}"></skeleton-chat-info>
-    <app-header shadow="">
+    <skeleton-chat-info group$="[[group]]" info="{{info}}"></skeleton-chat-info>
+    <app-header shadow>
       <app-toolbar>
         <a href="/chat" tabindex="-1">
           <paper-icon-button icon="chat-icon:close" class="main-action"></paper-icon-button>
         </a>
         <div class="image-container">
-          <iron-image fade="" sizing="cover" src\$="[[info.image]]" hidden\$="[[!info.image]]"></iron-image>
-          <iron-icon icon\$="chat-icon:[[icon]]" hidden\$="[[info.image]]"></iron-icon>
+          <iron-image fade sizing="cover" src$="[[info.image]]" hidden$="[[!info.image]]"></iron-image>
+          <iron-icon icon$="chat-icon:[[icon]]" hidden$="[[info.image]]"></iron-icon>
         </div>
-        <div main-title="" class="title">[[info.title]]</div>
-        <div id="status" online=""></div>
+        <div main-title class="title">[[info.title]]</div>
+        <div id="status" online></div>
 
         <paper-menu-button vertical-align="top" vertical-offset="70" horizontal-align="right">
           <paper-icon-button icon="chat-icon:more-vert" slot="dropdown-trigger"></paper-icon-button>
@@ -150,8 +152,8 @@ class SkeletonChatBox extends Fabric.ChatMixin(PolymerElement) {
         </paper-menu-button>
       </app-toolbar>
     </app-header>
-    <skeleton-chat-messages theme\$="[[theme]]" group\$="[[group]]">
-      <skeleton-chat-input theme\$="[[theme]]" group\$="[[group]]" mic\$="[[mic]]" camera\$="[[camera]]" emoji\$="[[emoji]]" maxlength\$="[[maxlength]]" label\$="[[label]]"></skeleton-chat-input>
+    <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]">
+      <skeleton-chat-input theme$="[[theme]]" group$="[[group]]" mic$="[[mic]]" camera$="[[camera]]" emoji$="[[emoji]]" maxlength$="[[maxlength]]" label$="[[label]]"></skeleton-chat-input>
     </skeleton-chat-messages>
 `;
   }

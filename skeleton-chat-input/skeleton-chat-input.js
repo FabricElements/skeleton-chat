@@ -1,12 +1,12 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-input/paper-textarea.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-styles/shadow.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-input/paper-textarea.js';
 import '../icons.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import 'firebase/firebase-auth.js';
-import 'firebase/firebase-firestore.js';
+
+const firebase = window.firebase;
+
 /**
  * `skeleton-chat-input`
  *
@@ -16,6 +16,9 @@ import 'firebase/firebase-firestore.js';
  * @demo demo/index.html
  */
 class SkeletonChatInput extends PolymerElement {
+  /**
+   * @return {!HTMLTemplateElement}
+   */
   static get template() {
     return html`
     <!--suppress CssInvalidPseudoSelector -->
@@ -176,12 +179,16 @@ class SkeletonChatInput extends PolymerElement {
     </style>
 
     <div id="input">
-      <paper-textarea label\$="[[label]]" value="{{text}}" on-keydown="_checkForEnter" no-label-float="" max-rows="0" maxlength\$="[[maxlength]]">
-      </paper-textarea>
+      <paper-textarea label$="[[label]]"
+                      value="{{text}}"
+                      on-keydown="_checkForEnter"
+                      no-label-float
+                      max-rows="0"
+                      maxlength$="[[maxlength]]"></paper-textarea>
     </div>
-    <paper-icon-button icon="chat-icon:photo-camera" class="icon-camera" hidden\$="[[!camera]]"></paper-icon-button>
-    <paper-icon-button icon="chat-icon:arrow-upward" class="icon-send" on-tap="_sendMessage" hidden\$="[[!text]]" disabled\$="[[!text]]"></paper-icon-button>
-    <paper-icon-button icon="chat-icon:mic" class="icon-mic" on-down="_inputAudioStarts" on-up="_inputAudioEnds" hidden\$="[[!_showMic]]"></paper-icon-button>
+    <paper-icon-button icon="chat-icon:photo-camera" class="icon-camera" hidden$="[[!camera]]"></paper-icon-button>
+    <paper-icon-button icon="chat-icon:arrow-upward" class="icon-send" on-tap="_sendMessage" hidden$="[[!text]]" disabled$="[[!text]]"></paper-icon-button>
+    <paper-icon-button icon="chat-icon:mic" class="icon-mic" on-down="_inputAudioStarts" on-up="_inputAudioEnds" hidden$="[[!_showMic]]"></paper-icon-button>
 `;
   }
 

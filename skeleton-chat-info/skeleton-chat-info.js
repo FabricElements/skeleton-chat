@@ -1,7 +1,7 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import 'firebase/firebase-auth.js';
-import 'firebase/firebase-firestore.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+
+const firebase = window.firebase;
+
 /**
  * `skeleton-chat-info`
  *
@@ -12,6 +12,9 @@ import 'firebase/firebase-firestore.js';
  * @demo demo/index.html
  */
 class SkeletonChatInfo extends PolymerElement {
+  /**
+   * @return {!HTMLTemplateElement}
+   */
   static get template() {
     return html`
     <style>

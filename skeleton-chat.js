@@ -5,15 +5,13 @@ Copyright (c) 2018 FabricElements. All rights reserved.
 @group Skeleton Chat
 @demo demo/index.html
 */
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-
-import './chat-mixin/chat-mixin.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/app-route/app-location.js';
 import '@polymer/app-route/app-route.js';
+import './chat-mixin/chat-mixin.js';
 import './skeleton-chat-groups/skeleton-chat-groups.js';
 import './skeleton-chat-box/skeleton-chat-box.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 /**
  * `skeleton-chat`
  *
@@ -24,6 +22,9 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
  * @demo demo/index.html
  */
 class SkeletonChat extends Fabric.ChatMixin(PolymerElement) {
+  /**
+   * @return {!HTMLTemplateElement}
+   */
   static get template() {
     return html`
     <style>
@@ -49,10 +50,10 @@ class SkeletonChat extends Fabric.ChatMixin(PolymerElement) {
       }
     </style>
     <app-location route="{{route}}"></app-location>
-    <app-route route="{{route}}" pattern\$="/[[routeChat]]" tail="{{chatRouteTail}}"></app-route>
+    <app-route route="{{route}}" pattern$="/[[routeChat]]" tail="{{chatRouteTail}}"></app-route>
     <app-route route="{{chatRouteTail}}" pattern="/:id" active="{{chatBoxActive}}" data="{{subrouteData}}"></app-route>
-    <skeleton-chat-groups link-back\$="[[linkBack]]"></skeleton-chat-groups>
-    <skeleton-chat-box fullbleed="" group\$="[[subrouteData.id]]" opened\$="[[chatBoxActive]]"></skeleton-chat-box>
+    <skeleton-chat-groups link-back$="[[linkBack]]"></skeleton-chat-groups>
+    <skeleton-chat-box fullbleed group$="[[subrouteData.id]]" opened$="[[chatBoxActive]]"></skeleton-chat-box>
 `;
   }
 

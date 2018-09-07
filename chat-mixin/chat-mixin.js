@@ -1,5 +1,7 @@
-import 'firebase/firebase-firestore.js';
 window.Fabric = window.Fabric || {};
+
+const firebase = window.firebase;
+
 /**
  * Fabric.ChatMixin
  *

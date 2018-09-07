@@ -6,25 +6,18 @@
 
   <title>skeleton-chat-groups demo</title>
 
-  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-
-  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
+  <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+  <script src="../../node_modules/web-animations-js/web-animations-next-lite.min.js"></script>
+  <script src="../../node_modules/firebase/firebase.js"></script>
+  <script src="../../node_modules/@fabricelements/firebase-config/index.js"></script>
   <script type="module" src="../../demo/shared.js"></script>
+
+  <script type="module">
+    import '@fabricelements/skeleton-auth/skeleton-auth.js';
+  </script>
   <script type="module" src="../skeleton-chat-groups.js"></script>
 
-  <!-- FIXME(polymer-modulizer):
-        These imperative modules that innerHTML your HTML are
-        a hacky way to be sure that any mixins in included style
-        modules are ready before any elements that reference them are
-        instantiated, otherwise the CSS @apply mixin polyfill won't be
-        able to expand the underlying CSS custom properties.
-        See: https://github.com/Polymer/polymer-modulizer/issues/154
-        -->
-    <script type="module">
-const $_documentContainer = document.createElement('template');
-
-$_documentContainer.innerHTML = `<custom-style>
+  <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
       .container {
         background-color: var(--paper-grey-50);
@@ -34,61 +27,35 @@ $_documentContainer.innerHTML = `<custom-style>
         background-color: var(--paper-grey-800);
       }
     </style>
-  </custom-style>`;
-
-document.body.appendChild($_documentContainer.content);
-</script>
-</head>
-<body>
-<script type="module">
-const $_documentContainer = document.createElement('template');
-
-$_documentContainer.innerHTML = `<dom-bind>
-  <template>
-    <firebase-auth signed-in="{{signedIn}}" user="{{user}}">
-    </firebase-auth>
-    <dom-if if="[[!signedIn]]">
+  </custom-style>
+  <dom-bind>
+    <template>
+      <div hidden="[[signedIn]]">
+        <skeleton-auth google
+                        signed-in="{{signedIn}}"
+                        user="{{user}}"></skeleton-auth>
+      </div>
+    </template>
+  </dom-bind>
+  <div class="vertical-section-container centered">
+    <h3>Basic skeleton-chat-groups demo</h3>
+    <demo-snippet>
       <template>
-        <skeleton-auth google=""></skeleton-auth>
+        <div class="container light">
+          <skeleton-chat-groups></skeleton-chat-groups>
+        </div>
       </template>
-    </dom-if>
-  </template>
-</dom-bind>`;
-
-document.body.appendChild($_documentContainer.content);
-</script>
-
-<script type="module">
-const $_documentContainer = document.createElement('template');
-
-$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
-  <h3>Basic skeleton-chat-groups demo</h3>
-  <demo-snippet>
-    <template>
-      <div class="container light">
-        <skeleton-chat-groups></skeleton-chat-groups>
-      </div>
-    </template>
-  </demo-snippet>
-</div>`;
-
-document.body.appendChild($_documentContainer.content);
-</script>
-<script type="module">
-const $_documentContainer = document.createElement('template');
-
-$_documentContainer.innerHTML = `<div class="vertical-section-container centered">
-  <h3>Basic skeleton-chat-groups demo</h3>
-  <demo-snippet>
-    <template>
-      <div class="container dark">
-        <skeleton-chat-groups theme="dark"></skeleton-chat-groups>
-      </div>
-    </template>
-  </demo-snippet>
-</div>`;
-
-document.body.appendChild($_documentContainer.content);
-</script>
+    </demo-snippet>
+  </div>
+  <div class="vertical-section-container centered">
+    <h3>Basic skeleton-chat-groups demo</h3>
+    <demo-snippet>
+      <template>
+        <div class="container dark">
+          <skeleton-chat-groups theme="dark"></skeleton-chat-groups>
+        </div>
+      </template>
+    </demo-snippet>
+  </div>
 </body>
 </html>

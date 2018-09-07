@@ -1,11 +1,15 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+/* eslint-disable max-len */
+/* eslint-disable-next-line max-len */
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {IronResizableBehavior} from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
+import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import '@polymer/iron-list/iron-list.js';
-import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
 import '../skeleton-chat-message/skeleton-chat-message.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
-import 'firebase/firebase-firestore.js';
+import '../icons.js';
+
+const firebase = window.firebase;
+
 /**
  * `skeleton-chat-messages`
  *
@@ -18,11 +22,11 @@ import 'firebase/firebase-firestore.js';
 class SkeletonChatMessages extends mixinBehaviors([
   IronResizableBehavior,
 ], PolymerElement) {
+  /**
+   * @return {!HTMLTemplateElement}
+   */
   static get template() {
     return html`
-    <!--suppress CssInvalidPseudoSelector -->
-    <!--suppress CssUnresolvedCustomProperty -->
-    <!--suppress CssUnresolvedCustomPropertySet -->
     <style is="custom-style">
       :host {
         display: block;
@@ -72,7 +76,7 @@ class SkeletonChatMessages extends mixinBehaviors([
       <template is="dom-if" if="{{!empty}}" restamp="true">
         <iron-list items="[[list]]" as="message" max-physical-count="50" scroll-offset="100" scroll-target="threshold" on-iron-resize="_scrollToLast">
           <template>
-            <skeleton-chat-message theme\$="[[theme]]" message="[[message]]" user="[[user]]" signed-in\$="[[signedIn]]"></skeleton-chat-message>
+            <skeleton-chat-message theme$="[[theme]]" message="[[message]]" user="[[user]]" signed-in$="[[signedIn]]"></skeleton-chat-message>
           </template>
         </iron-list>
       </template>
@@ -174,10 +178,10 @@ class SkeletonChatMessages extends mixinBehaviors([
   _getData(user, group) {
     this.set('list', []);
     if (!user || !group) return;
-    const chatRef = `chat/${group}/messages`;
     const db = firebase.firestore();
-    db.collection(chatRef)
+    db.collection('chat-message')
       .orderBy('created', 'desc')
+      .where('group', '==', group)
       .limit(200)
       .onSnapshot((querySnapshot) => {
         let base = [];

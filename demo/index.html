@@ -6,51 +6,42 @@
         content="width=device-width, minimum-scale=1, maximum-scale=1, initial-scale=1, user-scalable=no">
 
   <title>skeleton-chat demo</title>
-
-  <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-
-  <script type="module" src="../../@polymer/polymer/lib/elements/dom-bind.js"></script>
-  <script type="module" src="../../@polymer/polymer/lib/elements/dom-if.js"></script>
-  <script type="module" src="./shared.js"></script>
   <!--<link rel="stylesheet" href="../../jquery/dist/jquery.min.js" />-->
   <!--<link rel="stylesheet" href="../../@fancyapps/fancybox/dist/jquery.fancybox.min.js" />-->
   <!--<link rel="stylesheet" href="../../@fancyapps/fancybox/dist/jquery.fancybox.min.css" />-->
+
+  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+  <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js"></script>
+  <script src="../node_modules/firebase/firebase.js"></script>
+  <script src="../node_modules/@fabricelements/firebase-config/index.js"></script>
+  
+  <script type="module">
+    import '@fabricelements/skeleton-auth/skeleton-auth.js';
+    </script>
+  <script type="module" src="../demo/shared.js"></script>
   <script type="module" src="../skeleton-chat.js"></script>
 
-
-  <style>
-    html,
-    body {
-      height: 100vh;
-      padding: 0;
-      margin: 0;
-    }
-  </style>
+  <custom-style>
+    <style>
+      html,
+      body {
+        height: 100vh;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </custom-style>
 </head>
 <body>
-<dom-bind>
-  <template>
-    <firebase-auth signed-in="{{signedIn}}"></firebase-auth>
-    <dom-if if="[[!signedIn]]">
-      <template>
-        <skeleton-auth google></skeleton-auth>
-      </template>
-    </dom-if>
-    <dom-if if="[[signedIn]]">
-      <template>
-        <skeleton-chat></skeleton-chat>
-      </template>
-    </dom-if>
-  </template>
-</dom-bind>
-<script type="module">
-  import '@polymer/polymer/lib/elements/dom-bind.js';
-  import '@polymer/polymer/lib/elements/dom-if.js';
-  import './shared.js';
-  import '../skeleton-chat.js';
-
-  window.history.pushState({}, 'Chat', '/chat');
-  window.dispatchEvent(new CustomEvent('location-changed'));
-</script>
+  <dom-bind>
+    <template>
+      <div hidden="[[signedIn]]">
+        <skeleton-auth google
+                       signed-in="{{signedIn}}"
+                       user="{{user}}"></skeleton-auth>
+      </div>
+    </template>
+  </dom-bind>
+  <skeleton-chat></skeleton-chat>
 </body>
 </html>

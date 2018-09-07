@@ -1,13 +1,15 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+/* eslint-disable max-len */
+/* eslint-disable-next-line max-len */
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-item/paper-icon-item.js';
 import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/iron-image/iron-image.js';
+import '@polymer/paper-styles/color.js';
 import '@polymer/paper-styles/typography.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
-import '@polymer/paper-styles/color.js';
 import '../skeleton-chat-info/skeleton-chat-info.js';
 import '../icons.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 /**
  * `skeleton-chat-groups-item`
  *
@@ -18,6 +20,9 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
  * @demo demo/index.html
  */
 class SkeletonChatGroupsItem extends PolymerElement {
+  /**
+   * @return {!HTMLTemplateElement}
+   */
   static get template() {
     return html`
     <!--suppress CssInvalidPseudoSelector -->
@@ -101,13 +106,13 @@ class SkeletonChatGroupsItem extends PolymerElement {
       }
     </style>
 
-    <skeleton-chat-info group\$="[[group]]" info="{{info}}" hidden=""></skeleton-chat-info>
+    <skeleton-chat-info group$="[[group]]" info="{{info}}" hidden></skeleton-chat-info>
 
-    <a href\$="[[path]]/[[group]]" tabindex="-1">
+    <a href$="[[path]]/[[group]]" tabindex="-1">
       <paper-icon-item>
         <div class="image-container" slot="item-icon">
-          <iron-image fade="" sizing="cover" src\$="[[info.avatar]]" hidden\$="[[!info.avatar]]"></iron-image>
-          <iron-icon icon\$="chat-icon:[[icon]]" hidden\$="[[info.avatar]]"></iron-icon>
+          <iron-image fade sizing="cover" src$="[[info.avatar]]" hidden$="[[!info.avatar]]"></iron-image>
+          <iron-icon icon$="chat-icon:[[icon]]" hidden$="[[info.avatar]]"></iron-icon>
         </div>
         <paper-item-body>
           <div class="title">[[info.title]]</div>

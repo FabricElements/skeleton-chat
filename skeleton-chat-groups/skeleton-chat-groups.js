@@ -1,16 +1,15 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/neon-animation/web-animations.js';
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import '@polymer/iron-list/iron-list.js';
-import 'polymerfire/firebase-auth-script.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '../skeleton-chat-groups-item/skeleton-chat-groups-item.js';
 import '../icons.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
+const firebase = window.firebase;
+
 /**
  * `skeleton-chat-groups`
  *
@@ -21,6 +20,9 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
  * @demo demo/index.html
  */
 class SkeletonChatGroups extends PolymerElement {
+  /**
+   * @return {!HTMLTemplateElement}
+   */
   static get template() {
     return html`
     <!--suppress CssInvalidPseudoSelector -->
@@ -61,12 +63,12 @@ class SkeletonChatGroups extends PolymerElement {
         };
       }
     </style>
-    <app-header shadow="">
+    <app-header shadow>
       <app-toolbar>
-        <a href\$="[[linkBack]]" tabindex="-1">
+        <a href$="[[linkBack]]" tabindex="-1">
           <paper-icon-button icon="chat-icon:arrow-back" class="main-action"></paper-icon-button>
         </a>
-        <div main-title="">Chat</div>
+        <div main-title>Chat</div>
       </app-toolbar>
     </app-header>
     <div class="container">
@@ -74,7 +76,7 @@ class SkeletonChatGroups extends PolymerElement {
         <template is="dom-if" if="{{!empty}}" restamp="true">
           <iron-list items="[[list]]" max-physical-count="50" scroll-offset="100" scroll-target="threshold">
             <template>
-              <skeleton-chat-groups-item theme\$="[[theme]]" group\$="[[item]]"></skeleton-chat-groups-item>
+              <skeleton-chat-groups-item theme$="[[theme]]" group$="[[item]]"></skeleton-chat-groups-item>
             </template>
           </iron-list>
         </template>
