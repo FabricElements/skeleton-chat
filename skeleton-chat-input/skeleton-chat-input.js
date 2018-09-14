@@ -336,8 +336,11 @@ class SkeletonChatInput extends PolymerElement {
      * Format message
      */
     const message = {
+      backup: false,
       created: timestamp,
       isAnonymous: user.isAnonymous,
+      group: group,
+      processed: false,
       text: baseText,
       type: 'default',
       uid: user.uid,
@@ -348,7 +351,7 @@ class SkeletonChatInput extends PolymerElement {
       },
     };
     this.text = null;
-    const chatRef = `chat/${group}/messages`;
+    const chatRef = `chat-message`;
     const db = firebase.firestore();
     db.collection(chatRef).add(message)
       .then(() => {

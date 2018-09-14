@@ -678,6 +678,12 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
     return this._secondsToHms(seconds);
   }
 
+  /**
+   * Seconds to Hms
+   * @param {number} d
+   * @return {string}
+   * @private
+   */
   _secondsToHms(d) {
     d = Number(d);
 
