@@ -159,6 +159,7 @@ class SkeletonChatMessages extends mixinBehaviors([
     super.connectedCallback();
     firebase.auth().onAuthStateChanged((user) => {
       this.user = user;
+      this.signedIn = !(!user);
     });
     this.addEventListener('list-changed', (e) => this._notifyResize(), true);
     this.addEventListener('iron-resize', (e) => this._scrollToLast(), true);
