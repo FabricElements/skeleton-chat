@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable-next-line max-len */
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-styles/shadow.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
@@ -186,7 +188,13 @@ class SkeletonChatInput extends PolymerElement {
                       max-rows="0"
                       maxlength$="[[maxlength]]"></paper-textarea>
     </div>
-    <paper-icon-button icon="chat-icon:photo-camera" class="icon-camera" hidden$="[[!camera]]"></paper-icon-button>
+    <input id="media-upload"
+           type="file"
+           accept="[[accept]]"
+           on-change="_upload"
+           hidden>
+    <paper-icon-button icon="chat-icon:photo-camera" data-item="camera" class="icon-camera" on-tap="_tapButton"></paper-icon-button>
+    <paper-icon-button icon="chat-icon:attach-file" data-item="file" class="icon-file" on-tap="_tapButton"></paper-icon-button>
     <paper-icon-button icon="chat-icon:arrow-upward" class="icon-send" on-tap="_sendMessage" hidden$="[[!text]]" disabled$="[[!text]]"></paper-icon-button>
     <paper-icon-button icon="chat-icon:mic" class="icon-mic" on-down="_inputAudioStarts" on-up="_inputAudioEnds" hidden$="[[!_showMic]]"></paper-icon-button>
 `;
@@ -274,6 +282,42 @@ class SkeletonChatInput extends PolymerElement {
         value: false,
         computed: '_computeShowMic(mic, text)',
       },
+      path: {
+        type: String,
+        value: null,
+      },
+      extension: {
+        type: String,
+        value: null,
+      },
+      fileType: {
+        type: String,
+        value: null,
+      },
+      accept: {
+        type: String,
+        value: null,
+      },
+      metadata: {
+        type: Object,
+        value: {},
+      },
+      downloadUrl: {
+        type: String,
+        value: null,
+      },
+      uploadProgress: {
+        type: Number,
+        value: 0,
+      },
+      maxSize: {
+        type: Number,
+        value: 0,
+      },
+      minSize: {
+        type: Number,
+        value: 0,
+      },
     };
   }
 
@@ -324,9 +368,6 @@ class SkeletonChatInput extends PolymerElement {
     if (!this.user) {
       return this._dispatchEvent('error', 'You need to sign in first.');
     }
-    if (!this.text) {
-      return this._dispatchEvent('error', 'Empty message.');
-    }
 
     const timestamp = firebase.firestore.FieldValue.serverTimestamp();
     const baseText = this.text;
@@ -335,6 +376,7 @@ class SkeletonChatInput extends PolymerElement {
     /**
      * Format message
      */
+
     const message = {
       backup: false,
       created: timestamp,
@@ -349,6 +391,10 @@ class SkeletonChatInput extends PolymerElement {
         name: user.displayName ? user.displayName : null,
         avatar: user.photoURL ? user.photoURL : null,
       },
+      media: {
+        type: this.fileType || null,
+        url: this.downloadURL || null,
+      },
     };
     this.text = null;
     const chatRef = `chat-message`;
@@ -362,6 +408,84 @@ class SkeletonChatInput extends PolymerElement {
         console.error(err);
         this._dispatchEvent('error', err);
       });
+  }
+
+  /**
+   * Tap button
+   * @param {object} event
+   * @private
+   */
+  _tapButton(event) {
+    const item = event.target.dataset.item;
+    if (item === 'camera') {
+      this.accept = 'image/*';
+    } else {
+      this.accept = 'audio/*,video/*,application/pdf';
+    }
+    const input = this.shadowRoot.querySelector('input');
+    input.value = null;
+    input.click();
+  }
+
+  /**
+   * Upload
+   *
+   * @param {object} event
+   * @param {object} fileObject
+   * @private
+   */
+  _upload(event, fileObject) {
+    const file = fileObject ?
+    fileObject :
+    this.shadowRoot.querySelector('#media-upload').files[0];
+
+    const fileSize = this.shadowRoot.querySelector('#media-upload').files[0].size;
+    if (this.maxSize != 0 && fileSize > this.maxSize) {
+      this._dispatchEvent('error', 'File size is bigger than specified');
+      return;
+    }
+    if (this.minSize != 0 && fileSize < this.minSize) {
+      this._dispatchEvent('error', 'File size is smaller than specified');
+      return;
+    }
+    this.downloadURL = null;
+    let fileExt = /\.[\w]+/.exec(file.name);
+
+    const storageRef = firebase.storage().ref(this.path + fileExt);
+    let metadataObject = null;
+    if (this.metadata && typeof this.metadata === 'object') {
+      metadataObject = {
+        customMetadata: this.metadata,
+      };
+    } else if (this.metadata && typeof this.metadata !== 'object') {
+      this._dispatchEvent('error', 'Metadata should be an object');
+      return;
+    }
+    this.task = storageRef.put(file, metadataObject);
+    this.task.on('state_changed', (snapshot) => {
+      // Observe state change events such as progress, pause, and resume
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      this.uploadProgress = progress;
+      switch (snapshot.state) {
+        case firebase.storage.TaskState.PAUSED: // or 'paused'
+          this._dispatchEvent('paused', 'Upload is paused');
+          break;
+        case firebase.storage.TaskState.RUNNING: // or 'running'
+          this._dispatchEvent('running', 'Upload is running');
+          break;
+      }
+    }, (error) => {
+      // Handle unsuccessful uploads
+      this._dispatchEvent('error', error);
+    }, () => {
+      this.task.snapshot.ref.getDownloadURL().then((downloadURL) => {
+        // Handle successful uploads on complete
+        this.downloadURL = downloadURL;
+        this.fileType = file.type;
+        this.extension = fileExt[0];
+        this._sendMessage();
+      });
+    });
   }
 
   /**
