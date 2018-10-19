@@ -3,6 +3,7 @@ import '@polymer/paper-styles/shadow.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/app-media/app-media.js';
 import '../icons.js';
 
 const firebase = window.firebase;
@@ -189,6 +190,42 @@ class SkeletonChatInput extends PolymerElement {
     <paper-icon-button icon="chat-icon:photo-camera" class="icon-camera" hidden$="[[!camera]]"></paper-icon-button>
     <paper-icon-button icon="chat-icon:arrow-upward" class="icon-send" on-tap="_sendMessage" hidden$="[[!text]]" disabled$="[[!text]]"></paper-icon-button>
     <paper-icon-button icon="chat-icon:mic" class="icon-mic" on-down="_inputAudioStarts" on-up="_inputAudioEnds" hidden$="[[!_showMic]]"></paper-icon-button>
+    <app-media-devices
+            kind="audioinput"
+            selected-device="{{audioDevice}}">
+        </app-media-devices>
+        <!-- The computer is connected to devices... -->
+    <app-media-recorder
+            id="recorder"
+            stream="[[stream]]"
+            duration="[[duration]]"
+            elapsed="{{elapsed}}"
+            data="{{recording}}">
+        </app-media-recorder>
+        <!-- ...media stream is connected to the video output... -->
+        <app-media-video
+            id="video"
+            source="[[stream]]"
+            on-click="record"
+            autoplay
+            muted
+            mirror>
+        </app-media-video>
+
+        <!-- ...and the recorder... -->
+        <app-media-recorder
+            id="recorder"
+            stream="[[stream]]"
+            duration="[[duration]]"
+            elapsed="{{elapsed}}"
+            data="{{recording}}">
+        </app-media-recorder>
+
+        <!-- ...and the audio analyser... -->
+        <app-media-audio
+            source="[[stream]]"
+            analyser="{{analyser}}">
+        </app-media-audio>
 `;
   }
 
@@ -274,6 +311,15 @@ class SkeletonChatInput extends PolymerElement {
         value: false,
         computed: '_computeShowMic(mic, text)',
       },
+      recording: {type: Blob, observer: '_recordingChanged'},
+      recordings: {
+        type: Array,
+        value: () => {
+          return [];
+        },
+      },
+      duration: {type: Number, value: 3000},
+      elapsed: {type: Number, observer: '_elapsedChanged'},
     };
   }
 
@@ -386,9 +432,11 @@ class SkeletonChatInput extends PolymerElement {
    * @private
    */
   _inputAudioStarts(e) {
-    this._dispatchEvent('capture-audio-starts', {
+    console.log('Recording STARTS ...');
+    this.record();
+    /* this._dispatchEvent('capture-audio-starts', {
       chatId: this.group,
-    });
+    });*/
   }
 
   /**
@@ -398,9 +446,41 @@ class SkeletonChatInput extends PolymerElement {
    * @private
    */
   _inputAudioEnds(e) {
-    this._dispatchEvent('capture-audio-ends', {
+    console.log('Recording ENDS');
+    this.shadowRoot.querySelector('#recorder').end();
+    /* this._dispatchEvent('capture-audio-ends', {
       chatId: this.group,
-    });
+    });*/
+  }
+
+  record() {
+    this.classList.add('recording');
+    this.shadowRoot.querySelector('#recorder').start();
+  }
+
+  /**
+   * Recording Changed
+   *
+   * @param {Object} recording
+   * @private
+   */
+  _recordingChanged(recording) {
+    if (recording != null) {
+      this.push('recordings', recording);
+    }
+
+    this.classList.remove('recording');
+  }
+
+  /**
+   * Function to save
+   *
+   * @param {Object} blob
+   * @return {string}
+   * @private
+   */
+  _toObjectURL(blob) {
+    return URL.createObjectURL(blob);
   }
 
   /**
