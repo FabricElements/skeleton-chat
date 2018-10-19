@@ -1,16 +1,17 @@
 /* eslint-disable max-len */
 /* eslint-disable-next-line max-len */
-import {
-  html,
-  PolymerElement,
-} from '@polymer/polymer/polymer-element.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-styles/shadow.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/app-media/app-media.js';
+import '@polymer/app-media/app-media-devices.js';
+import '@polymer/app-media/app-media-stream.js';
+import '@polymer/app-media/app-media-recorder.js';
 import '../icons.js';
+
 const firebase = window.firebase;
+
 /**
  * `skeleton-chat-input`
  *
@@ -24,7 +25,7 @@ class SkeletonChatInput extends PolymerElement {
    * @return {!HTMLTemplateElement}
    */
   static get template() {
-    return html `
+    return html`
     <!--suppress CssInvalidPseudoSelector -->
     <!--suppress CssUnresolvedCustomProperty -->
     <!--suppress CssUnresolvedCustomPropertySet -->
@@ -199,50 +200,16 @@ class SkeletonChatInput extends PolymerElement {
     <paper-icon-button icon="chat-icon:attach-file" data-item="file" class="icon-file" on-tap="_tapButton"></paper-icon-button>
     <paper-icon-button icon="chat-icon:arrow-upward" class="icon-send" on-tap="_sendMessage" hidden$="[[!text]]" disabled$="[[!text]]"></paper-icon-button>
     <paper-icon-button icon="chat-icon:mic" class="icon-mic" on-down="_inputAudioStarts" on-up="_inputAudioEnds" hidden$="[[!_showMic]]"></paper-icon-button>
-    <app-media-devices
-            kind="audioinput"
-            selected-device="{{audioDevice}}">
-        </app-media-devices>
-        <!-- The computer is connected to devices... -->
-    <app-media-recorder
-            id="recorder"
-            stream="[[stream]]"
-            duration="[[duration]]"
-            elapsed="{{elapsed}}"
-            data="{{recording}}">
-        </app-media-recorder>
-        <!-- ...media stream is connected to the video output... -->
-        <app-media-video
-            id="video"
-            source="[[stream]]"
-            on-click="record"
-            autoplay
-            muted
-            mirror>
-        </app-media-video>
-
-        <!-- ...and the recorder... -->
-        <app-media-recorder
-            id="recorder"
-            stream="[[stream]]"
-            duration="[[duration]]"
-            elapsed="{{elapsed}}"
-            data="{{recording}}">
-        </app-media-recorder>
-
-        <!-- ...and the audio analyser... -->
-        <app-media-audio
-            source="[[stream]]"
-            analyser="{{analyser}}">
-        </app-media-audio>
 `;
   }
+
   /**
    * @return {string}
    */
   static get is() {
     return 'skeleton-chat-input';
   }
+
   /**
    * @return {object}
    */
@@ -372,8 +339,13 @@ class SkeletonChatInput extends PolymerElement {
         type: Number,
         value: 0,
       },
+      mediaRecorder: {
+        type: Object,
+        value: {},
+      },
     };
   }
+
   /**
    * Connected callback
    */
@@ -384,6 +356,7 @@ class SkeletonChatInput extends PolymerElement {
       this.signedIn = !(!user);
     });
   }
+
   /**
    * @return {array}
    */
@@ -392,6 +365,7 @@ class SkeletonChatInput extends PolymerElement {
       '_resetOnChange(user, group)',
     ];
   }
+
   /**
    * Function to send message on Enter key press.
    *
@@ -405,6 +379,7 @@ class SkeletonChatInput extends PolymerElement {
       this._sendMessage();
     }
   }
+
   /**
    * Send message
    *
@@ -457,6 +432,7 @@ class SkeletonChatInput extends PolymerElement {
         this._dispatchEvent('error', err);
       });
   }
+
   /**
    * Tap button
    * @param {object} event
@@ -473,6 +449,7 @@ class SkeletonChatInput extends PolymerElement {
     input.value = null;
     input.click();
   }
+
   /**
    * Upload
    *
@@ -531,6 +508,7 @@ class SkeletonChatInput extends PolymerElement {
       });
     });
   }
+
   /**
    * Dispatch event
    *
@@ -545,6 +523,7 @@ class SkeletonChatInput extends PolymerElement {
       composed: true,
     }));
   }
+
   /**
    * Input audio starts
    *
@@ -553,11 +532,28 @@ class SkeletonChatInput extends PolymerElement {
    */
   _inputAudioStarts(e) {
     console.log('Recording STARTS ...');
-    this.record();
+    navigator.mediaDevices.getUserMedia({
+      audio: true,
+    })
+      .then((stream) => {
+        this.mediaRecorder = new MediaRecorder(stream);
+        this.mediaRecorder.start();
+        const audioChunks = [];
+        this.mediaRecorder.addEventListener('dataavailable', (event) => {
+          audioChunks.push(event.data);
+        });
+        this.mediaRecorder.addEventListener('stop', () => {
+          const audioBlob = new Blob(audioChunks);
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          audio.play();
+        });
+      });
     /* this._dispatchEvent('capture-audio-starts', {
       chatId: this.group,
     });*/
   }
+
   /**
    * Input audio ends
    *
@@ -566,18 +562,19 @@ class SkeletonChatInput extends PolymerElement {
    */
   _inputAudioEnds(e) {
     console.log('Recording ENDS');
-    this.shadowRoot.querySelector('#recorder').end();
+    this.mediaRecorder.stop();
     /* this._dispatchEvent('capture-audio-ends', {
       chatId: this.group,
     });*/
   }
+
   /**
    * Starts recording
    */
   record() {
-    this.classList.add('recording');
-    this.shadowRoot.querySelector('#recorder').start();
+    this.$.recorder.start();
   }
+
   /**
    * Recording Changed
    *
@@ -590,6 +587,7 @@ class SkeletonChatInput extends PolymerElement {
     }
     this.classList.remove('recording');
   }
+
   /**
    * Function to save
    *
@@ -600,6 +598,7 @@ class SkeletonChatInput extends PolymerElement {
   _toObjectURL(blob) {
     return URL.createObjectURL(blob);
   }
+
   /**
    * Show/hide mic
    *
@@ -611,6 +610,7 @@ class SkeletonChatInput extends PolymerElement {
   _computeShowMic(mic, text) {
     return mic && !text;
   }
+
   /**
    * Reset on change
    *
@@ -621,5 +621,50 @@ class SkeletonChatInput extends PolymerElement {
   _resetOnChange(user, group) {
     this.text = null;
   }
+
+  /**
+   * Record Audio
+   * @return {Promise}
+   */
+  recordAudio() {
+    return new Promise((resolve) => {
+      navigator.mediaDevices.getUserMedia({
+        audio: true,
+      })
+        .then((stream) => {
+          const mediaRecorder = new MediaRecorder(stream);
+          const audioChunks = [];
+          mediaRecorder.addEventListener('dataavailable', (event) => {
+            audioChunks.push(event.data);
+          });
+          const start = () => {
+            mediaRecorder.start();
+          };
+          const stop = () => {
+            return new Promise((resolve) => {
+              mediaRecorder.addEventListener('stop', () => {
+                const audioBlob = new Blob(audioChunks);
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                const play = () => {
+                  audio.play();
+                };
+                resolve({
+                  audioBlob,
+                  audioUrl,
+                  play,
+                });
+              });
+              mediaRecorder.stop();
+            });
+          };
+          resolve({
+            start,
+            stop,
+          });
+        });
+    });
+  }
 }
+
 window.customElements.define(SkeletonChatInput.is, SkeletonChatInput);
