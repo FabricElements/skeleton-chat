@@ -178,25 +178,60 @@ class SkeletonChatInput extends PolymerElement {
       .icon-send {
         @apply --skeleton-chat-input-icon-send;
       }
-    </style>
 
+      .progress-circle {
+        padding: 5px 5px 0 0;
+      }
+
+      .progress {
+        transform: rotate(-90deg);
+        width: 3rem;
+        height: 3rem;
+        outline: 1px cyan;
+      }
+
+      #progress-value {
+        stroke-dasharray: 314.16;
+        stroke-linecap: none;
+        stroke: var(--skeleton-chat-input-action-bg, var(--accent-color));
+        transition: all 100ms linear;
+      }
+    </style>
     <div id="input">
       <paper-textarea label$="[[label]]"
                       value="{{text}}"
                       on-keydown="_checkForEnter"
                       no-label-float
                       max-rows="0"
-                      maxlength$="[[maxlength]]"></paper-textarea>
+                      maxlength$="[[maxlength]]"
+                      disabled$="[[uploading]]"></paper-textarea>
     </div>
     <input id="media-upload"
-           type="file"
-           accept="[[accept]]"
-           on-change="_upload"
-           hidden>
-    <paper-icon-button icon="chat-icon:photo-camera" data-item="camera" class="icon-camera" on-tap="_tapButton"></paper-icon-button>
-    <paper-icon-button icon="chat-icon:attach-file" data-item="file" class="icon-file" on-tap="_tapButton"></paper-icon-button>
-    <paper-icon-button icon="chat-icon:arrow-upward" class="icon-send" on-tap="_sendMessage" hidden$="[[!text]]" disabled$="[[!text]]"></paper-icon-button>
-    <paper-icon-button icon="chat-icon:mic" class="icon-mic" on-down="_inputAudioStarts" on-up="_inputAudioEnds" hidden$="[[!_showMic]]"></paper-icon-button>
+          type="file"
+          accept="[[accept]]"
+          on-change="_upload"
+          hidden>
+
+    <template is="dom-if" if="[[uploading]]">
+      <div class="progress-circle">
+        <svg class="progress" viewBox="0 0 100 100">
+          <circle id="progress-value"
+                  cx="50"
+                  cy="50"
+                  fill="none"
+                  r="35"
+                  stroke-width="10"
+                  stroke-dashoffset$="[[progressValue]]"></circle>
+        </svg>
+      </div>
+    </template>
+
+    <template is="dom-if" if="[[!uploading]]">
+      <paper-icon-button icon="chat-icon:photo-camera" data-item="camera" class="icon-camera" on-tap="_tapButton"></paper-icon-button>
+      <paper-icon-button icon="chat-icon:attach-file" data-item="file" class="icon-file" on-tap="_tapButton"></paper-icon-button>
+      <paper-icon-button icon="chat-icon:arrow-upward" class="icon-send" on-tap="_sendMessage" hidden$="[[!text]]" disabled$="[[!text]]"></paper-icon-button>
+      <paper-icon-button icon="chat-icon:mic" class="icon-mic" on-down="_inputAudioStarts" on-up="_inputAudioEnds" hidden$="[[!_showMic]]"></paper-icon-button>
+    </template>
 `;
   }
 
@@ -310,6 +345,12 @@ class SkeletonChatInput extends PolymerElement {
         type: Number,
         value: 0,
       },
+      uploading: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        computed: '_computeProgress(uploadProgress)',
+      },
       maxSize: {
         type: Number,
         value: 0,
@@ -317,6 +358,11 @@ class SkeletonChatInput extends PolymerElement {
       minSize: {
         type: Number,
         value: 0,
+      },
+      progressValue: {
+        type: Number,
+        value: null,
+        computed: '_dashOffset(uploadProgress)',
       },
     };
   }
@@ -425,6 +471,29 @@ class SkeletonChatInput extends PolymerElement {
     const input = this.shadowRoot.querySelector('input');
     input.value = null;
     input.click();
+  }
+
+  /**
+   * Compute progress
+   * @param {number} progress
+   * @return {*}
+   * @private
+   */
+  _computeProgress(progress) {
+    if (progress > 0 && progress < 100) {
+      return true;
+    }
+  }
+
+  /**
+   * dash offset
+   *
+   * @param {number} uploadProgress
+   * @private
+   * @return {*}
+   */
+  _dashOffset(uploadProgress) {
+    return Math.PI * (100 - uploadProgress);
   }
 
   /**
