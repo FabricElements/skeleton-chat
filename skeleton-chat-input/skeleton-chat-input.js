@@ -179,15 +179,24 @@ class SkeletonChatInput extends PolymerElement {
         @apply --skeleton-chat-input-icon-send;
       }
 
-      .progress-circle {
-        padding: 5px 5px 0 0;
+      #progress-circle {
+        border-radius: 50%;
+        box-sizing: border-box;
+        margin: 3px 3px 0 0;
+        height: 3rem;
+        overflow: hidden;
+        position: relative;
+        width: 3rem;
+      }
+
+      #progress-circle * {
+        box-sizing: border-box;
       }
 
       .progress {
         transform: rotate(-90deg);
-        width: 3rem;
-        height: 3rem;
-        outline: 1px cyan;
+        width: 100%;
+        height: 100%;
       }
 
       #progress-value {
@@ -195,6 +204,15 @@ class SkeletonChatInput extends PolymerElement {
         stroke-linecap: none;
         stroke: var(--skeleton-chat-input-action-bg, var(--accent-color));
         transition: all 100ms linear;
+      }
+
+      .thumbnail {
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        object-fit: cover;
+        width: 100%;
       }
     </style>
     <div id="input">
@@ -213,14 +231,15 @@ class SkeletonChatInput extends PolymerElement {
           hidden>
 
     <template is="dom-if" if="[[uploading]]">
-      <div class="progress-circle">
+      <div id="progress-circle">
+        <img class="thumbnail" src="[[thumbnail]]" />
         <svg class="progress" viewBox="0 0 100 100">
           <circle id="progress-value"
                   cx="50"
                   cy="50"
                   fill="none"
-                  r="35"
-                  stroke-width="10"
+                  r="47"
+                  stroke-width="6"
                   stroke-dashoffset$="[[progressValue]]"></circle>
         </svg>
       </div>
@@ -364,6 +383,10 @@ class SkeletonChatInput extends PolymerElement {
         value: null,
         computed: '_dashOffset(uploadProgress)',
       },
+      thumbnail: {
+        type: String,
+        value: null,
+      },
     };
   }
 
@@ -497,6 +520,23 @@ class SkeletonChatInput extends PolymerElement {
   }
 
   /**
+   * dash offset
+   *
+   * @param {FileReader} file
+   * @private
+   * @return {Promise<string>}
+   */
+  getThumbnail(file) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.src = window.URL.createObjectURL(file);
+      image.onload = (e) => {
+        resolve(image.src);
+      };
+    });
+  }
+
+  /**
    * Upload
    *
    * @param {object} event
@@ -507,6 +547,10 @@ class SkeletonChatInput extends PolymerElement {
     const file = fileObject ?
     fileObject :
     this.shadowRoot.querySelector('#media-upload').files[0];
+
+    this.getThumbnail(file).then((file) => {
+      this.thumbnail = file;
+    });
 
     const fileSize = this.shadowRoot.querySelector('#media-upload').files[0].size;
     if (this.maxSize != 0 && fileSize > this.maxSize) {
