@@ -5,6 +5,7 @@ import '@polymer/paper-styles/shadow.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/iron-icon/iron-icon.js';
 import '../icons.js';
 
 const firebase = window.firebase;
@@ -206,13 +207,21 @@ class SkeletonChatInput extends PolymerElement {
         transition: all 100ms linear;
       }
 
-      .thumbnail {
+      .thumbnail,
+      .icon-hue {
         height: 100%;
         left: 0;
         position: absolute;
         top: 0;
         object-fit: cover;
         width: 100%;
+      }
+
+      .icon-hue {
+        color: var(--paper-grey-800);
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     </style>
     <div id="input">
@@ -232,7 +241,14 @@ class SkeletonChatInput extends PolymerElement {
 
     <template is="dom-if" if="[[uploading]]">
       <div id="progress-circle">
-        <img class="thumbnail" src="[[thumbnail]]" />
+        <template is="dom-if" if="[[imageType]]">
+          <img class="thumbnail" src="[[thumbnail]]" />
+        </template>
+        <template is="dom-if" if="[[!imageType]]">
+        <div class="icon-hue">
+          <iron-icon icon$="chat-icon:[[icon]]" hidden$="[[info.image]]"></iron-icon>
+        </div>
+        </template>
         <svg class="progress" viewBox="0 0 100 100">
           <circle id="progress-value"
                   cx="50"
@@ -386,6 +402,16 @@ class SkeletonChatInput extends PolymerElement {
       thumbnail: {
         type: String,
         value: null,
+      },
+      icon: {
+        type: String,
+        value: null,
+        notify: true,
+      },
+      imageType: {
+        type: Boolean,
+        notify: true,
+        value: false,
       },
     };
   }
@@ -552,6 +578,16 @@ class SkeletonChatInput extends PolymerElement {
       this.thumbnail = file;
     });
 
+    if (file.type.match(/image\/(gif|bmp|jpeg|png)$/i)) {
+      this.imageType = true;
+    } else if (file.type.match(/audio\/(ogg|mp3|wav)$/i)) {
+      this.icon = 'library-music';
+      this.imageType = false;
+    } else {
+      this.icon = 'attach-file';
+      this.imageType = false;
+    }
+
     const fileSize = this.shadowRoot.querySelector('#media-upload').files[0].size;
     if (this.maxSize != 0 && fileSize > this.maxSize) {
       this._dispatchEvent('error', 'File size is bigger than specified');
@@ -597,6 +633,9 @@ class SkeletonChatInput extends PolymerElement {
         this.fileType = file.type;
         this.extension = fileExt[0];
         this._sendMessage();
+        this.downloadURL = null;
+        this.fileType = null;
+        this.extension = null;
       });
     });
   }
