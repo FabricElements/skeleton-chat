@@ -53,7 +53,7 @@ class SkeletonChat extends Fabric.ChatMixin(PolymerElement) {
     <app-route route="{{route}}" pattern$="/[[routeChat]]" tail="{{chatRouteTail}}"></app-route>
     <app-route route="{{chatRouteTail}}" pattern="/:id" active="{{chatBoxActive}}" data="{{subrouteData}}"></app-route>
     <skeleton-chat-groups link-back$="[[linkBack]]"></skeleton-chat-groups>
-    <skeleton-chat-box fullbleed group$="[[subrouteData.id]]" opened$="[[chatBoxActive]]" path$="[[path]]"></skeleton-chat-box>
+    <skeleton-chat-box fullbleed group$="[[subrouteData.id]]" opened$="[[chatBoxActive]]"></skeleton-chat-box>
 `;
   }
 
@@ -100,10 +100,6 @@ class SkeletonChat extends Fabric.ChatMixin(PolymerElement) {
         value: 'chat',
       },
       routeLeave: {
-        type: String,
-        value: null,
-      },
-      path: {
         type: String,
         value: null,
       },

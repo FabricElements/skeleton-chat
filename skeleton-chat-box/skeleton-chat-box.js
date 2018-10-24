@@ -153,7 +153,7 @@ class SkeletonChatBox extends Fabric.ChatMixin(PolymerElement) {
       </app-toolbar>
     </app-header>
     <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]">
-      <skeleton-chat-input theme$="[[theme]]" group$="[[group]]" mic$="[[mic]]" camera$="[[camera]]" emoji$="[[emoji]]" maxlength$="[[maxlength]]" label$="[[label]]" path$="[[path]]"></skeleton-chat-input>
+      <skeleton-chat-input theme$="[[theme]]" group$="[[group]]" mic$="[[mic]]" camera$="[[camera]]" emoji$="[[emoji]]" maxlength$="[[maxlength]]" label$="[[label]]"></skeleton-chat-input>
     </skeleton-chat-messages>
 `;
   }
@@ -240,10 +240,6 @@ class SkeletonChatBox extends Fabric.ChatMixin(PolymerElement) {
       user: {
         type: Object,
         value: {},
-      },
-      path: {
-        type: String,
-        value: null,
       },
     };
   }

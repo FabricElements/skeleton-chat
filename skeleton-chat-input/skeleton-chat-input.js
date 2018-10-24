@@ -352,10 +352,6 @@ class SkeletonChatInput extends PolymerElement {
         value: false,
         computed: '_computeShowMic(mic, text)',
       },
-      path: {
-        type: String,
-        value: null,
-      },
       extension: {
         type: String,
         value: null,
@@ -600,7 +596,7 @@ class SkeletonChatInput extends PolymerElement {
     this.downloadURL = null;
     let fileExt = /\.[\w]+/.exec(file.name);
 
-    const storageRef = firebase.storage().ref(this.path + fileExt);
+    const storageRef = firebase.storage().ref(`chat/${this.group}/${file.lastModified}${fileExt}`);
     let metadataObject = null;
     if (this.metadata && typeof this.metadata === 'object') {
       metadataObject = {
