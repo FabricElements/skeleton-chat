@@ -1,9 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable-next-line max-len */
-import {
-  html,
-  PolymerElement
-} from '@polymer/polymer/polymer-element.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-styles/shadow.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
