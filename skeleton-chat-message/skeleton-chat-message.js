@@ -323,30 +323,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       .messageImg[with-caption] {
         border-radius: 1rem 1rem 0 0;
       }
-      .bubble-file{
-        background-color: var(--paper-grey-300);
-        margin: 15px 15px 5px 15px;
-        padding: 10px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      
-      .bubble-file iron-icon{
-        --iron-icon-fill-color: var(--paper-blue-500);
-        vertical-align: text-bottom;
-      }
-      
-      .bubble-file .bubble-file-name{
-        color: var(--paper-grey-900);
-      }
-      
-      .bubble-file-size{
-        margin: 0 15px 15px 15px;
-        color: var(--paper-grey-500);
-        font-size: 12px;
-        text-align: right;
-      }
-      
+
       .player-progress{
         color: var(--paper-grey-500);
         font-size: 12px;
@@ -356,16 +333,53 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         overflow: hidden;
         line-height: 50px;
       }
+
+      .bubble-file{
+        background-color: var(--paper-grey-300);
+        margin: 15px 15px 5px 15px;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .bubble-file a {
+        text-decoration: none;
+        align-items: center;
+        display: flex;
+      }
+
+      .file-icon {
+        color: var(--paper-blue-500);
+        padding: .2rem;
+        --iron-icon-width: 2rem;
+        --iron-icon-height: 2rem;
+      }
+
+      .bubble-file-name {
+        color: var(--paper-grey-900);;
+        direction: rtl;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 15rem;
+      }
+
+      .bubble-file-size{
+        margin: 0 15px 15px 15px;
+        color: var(--paper-grey-500);
+        font-size: 12px;
+        text-align: right;
+      }
       
       [owner] .player-progress{
         color: white;
       }
-      
+
       [owner] .bubble-file{
         background-color: var(--paper-blue-600);
       }
       
-      [owner] .bubble-file iron-icon{
+      [owner] .file-icon{
         --iron-icon-fill-color: white;
        }
        
@@ -376,7 +390,6 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       [owner] .bubble-file-size{
        color: white;
       }
-      
     </style>
 
     <paper-icon-item owner$="[[isOwner]]" type-media$="[[message.media.type]]">
@@ -401,8 +414,10 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
             </template>
             <template is="dom-if" if="[[isFileType]]" restamp="true">
               <div class="bubble-file">
-                <iron-icon icon="description"></iron-icon>
-                <span class="bubble-file-name">[[message.media.name]]</span>
+                <a href$="[[message.media.url]]" target="_blank">
+                  <iron-icon class="file-icon" icon="chat-icon:attach-file"></iron-icon>
+                  <p class="bubble-file-name">[[message.media.url]]</p>
+                </a>
               </div>
               <div class="bubble-file-size">pdf · 2 mb</div>
             </template>

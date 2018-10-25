@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable-next-line max-len */
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {
+  html,
+  PolymerElement
+} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-styles/shadow.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
@@ -9,9 +12,7 @@ import '@polymer/app-media/app-media-devices.js';
 import '@polymer/app-media/app-media-stream.js';
 import '@polymer/app-media/app-media-recorder.js';
 import '../icons.js';
-
 const firebase = window.firebase;
-
 /**
  * `skeleton-chat-input`
  *
@@ -25,7 +26,7 @@ class SkeletonChatInput extends PolymerElement {
    * @return {!HTMLTemplateElement}
    */
   static get template() {
-    return html`
+    return html `
     <!--suppress CssInvalidPseudoSelector -->
     <!--suppress CssUnresolvedCustomProperty -->
     <!--suppress CssUnresolvedCustomPropertySet -->
@@ -182,15 +183,24 @@ class SkeletonChatInput extends PolymerElement {
         @apply --skeleton-chat-input-icon-send;
       }
 
-      .progress-circle {
-        padding: 5px 5px 0 0;
+      #progress-circle {
+        border-radius: 50%;
+        box-sizing: border-box;
+        margin: 3px 3px 0 0;
+        height: 3rem;
+        overflow: hidden;
+        position: relative;
+        width: 3rem;
+      }
+
+      #progress-circle * {
+        box-sizing: border-box;
       }
 
       .progress {
         transform: rotate(-90deg);
-        width: 3rem;
-        height: 3rem;
-        outline: 1px cyan;
+        width: 100%;
+        height: 100%;
       }
 
       #progress-value {
@@ -198,6 +208,15 @@ class SkeletonChatInput extends PolymerElement {
         stroke-linecap: none;
         stroke: var(--skeleton-chat-input-action-bg, var(--accent-color));
         transition: all 100ms linear;
+      }
+
+      .thumbnail {
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        object-fit: cover;
+        width: 100%;
       }
     </style>
     <div id="input">
@@ -216,14 +235,15 @@ class SkeletonChatInput extends PolymerElement {
           hidden>
 
     <template is="dom-if" if="[[uploading]]">
-      <div class="progress-circle">
+      <div id="progress-circle">
+        <img class="thumbnail" src="[[thumbnail]]" />
         <svg class="progress" viewBox="0 0 100 100">
           <circle id="progress-value"
                   cx="50"
                   cy="50"
                   fill="none"
-                  r="35"
-                  stroke-width="10"
+                  r="47"
+                  stroke-width="6"
                   stroke-dashoffset$="[[progressValue]]"></circle>
         </svg>
       </div>
@@ -237,14 +257,12 @@ class SkeletonChatInput extends PolymerElement {
     </template>
 `;
   }
-
   /**
    * @return {string}
    */
   static get is() {
     return 'skeleton-chat-input';
   }
-
   /**
    * @return {object}
    */
@@ -389,9 +407,16 @@ class SkeletonChatInput extends PolymerElement {
         value: null,
         computed: '_dashOffset(uploadProgress)',
       },
+      thumbnail: {
+        type: String,
+        value: null,
+      },
+      audioBlob: {
+        type: String,
+        value: null,
+      },
     };
   }
-
   /**
    * Connected callback
    */
@@ -402,7 +427,6 @@ class SkeletonChatInput extends PolymerElement {
       this.signedIn = !(!user);
     });
   }
-
   /**
    * @return {array}
    */
@@ -411,7 +435,6 @@ class SkeletonChatInput extends PolymerElement {
       '_resetOnChange(user, group)',
     ];
   }
-
   /**
    * Function to send message on Enter key press.
    *
@@ -425,7 +448,6 @@ class SkeletonChatInput extends PolymerElement {
       this._sendMessage();
     }
   }
-
   /**
    * Send message
    *
@@ -478,7 +500,6 @@ class SkeletonChatInput extends PolymerElement {
         this._dispatchEvent('error', err);
       });
   }
-
   /**
    * Tap button
    * @param {object} event
@@ -495,7 +516,6 @@ class SkeletonChatInput extends PolymerElement {
     input.value = null;
     input.click();
   }
-
   /**
    * Compute progress
    * @param {number} progress
@@ -507,7 +527,6 @@ class SkeletonChatInput extends PolymerElement {
       return true;
     }
   }
-
   /**
    * dash offset
    *
@@ -518,29 +537,57 @@ class SkeletonChatInput extends PolymerElement {
   _dashOffset(uploadProgress) {
     return Math.PI * (100 - uploadProgress);
   }
-
+  /**
+   * dash offset
+   *
+   * @param {FileReader} file
+   * @private
+   * @return {Promise<string>}
+   */
+  getThumbnail(file) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.src = window.URL.createObjectURL(file);
+      image.onload = (e) => {
+        resolve(image.src);
+      };
+    });
+  }
   /**
    * Upload
    *
    * @param {object} event
    * @param {object} fileObject
+   * @param {string} type
    * @private
    */
-  _upload(event, fileObject) {
+  _upload(event, fileObject, type) {
     const file = fileObject ?
       fileObject :
       this.shadowRoot.querySelector('#media-upload').files[0];
-    const fileSize = this.shadowRoot.querySelector('#media-upload').files[0].size;
-    if (this.maxSize != 0 && fileSize > this.maxSize) {
-      this._dispatchEvent('error', 'File size is bigger than specified');
-      return;
-    }
-    if (this.minSize != 0 && fileSize < this.minSize) {
-      this._dispatchEvent('error', 'File size is smaller than specified');
-      return;
+    if (type != 'audio') {
+      this.getThumbnail(file).then((file) => {
+        this.thumbnail = file;
+      });
+      const fileSize = this.shadowRoot.querySelector('#media-upload').files[0].size;
+      if (this.maxSize != 0 && fileSize > this.maxSize) {
+        this._dispatchEvent('error', 'File size is bigger than specified');
+        return;
+      }
+      if (this.minSize != 0 && fileSize < this.minSize) {
+        this._dispatchEvent('error', 'File size is smaller than specified');
+        return;
+      }
     }
     this.downloadURL = null;
-    let fileExt = /\.[\w]+/.exec(file.name);
+    let fileExt;
+    if (type != 'audio') {
+      fileExt = /\.[\w]+/.exec(file.name);
+    } else {
+      fileExt = new Date()+'.mp3';
+    }
+    console.log(this.path);
+    console.log(fileExt);
     const storageRef = firebase.storage().ref(this.path + fileExt);
     let metadataObject = null;
     if (this.metadata && typeof this.metadata === 'object') {
@@ -550,6 +597,9 @@ class SkeletonChatInput extends PolymerElement {
     } else if (this.metadata && typeof this.metadata !== 'object') {
       this._dispatchEvent('error', 'Metadata should be an object');
       return;
+    }
+    if (type === 'audio') {
+      metadataObject.contentType = 'audio/mp3';
     }
     this.task = storageRef.put(file, metadataObject);
     this.task.on('state_changed', (snapshot) => {
@@ -570,6 +620,7 @@ class SkeletonChatInput extends PolymerElement {
     }, () => {
       this.task.snapshot.ref.getDownloadURL().then((downloadURL) => {
         // Handle successful uploads on complete
+        console.log('File uploaded!');
         this.downloadURL = downloadURL;
         this.fileType = file.type;
         this.extension = fileExt[0];
@@ -577,7 +628,6 @@ class SkeletonChatInput extends PolymerElement {
       });
     });
   }
-
   /**
    * Dispatch event
    *
@@ -592,9 +642,10 @@ class SkeletonChatInput extends PolymerElement {
       composed: true,
     }));
   }
-
   /**
    * Input audio starts
+   *
+   * https://medium.com/@bryanjenningz/how-to-record-and-play-audio-in-javascript-faa1b2b3e49b
    *
    * @param {Object} e
    * @private
@@ -602,27 +653,16 @@ class SkeletonChatInput extends PolymerElement {
   _inputAudioStarts(e) {
     console.log('Recording STARTS ...');
     navigator.mediaDevices.getUserMedia({
-      audio: true,
-    })
+        audio: true,
+      })
       .then((stream) => {
         this.mediaRecorder = new MediaRecorder(stream);
         this.mediaRecorder.start();
-        const audioChunks = [];
-        this.mediaRecorder.addEventListener('dataavailable', (event) => {
-          audioChunks.push(event.data);
-        });
-        this.mediaRecorder.addEventListener('stop', () => {
-          const audioBlob = new Blob(audioChunks);
-          const audioUrl = URL.createObjectURL(audioBlob);
-          const audio = new Audio(audioUrl);
-          audio.play();
-        });
       });
     /* this._dispatchEvent('capture-audio-starts', {
       chatId: this.group,
     });*/
   }
-
   /**
    * Input audio ends
    *
@@ -632,18 +672,28 @@ class SkeletonChatInput extends PolymerElement {
   _inputAudioEnds(e) {
     console.log('Recording ENDS');
     this.mediaRecorder.stop();
+    const audioChunks = [];
+    this.mediaRecorder.addEventListener('dataavailable', (event) => {
+      audioChunks.push(event.data);
+    });
+    this.mediaRecorder.addEventListener('stop', () => {
+      this.audioBlob = new Blob(audioChunks);
+      const audioUrl = URL.createObjectURL(this.audioBlob);
+      const audio = new Audio(audioUrl);
+      this.audioObject = audio;
+      audio.play();
+      this._upload('', this.audioBlob, 'audio');
+    });
     /* this._dispatchEvent('capture-audio-ends', {
       chatId: this.group,
     });*/
   }
-
   /**
    * Starts recording
    */
   record() {
     this.$.recorder.start();
   }
-
   /**
    * Recording Changed
    *
@@ -656,7 +706,6 @@ class SkeletonChatInput extends PolymerElement {
     }
     this.classList.remove('recording');
   }
-
   /**
    * Function to save
    *
@@ -667,7 +716,6 @@ class SkeletonChatInput extends PolymerElement {
   _toObjectURL(blob) {
     return URL.createObjectURL(blob);
   }
-
   /**
    * Show/hide mic
    *
@@ -679,7 +727,6 @@ class SkeletonChatInput extends PolymerElement {
   _computeShowMic(mic, text) {
     return mic && !text;
   }
-
   /**
    * Reset on change
    *
@@ -690,7 +737,6 @@ class SkeletonChatInput extends PolymerElement {
   _resetOnChange(user, group) {
     this.text = null;
   }
-
   /**
    * Record Audio
    * @return {Promise}
@@ -698,8 +744,8 @@ class SkeletonChatInput extends PolymerElement {
   recordAudio() {
     return new Promise((resolve) => {
       navigator.mediaDevices.getUserMedia({
-        audio: true,
-      })
+          audio: true,
+        })
         .then((stream) => {
           const mediaRecorder = new MediaRecorder(stream);
           const audioChunks = [];
@@ -735,5 +781,4 @@ class SkeletonChatInput extends PolymerElement {
     });
   }
 }
-
 window.customElements.define(SkeletonChatInput.is, SkeletonChatInput);
