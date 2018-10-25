@@ -26,6 +26,7 @@
     "@fabricelements/skeleton-player": "^0.0.2",
     "@fancyapps/fancybox": "^3.3.5",
     "@polymer/app-layout": "^3.0.0-pre.21",
+    "@polymer/app-media": "github:PolymerElements/app-media",
     "@polymer/app-route": "^3.0.0-pre.21",
     "@polymer/iron-flex-layout": "^3.0.0-pre.21",
     "@polymer/iron-icons": "^3.0.0-pre.21",
@@ -41,9 +42,11 @@
     "@types/polymer": "^1.2.4",
     "autolinker": "^1.6.2",
     "firebase": "^5.0.4",
+    "image-capture": "^0.4.0",
     "jquery": "^3.3.1",
     "moment": "^2.22.2",
-    "web-animations-js": "^2.3.1"
+    "web-animations-js": "^2.3.1",
+    "webrtc-adapter": "^6.4.4"
   },
   "resolutions": {
     "inherits": "2.0.3",
