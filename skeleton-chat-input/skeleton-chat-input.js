@@ -478,12 +478,22 @@ class SkeletonChatInput extends PolymerElement {
    * @private
    */
   _sendMessage() {
+    const media = {
+      type: this.fileType || null,
+      url: this.downloadURL || null,
+    };
+
     if (!this.group) {
       return this._dispatchEvent('error', 'Define the group first.');
     }
     if (!this.user) {
       return this._dispatchEvent('error', 'You need to sign in first.');
     }
+
+    if (!this.text && !media.url) {
+      return this._dispatchEvent('error', 'Empty message');
+    }
+
     const timestamp = firebase.firestore.FieldValue.serverTimestamp();
     const baseText = this.text;
     const group = this.group;
@@ -505,10 +515,7 @@ class SkeletonChatInput extends PolymerElement {
         name: user.displayName ? user.displayName : null,
         avatar: user.photoURL ? user.photoURL : null,
       },
-      media: {
-        type: this.fileType || null,
-        url: this.downloadURL || null,
-      },
+      media: media,
     };
     this.text = null;
     const chatRef = `chat-message`;
@@ -652,7 +659,9 @@ class SkeletonChatInput extends PolymerElement {
         // Handle successful uploads on complete
         console.log('File uploaded!');
         this.downloadURL = downloadURL;
-        this.fileType = file.type;
+        type && type === 'audio'
+          ? this.fileType = 'audio/mp3'
+          : this.fileType = file.type;
         this.extension = fileExt[0];
         this._sendMessage();
         this.downloadURL = null;
