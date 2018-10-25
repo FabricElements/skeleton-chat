@@ -409,7 +409,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
           <div class="bubble-content" with-media$="[[message.media]]" no-caption$="[[!originalText]]">
             <template is="dom-if" if="[[message.media.url]]" restamp="true">
               <template is="dom-if" if="[[isImageMedia]]" restamp="true">
-                <iron-image class="messageImg" fade preload sizing="cover" with-caption$="[[originalText]]" src="[[message.media.url]]" on-tap="_showFancybox"></iron-image>
+                <iron-image class="messageImg" fade preload sizing="cover" with-caption$="[[message.text]]" src="[[message.media.url]]" on-tap="_showFancybox"></iron-image>
               </template>
             </template>
             <template is="dom-if" if="[[isFileType]]" restamp="true">
@@ -729,7 +729,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
     let translatedMessage = this._extractHyperlinks(baseMessage);
     this._setText(translatedMessage);
 
-    if (message.media) {
+    if (message.media && message.media.type) {
       if (message.media.type.match(/image\/(gif|bmp|jpeg|png)$/i)) {
         this._setIsImageMedia(message.media.type);
       } else if (message.media.type.match(/audio\/(ogg|mp3|wav)$/i)) {
