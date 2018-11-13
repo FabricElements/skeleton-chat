@@ -263,8 +263,8 @@ class SkeletonChatInput extends PolymerElement {
     </template>
 
     <template is="dom-if" if="[[!uploading]]">
-      <paper-icon-button icon="chat-icon:photo-camera" data-item="camera" class="icon-camera" on-tap="_tapButton"></paper-icon-button>
-      <paper-icon-button icon="chat-icon:attach-file" data-item="file" class="icon-file" on-tap="_tapButton"></paper-icon-button>
+      <paper-icon-button icon="chat-icon:photo-camera" data-item="camera" class="icon-camera" on-tap="_tapButton" hidden$="[[!camera]]"></paper-icon-button>
+      <paper-icon-button icon="chat-icon:attach-file" data-item="file" class="icon-file" on-tap="_tapButton" hidden$="[[!file]]"></paper-icon-button>
       <paper-icon-button icon="chat-icon:arrow-upward" class="icon-send" on-tap="_sendMessage" hidden$="[[!text]]" disabled$="[[!text]]"></paper-icon-button>
       <paper-icon-button icon="chat-icon:mic" class="icon-mic" on-down="_inputAudioStarts" on-up="_inputAudioEnds" hidden$="[[!_showMic]]"></paper-icon-button>
     </template>
@@ -320,6 +320,13 @@ class SkeletonChatInput extends PolymerElement {
        * Displays camera
        */
       camera: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * Displays file upload
+       */
+      file: {
         type: Boolean,
         value: false,
       },
