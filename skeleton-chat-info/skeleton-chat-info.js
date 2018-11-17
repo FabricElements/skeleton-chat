@@ -164,6 +164,7 @@ class SkeletonChatInfo extends PolymerElement {
       finalData.title = objectUser.name || '###';
       finalData.image = objectUser.avatar;
       finalData.isOwner = user.uid === data.owner;
+      finalData.owner = data.owner;
     }
 
     return finalData;

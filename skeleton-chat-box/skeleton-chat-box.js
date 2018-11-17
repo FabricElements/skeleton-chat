@@ -152,7 +152,7 @@ class SkeletonChatBox extends Fabric.ChatMixin(PolymerElement) {
         </paper-menu-button>
       </app-toolbar>
     </app-header>
-    <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]">
+    <skeleton-chat-messages theme$="[[theme]]" group$="[[group]]" owner$="[[info.owner]]">
       <skeleton-chat-input theme$="[[theme]]" group$="[[group]]" mic$="[[mic]]" camera$="[[camera]]" emoji$="[[emoji]]" maxlength$="[[maxlength]]" label$="[[label]]"></skeleton-chat-input>
     </skeleton-chat-messages>
 `;

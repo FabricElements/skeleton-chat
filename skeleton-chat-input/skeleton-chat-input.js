@@ -607,7 +607,7 @@ class SkeletonChatInput extends PolymerElement {
     });
     if (file.type.match(/image\/(gif|bmp|jpeg|png)$/i)) {
       this.imageType = true;
-    } else if (file.type.match(/audio\/(ogg|mp3|wav)$/i)) {
+    } else if (file.type.match(/audio\/(ogg|webm|wav)$/i)) {
       this.icon = 'library-music';
       this.imageType = false;
     } else {
@@ -631,7 +631,7 @@ class SkeletonChatInput extends PolymerElement {
       fileExt = /\.[\w]+/.exec(file.name);
       storageRef = firebase.storage().ref(`chat/${this.group}/${file.lastModified}${fileExt}`);
     } else {
-      fileExt = '.mp3';
+      fileExt = '.webm';
       storageRef = firebase.storage().ref(`chat/${this.group}/${new Date()}${fileExt}`);
     }
     if (this.metadata && typeof this.metadata === 'object') {
@@ -643,7 +643,7 @@ class SkeletonChatInput extends PolymerElement {
       return;
     }
     if (type === 'audio') {
-      metadataObject.contentType = 'audio/mp3';
+      metadataObject.contentType = 'audio/webm';
     }
     this.task = storageRef.put(file, metadataObject);
     this.task.on('state_changed', (snapshot) => {
@@ -667,7 +667,7 @@ class SkeletonChatInput extends PolymerElement {
         console.log('File uploaded!');
         this.downloadURL = downloadURL;
         type && type === 'audio'
-          ? this.fileType = 'audio/mp3'
+          ? this.fileType = 'audio/webm'
           : this.fileType = file.type;
         this.extension = fileExt[0];
         this._sendMessage();
@@ -703,6 +703,7 @@ class SkeletonChatInput extends PolymerElement {
     console.log('Recording STARTS ...');
     navigator.mediaDevices.getUserMedia({
         audio: true,
+        video: false,
       })
       .then((stream) => {
         this.mediaRecorder = new MediaRecorder(stream);
@@ -726,7 +727,7 @@ class SkeletonChatInput extends PolymerElement {
       audioChunks.push(event.data);
     });
     this.mediaRecorder.addEventListener('stop', () => {
-      this.audioBlob = new Blob(audioChunks);
+      this.audioBlob = new Blob(audioChunks, {'type': 'audio/webm; codecs=opus'});
       const audioUrl = URL.createObjectURL(this.audioBlob);
       const audio = new Audio(audioUrl);
       this.audioObject = audio;

@@ -76,7 +76,7 @@ class SkeletonChatMessages extends mixinBehaviors([
       <template is="dom-if" if="{{!empty}}" restamp="true">
         <iron-list items="[[list]]" as="message" max-physical-count="50" scroll-offset="100" scroll-target="threshold" on-iron-resize="_scrollToLast">
           <template>
-            <skeleton-chat-message theme$="[[theme]]" message="[[message]]" user="[[user]]" signed-in$="[[signedIn]]"></skeleton-chat-message>
+            <skeleton-chat-message theme$="[[theme]]" group="[[group]]" message="[[message]]" user="[[user]]" signed-in$="[[signedIn]]" owner-uid$="[[owner]]"></skeleton-chat-message>
           </template>
         </iron-list>
       </template>
@@ -148,6 +148,10 @@ class SkeletonChatMessages extends mixinBehaviors([
        */
       listSnapshot: {
         type: Object,
+        value: null,
+      },
+      owner: {
+        type: String,
         value: null,
       },
     };

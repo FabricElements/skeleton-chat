@@ -132,6 +132,11 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         overflow: hidden;
         position: relative;
         margin-top: 25px;
+        border: 2px solid transparent;
+      }
+
+      [lider] .icon-container {
+        border: 2px solid var(--paper-blue-a400);
       }
 
       [owner] .icon-container {
@@ -162,7 +167,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         color: white;
         display: inline-block;
         max-width: 100%;
-        min-width: 200px;
+        min-width: 10rem;
         width: auto;
         transition: max-width ease 0.5s;
         box-shadow: inset 0 0 3px rgba(0, 0, 0, .02);
@@ -302,14 +307,12 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       }
 
       #acronym {
-        @apply --paper-font-subhead;
-        @apply --paper-font-common-nowrap;
-        line-height: var(--skeleton-chat-message-height);
-        text-transform: uppercase;
-        text-align: center;
-        @apply --layout-fit;
-        z-index: 1;
-        @apply --skeleton-chat-message-icon-acronym;
+        align-items: center;
+        background-color: var(--skeleton-chat-message-icon-acronym_-_background-color);
+        display: flex;
+        height: 35.75px;
+        justify-content: center;
+        width: 35.75px;
       }
 
       .messageImg {
@@ -392,11 +395,11 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       }
     </style>
 
-    <paper-icon-item owner$="[[isOwner]]" type-media$="[[message.media.type]]">
+    <paper-icon-item owner$="[[isOwner]]" lider$="[[isChatOwner]]" type-media$="[[message.media.type]]">
       <div class="icon-container" slot="item-icon">
           <iron-image fade sizing="cover" src$="[[image]]" hidden$="[[!image]]" id="owner-img"></iron-image>
           <div id="acronym" hidden$="[[!acronym]]">
-            [[acronym]]
+            <span>[[acronym]]</span>
           </div>
           <iron-icon icon$="chat-icon:[[icon]]" class="icon-option" hidden$="[[!icon]]"></iron-icon>
       </div>
@@ -624,6 +627,19 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         type: String,
         value: null,
       },
+      group: {
+        type: String,
+        value: null,
+      },
+      ownerUid: {
+        type: String,
+        value: null,
+      },
+      isChatOwner: {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+      },
     };
   }
 
@@ -648,6 +664,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
   _checkBasics(signedIn, userData, message) {
     // Set default values
     this._setIsOwner(false);
+    this._setIsChatOwner(false);
     this._setIsAnonymous(true);
 
     /**
@@ -679,6 +696,11 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
      * Check if is the message owner
      */
     this._setIsOwner(this.user.uid === message.uid);
+
+    /**
+     * Check if is the chat owner
+     */
+    this._setIsChatOwner(message.uid === this.ownerUid);
   }
 
   /**
@@ -732,7 +754,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
     if (message.media && message.media.type) {
       if (message.media.type.match(/image\/(gif|bmp|jpeg|png)$/i)) {
         this._setIsImageMedia(message.media.type);
-      } else if (message.media.type.match(/audio\/(ogg|mp3|wav)$/i)) {
+      } else if (message.media.type.match(/audio\/(ogg|webm|wav)$/i)) {
         this.isAudioType = true;
       } else {
         this.isFileType = true;
