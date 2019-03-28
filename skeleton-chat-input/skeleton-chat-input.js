@@ -10,7 +10,9 @@ import '@polymer/app-media/app-media-stream.js';
 import '@polymer/app-media/app-media-recorder.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '../icons.js';
+
 const firebase = window.firebase;
+
 /**
  * `skeleton-chat-input`
  *
@@ -24,7 +26,7 @@ class SkeletonChatInput extends PolymerElement {
    * @return {!HTMLTemplateElement}
    */
   static get template() {
-    return html `
+    return html`
     <!--suppress CssInvalidPseudoSelector -->
     <!--suppress CssUnresolvedCustomProperty -->
     <!--suppress CssUnresolvedCustomPropertySet -->
@@ -270,12 +272,14 @@ class SkeletonChatInput extends PolymerElement {
     </template>
 `;
   }
+
   /**
    * @return {string}
    */
   static get is() {
     return 'skeleton-chat-input';
   }
+
   /**
    * @return {object}
    */
@@ -445,8 +449,13 @@ class SkeletonChatInput extends PolymerElement {
         notify: true,
         value: false,
       },
+      save: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
+
   /**
    * Connected callback
    */
@@ -457,6 +466,7 @@ class SkeletonChatInput extends PolymerElement {
       this.signedIn = !(!user);
     });
   }
+
   /**
    * @return {array}
    */
@@ -465,6 +475,7 @@ class SkeletonChatInput extends PolymerElement {
       '_resetOnChange(user, group)',
     ];
   }
+
   /**
    * Function to send message on Enter key press.
    *
@@ -478,6 +489,7 @@ class SkeletonChatInput extends PolymerElement {
       this._sendMessage();
     }
   }
+
   /**
    * Send message
    *
@@ -508,16 +520,14 @@ class SkeletonChatInput extends PolymerElement {
     /**
      * Format message
      */
-    const message = {
+    let message = {
       backup: false,
-      created: timestamp,
       isAnonymous: user.isAnonymous,
       group: group,
       processed: false,
       text: baseText,
       type: 'default',
       uid: user.uid,
-      updated: timestamp,
       user: {
         name: user.displayName ? user.displayName : null,
         avatar: user.photoURL ? user.photoURL : null,
@@ -525,18 +535,24 @@ class SkeletonChatInput extends PolymerElement {
       media: media,
     };
     this.text = null;
-    const chatRef = `chat-message`;
-    const db = firebase.firestore();
-    db.collection(chatRef).add(message)
-      .then(() => {
-        this._dispatchEvent('message', 'ok');
-      })
-      .catch((err) => {
-        this.text = baseText;
-        console.error(err);
-        this._dispatchEvent('error', err);
-      });
+    this._dispatchEvent('message-sent', message);
+    if (this.save) {
+      message.created = timestamp;
+      message.updated = timestamp;
+      const chatRef = `chat-message`;
+      const db = firebase.firestore();
+      db.collection(chatRef).add(message)
+        .then(() => {
+          this._dispatchEvent('message', 'ok');
+        })
+        .catch((err) => {
+          this.text = baseText;
+          console.error(err);
+          this._dispatchEvent('error', err);
+        });
+    }
   }
+
   /**
    * Tap button
    * @param {object} event
@@ -553,6 +569,7 @@ class SkeletonChatInput extends PolymerElement {
     input.value = null;
     input.click();
   }
+
   /**
    * Compute progress
    * @param {number} progress
@@ -564,6 +581,7 @@ class SkeletonChatInput extends PolymerElement {
       return true;
     }
   }
+
   /**
    * dash offset
    *
@@ -574,6 +592,7 @@ class SkeletonChatInput extends PolymerElement {
   _dashOffset(uploadProgress) {
     return Math.PI * (100 - uploadProgress);
   }
+
   /**
    * dash offset
    *
@@ -590,6 +609,7 @@ class SkeletonChatInput extends PolymerElement {
       };
     });
   }
+
   /**
    * Upload
    *
@@ -677,11 +697,12 @@ class SkeletonChatInput extends PolymerElement {
       });
     });
   }
+
   /**
    * Dispatch event
    *
    * @param {string} event
-   * @param  {string} detail
+   * @param {string|object|any} detail
    * @private
    */
   _dispatchEvent(event, detail) {
@@ -691,6 +712,7 @@ class SkeletonChatInput extends PolymerElement {
       composed: true,
     }));
   }
+
   /**
    * Input audio starts
    *
@@ -702,9 +724,9 @@ class SkeletonChatInput extends PolymerElement {
   _inputAudioStarts(e) {
     console.log('Recording STARTS ...');
     navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false,
-      })
+      audio: true,
+      video: false,
+    })
       .then((stream) => {
         this.mediaRecorder = new MediaRecorder(stream);
         this.mediaRecorder.start();
@@ -713,6 +735,7 @@ class SkeletonChatInput extends PolymerElement {
       chatId: this.group,
     });*/
   }
+
   /**
    * Input audio ends
    *
@@ -738,12 +761,14 @@ class SkeletonChatInput extends PolymerElement {
       chatId: this.group,
     });*/
   }
+
   /**
    * Starts recording
    */
   record() {
     this.$.recorder.start();
   }
+
   /**
    * Recording Changed
    *
@@ -756,6 +781,7 @@ class SkeletonChatInput extends PolymerElement {
     }
     this.classList.remove('recording');
   }
+
   /**
    * Function to save
    *
@@ -766,6 +792,7 @@ class SkeletonChatInput extends PolymerElement {
   _toObjectURL(blob) {
     return URL.createObjectURL(blob);
   }
+
   /**
    * Show/hide mic
    *
@@ -777,6 +804,7 @@ class SkeletonChatInput extends PolymerElement {
   _computeShowMic(mic, text) {
     return mic && !text;
   }
+
   /**
    * Reset on change
    *
@@ -787,6 +815,7 @@ class SkeletonChatInput extends PolymerElement {
   _resetOnChange(user, group) {
     this.text = null;
   }
+
   /**
    * Record Audio
    * @return {Promise}
@@ -794,8 +823,8 @@ class SkeletonChatInput extends PolymerElement {
   recordAudio() {
     return new Promise((resolve) => {
       navigator.mediaDevices.getUserMedia({
-          audio: true,
-        })
+        audio: true,
+      })
         .then((stream) => {
           const mediaRecorder = new MediaRecorder(stream);
           const audioChunks = [];
@@ -831,4 +860,5 @@ class SkeletonChatInput extends PolymerElement {
     });
   }
 }
+
 window.customElements.define(SkeletonChatInput.is, SkeletonChatInput);
