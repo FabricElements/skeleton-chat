@@ -20,8 +20,8 @@ import '../icons.js';
  */
 const cssId = 'fancybox-css';
 if (!document.getElementById(cssId)) {
-  let head = document.getElementsByTagName('head')[0];
-  let link = document.createElement('link');
+  const head = document.getElementsByTagName('head')[0];
+  const link = document.createElement('link');
   link.id = cssId;
   link.rel = 'stylesheet';
   link.type = 'text/css';
@@ -412,7 +412,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
           <div class="bubble-content" with-media$="[[message.media]]" no-caption$="[[!originalText]]">
             <template is="dom-if" if="[[message.media.url]]" restamp="true">
               <template is="dom-if" if="[[isImageMedia]]" restamp="true">
-                <iron-image class="messageImg" fade preload sizing="cover" with-caption$="[[message.text]]" src="[[message.media.url]]" on-tap="_showFancybox"></iron-image>
+                <iron-image class="messageImg" fade preload sizing="cover" with-caption$="[[message.message]]" src="[[message.media.url]]" on-tap="_showFancybox"></iron-image>
               </template>
             </template>
             <template is="dom-if" if="[[isFileType]]" restamp="true">
@@ -433,9 +433,9 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
             <template is="dom-if" if="[[originalText]]" restamp="true">
               <div class="bubble-text">
                 <div class="text-original" hidden$="[[!showOriginal]]" inner-h-t-m-l="[[originalText]]">
-                  [[message.text]]
+                  [[message.message]]
                 </div>
-                <div class="text-translation" hidden$="[[showOriginal]]" inner-h-t-m-l="[[text]]">[[message.text]]</div>
+                <div class="text-translation" hidden$="[[showOriginal]]" inner-h-t-m-l="[[text]]">[[message.message]]</div>
               </div>
             </template>
           </div>
@@ -725,8 +725,8 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
     d = Number(d);
 
     // let h = Math.floor(d / 3600);
-    let m = Math.floor(d % 3600 / 60);
-    let s = Math.floor(d % 3600 % 60);
+    const m = Math.floor(d % 3600 / 60);
+    const s = Math.floor(d % 3600 % 60);
 
     return ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2);
   }
@@ -739,18 +739,14 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
    */
   _messageChange(message) {
     if (!message) return;
-
-    let baseMessage = message.text;
-
-    if (message.text && message.locales) {
-      baseMessage = this._returnFinalMessage(message.text, message.locales);
+    let baseMessage = message.message;
+    if (message.message && message.locales) {
+      baseMessage = this._returnFinalMessage(message.message, message.locales);
     }
-
-    const originalText = this._extractHyperlinks(message.text);
+    const originalText = this._extractHyperlinks(message.message);
     this._setOriginalText(originalText);
-    let translatedMessage = this._extractHyperlinks(baseMessage);
+    const translatedMessage = this._extractHyperlinks(baseMessage);
     this._setText(translatedMessage);
-
     if (message.media && message.media.type) {
       if (message.media.type.match(/image\/(gif|bmp|jpeg|png)$/i)) {
         this._setIsImageMedia(message.media.type);
@@ -760,7 +756,6 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
         this.isFileType = true;
       }
     }
-
     if (message.created) {
       this._setTime(message.created);
     } else {
@@ -783,7 +778,6 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
      */
     const image = user.avatar ? user.avatar : null;
     this._setImage(image);
-
     const name = user.name ? user.name : '';
     const acronym = name ? this._acronym(name) : null;
     this._setAcronym(acronym);
@@ -812,7 +806,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
     const language = (navigator.language || navigator.userLanguage) ?
       navigator.language : navigator.userLanguage;
     const separator = language.indexOf('-');
-// eslint-disable-next-line max-len
+    // eslint-disable-next-line max-len
     return language.substring(0, separator !== -1 ? separator : language.length);
   }
 
@@ -925,12 +919,11 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
    * @private
    */
   _showFancybox() {
-    $.fancybox.open(
-      {
-        src: this.message.media.url, // Source of the content
-        type: 'image', // Content type: image|inline|ajax|iframe|html (optional)
-        opts: {}, // Object containing item options (optional)
-      });
+    $.fancybox.open({
+      src: this.message.media.url, // Source of the content
+      type: 'image', // Content type: image|inline|ajax|iframe|html (optional)
+      opts: {}, // Object containing item options (optional)
+    });
   }
 }
 

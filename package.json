@@ -1,6 +1,6 @@
 {
   "name": "@fabricelements/skeleton-chat",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@fabricelements/firebase-config": "github:FabricElements/firebase-config",
@@ -10,9 +10,9 @@
     "@polymer/iron-test-helpers": "^3.0.1",
     "@polymer/paper-item": "^3.0.1",
     "@webcomponents/webcomponentsjs": "^2.2.7",
-    "eslint": "^4.12.1",
-    "eslint-config-google": "^0.9.1",
-    "eslint-plugin-html": "^4.0.6",
+    "eslint": "^5.16.0",
+    "eslint-config-google": "^0.12.0",
+    "eslint-plugin-html": "^5.0.3",
     "wct-browser-legacy": "^1.0.2"
   },
   "scripts": {
@@ -23,7 +23,7 @@
     "serve": "polymer serve -H 0.0.0.0"
   },
   "dependencies": {
-    "@fabricelements/skeleton-player": "^0.0.2",
+    "@fabricelements/skeleton-player": "github:FabricElements/skeleton-player",
     "@fancyapps/fancybox": "^3.5.7",
     "@polymer/app-layout": "^3.0.2",
     "@polymer/app-media": "github:PolymerElements/app-media",
@@ -40,19 +40,20 @@
     "@polymer/paper-menu-button": "^3.0.1",
     "@polymer/polymer": "^3.2.0",
     "@types/polymer": "^1.2.7",
-    "autolinker": "^1.8.3",
+    "autolinker": "^3.0.5",
     "firebase": "^5.9.2",
     "image-capture": "^0.4.0",
     "jquery": "^3.3.1",
     "moment": "^2.24.0",
+    "supports-color": "^6.1.0",
+    "type-detect": "^4.0.8",
     "web-animations-js": "^2.3.1",
-    "webrtc-adapter": "^6.4.8"
+    "webrtc-adapter": "^7.2.3"
   },
   "resolutions": {
-    "inherits": "2.0.3",
-    "samsam": "1.1.3",
-    "supports-color": "3.1.2",
-    "type-detect": "1.0.0"
+    "inherits": "^2.0.3",
+    "supports-color": "^5.3.0",
+    "type-detect": "^1.0.0"
   },
   "main": "skeleton-chat.js"
 }

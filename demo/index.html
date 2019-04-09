@@ -14,10 +14,9 @@
   <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js"></script>
   <script src="../node_modules/firebase/firebase.js"></script>
   <script src="../node_modules/@fabricelements/firebase-config/index.js"></script>
-  
+
   <script type="module">
-    import '@fabricelements/skeleton-auth/skeleton-auth.js';
-    </script>
+    import '@fabricelements/skeleton-auth/skeleton-auth.js';</script>
   <script type="module" src="../demo/shared.js"></script>
   <script type="module" src="../skeleton-chat.js"></script>
 
@@ -33,15 +32,15 @@
   </custom-style>
 </head>
 <body>
-  <dom-bind>
-    <template>
-      <div hidden="[[signedIn]]">
-        <skeleton-auth google
-                       signed-in="{{signedIn}}"
-                       user="{{user}}"></skeleton-auth>
-      </div>
-    </template>
-  </dom-bind>
-  <skeleton-chat></skeleton-chat>
+<dom-bind>
+  <template>
+    <div hidden="[[signedIn]]">
+      <skeleton-auth google
+                     signed-in="{{signedIn}}"
+                     user="{{user}}"></skeleton-auth>
+    </div>
+    <skeleton-chat hidden="[[!signedIn]]"></skeleton-chat>
+  </template>
+</dom-bind>
 </body>
 </html>

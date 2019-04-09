@@ -520,12 +520,12 @@ class SkeletonChatInput extends PolymerElement {
     /**
      * Format message
      */
-    let message = {
+    let messageObject = {
       backup: false,
       isAnonymous: user.isAnonymous,
       group: group,
       processed: false,
-      text: baseText,
+      message: baseText,
       type: 'default',
       uid: user.uid,
       user: {
@@ -535,21 +535,20 @@ class SkeletonChatInput extends PolymerElement {
       media: media,
     };
     this.text = null;
-    this._dispatchEvent('message-sent', message);
     if (this.save) {
-      message.created = timestamp;
-      message.updated = timestamp;
+      messageObject.created = timestamp;
+      messageObject.updated = timestamp;
       const chatRef = `chat-message`;
       const db = firebase.firestore();
-      db.collection(chatRef).add(message)
-        .then(() => {
-          this._dispatchEvent('message', 'ok');
-        })
-        .catch((err) => {
-          this.text = baseText;
-          console.error(err);
-          this._dispatchEvent('error', err);
-        });
+      db.collection(chatRef).add(messageObject).then(() => {
+        this._dispatchEvent('message-sent', messageObject);
+      }).catch((err) => {
+        this.text = baseText;
+        console.error(err);
+        this._dispatchEvent('error', err);
+      });
+    } else {
+      this._dispatchEvent('message-sent', messageObject);
     }
   }
 
@@ -726,11 +725,10 @@ class SkeletonChatInput extends PolymerElement {
     navigator.mediaDevices.getUserMedia({
       audio: true,
       video: false,
-    })
-      .then((stream) => {
-        this.mediaRecorder = new MediaRecorder(stream);
-        this.mediaRecorder.start();
-      });
+    }).then((stream) => {
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder.start();
+    });
     /* this._dispatchEvent('capture-audio-starts', {
       chatId: this.group,
     });*/
@@ -824,39 +822,38 @@ class SkeletonChatInput extends PolymerElement {
     return new Promise((resolve) => {
       navigator.mediaDevices.getUserMedia({
         audio: true,
-      })
-        .then((stream) => {
-          const mediaRecorder = new MediaRecorder(stream);
-          const audioChunks = [];
-          mediaRecorder.addEventListener('dataavailable', (event) => {
-            audioChunks.push(event.data);
-          });
-          const start = () => {
-            mediaRecorder.start();
-          };
-          const stop = () => {
-            return new Promise((resolve) => {
-              mediaRecorder.addEventListener('stop', () => {
-                const audioBlob = new Blob(audioChunks);
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioUrl);
-                const play = () => {
-                  audio.play();
-                };
-                resolve({
-                  audioBlob,
-                  audioUrl,
-                  play,
-                });
-              });
-              mediaRecorder.stop();
-            });
-          };
-          resolve({
-            start,
-            stop,
-          });
+      }).then((stream) => {
+        const mediaRecorder = new MediaRecorder(stream);
+        const audioChunks = [];
+        mediaRecorder.addEventListener('dataavailable', (event) => {
+          audioChunks.push(event.data);
         });
+        const start = () => {
+          mediaRecorder.start();
+        };
+        const stop = () => {
+          return new Promise((resolve) => {
+            mediaRecorder.addEventListener('stop', () => {
+              const audioBlob = new Blob(audioChunks);
+              const audioUrl = URL.createObjectURL(audioBlob);
+              const audio = new Audio(audioUrl);
+              const play = () => {
+                audio.play();
+              };
+              resolve({
+                audioBlob,
+                audioUrl,
+                play,
+              });
+            });
+            mediaRecorder.stop();
+          });
+        };
+        resolve({
+          start,
+          stop,
+        });
+      });
     });
   }
 }

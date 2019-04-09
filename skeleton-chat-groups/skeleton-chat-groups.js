@@ -139,7 +139,9 @@ class SkeletonChatGroups extends PolymerElement {
   connectedCallback() {
     super.connectedCallback();
     firebase.auth().onAuthStateChanged((user) => {
-      this._getData(user.uid);
+      if (user) {
+        this._getData(user.uid);
+      }
     });
     this.addEventListener('list-changed', (e) => this._notifyResize(), true);
   }
@@ -154,30 +156,27 @@ class SkeletonChatGroups extends PolymerElement {
     this.set('list', []);
     if (!uid) return;
     const db = firebase.firestore();
-    db.collection('chat')
-      .orderBy(`users.${uid}`)
-      .limit(100)
-      .onSnapshot((querySnapshot) => {
-        let sortable = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const item = {
-            id: doc.id,
-            timestamp: data.updated ? Date.parse(data.updated) : Date.now(),
-          };
-          sortable.push(item);
-        });
-        sortable.sort((a, b) => {
-          return b.timestamp - a.timestamp;
-        });
-        const finalList = Object.keys(sortable).map((key) => {
-          return sortable[key].id;
-        });
-        this.set('list', finalList);
-      }, (error) => {
-        console.error(error);
-        this._dispatchEvent('error', error);
+    db.collection('chat').orderBy(`users.${uid}`).limit(100).onSnapshot((querySnapshot) => {
+      let sortable = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const item = {
+          id: doc.id,
+          timestamp: data.updated ? Date.parse(data.updated) : Date.now(),
+        };
+        sortable.push(item);
       });
+      sortable.sort((a, b) => {
+        return b.timestamp - a.timestamp;
+      });
+      const finalList = Object.keys(sortable).map((key) => {
+        return sortable[key].id;
+      });
+      this.set('list', finalList);
+    }, (error) => {
+      console.error(error);
+      this._dispatchEvent('error', error);
+    });
   }
 
   /**

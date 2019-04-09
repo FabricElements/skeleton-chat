@@ -156,6 +156,7 @@ class SkeletonChatMessages extends mixinBehaviors([
       },
     };
   }
+
   /**
    * connectedCallback
    */
@@ -168,6 +169,7 @@ class SkeletonChatMessages extends mixinBehaviors([
     this.addEventListener('list-changed', (e) => this._notifyResize(), true);
     this.addEventListener('iron-resize', (e) => this._scrollToLast(), true);
   }
+
   /**
    * disconnected Callback
    */
@@ -178,6 +180,7 @@ class SkeletonChatMessages extends mixinBehaviors([
       this.listSnapshot();
     }
   }
+
   /**
    * @return {array}
    */
@@ -186,6 +189,7 @@ class SkeletonChatMessages extends mixinBehaviors([
       '_getData(user, group)',
     ];
   }
+
   /**
    * Get data
    *
@@ -200,35 +204,28 @@ class SkeletonChatMessages extends mixinBehaviors([
     }
     if (!user || !group) return;
     const db = firebase.firestore();
-    this.listSnapshot = db.collection('chat-message')
-      .orderBy('created', 'desc')
-      .where('group', '==', group)
-      .limit(200)
-      .onSnapshot((querySnapshot) => {
-        // querySnapshot.reverse();
-        if (!querySnapshot.empty) {
-          let docs = querySnapshot.docs.reverse();
-          this.list = docs.map((item) => {
-            let data = {};
-            if (!item.exists) return data;
-            data = item.data();
-            data.id = item.id;
-            data.created = data.created ? data.created.toDate() : Date.now();
-            return data;
-          });
-        } else {
-          this.list = [];
-        }
-        // querySnapshot.forEach((doc) => {
-        //   base.unshift(doc.data());
-        // });
-        // this.set('list', base);
-      }, (err) => {
-        console.error(err);
-        this._dispatchEvent('error', err);
-        this.set('list', []);
-      });
+    this.listSnapshot = db.collection('chat-message').orderBy('created', 'desc').where('group', '==', group).limit(200).onSnapshot((querySnapshot) => {
+      // querySnapshot.reverse();
+      if (!querySnapshot.empty) {
+        const docs = querySnapshot.docs.reverse();
+        this.list = docs.map((item) => {
+          let data = {};
+          if (!item.exists) return data;
+          data = item.data();
+          data.id = item.id;
+          data.created = data.created ? data.created.toDate() : Date.now();
+          return data;
+        });
+      } else {
+        this.list = [];
+      }
+    }, (err) => {
+      console.error(err);
+      this._dispatchEvent('error', err);
+      this.set('list', []);
+    });
   }
+
   /**
    * Scroll the list to last  item
    *
@@ -239,6 +236,7 @@ class SkeletonChatMessages extends mixinBehaviors([
     if (!list) return;
     list.scrollToIndex(this.list.length - 1);
   }
+
   /**
    * Notify iron-list that the list has been updated
    *
@@ -249,6 +247,7 @@ class SkeletonChatMessages extends mixinBehaviors([
     if (!list) return;
     list.fire('iron-resize');
   }
+
   /**
    * Compute empty
    *
@@ -259,6 +258,7 @@ class SkeletonChatMessages extends mixinBehaviors([
   _computeEmpty(list) {
     return list.length < 1;
   }
+
   /**
    * Dispatch event
    *
