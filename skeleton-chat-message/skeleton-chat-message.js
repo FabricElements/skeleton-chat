@@ -412,7 +412,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
           <div class="bubble-content" with-media$="[[message.media]]" no-caption$="[[!originalText]]">
             <template is="dom-if" if="[[message.media.url]]" restamp="true">
               <template is="dom-if" if="[[isImageMedia]]" restamp="true">
-                <iron-image class="messageImg" fade preload sizing="cover" with-caption$="[[message.message]]" src="[[message.media.url]]" on-tap="_showFancybox"></iron-image>
+                <iron-image class="messageImg" fade preload sizing="cover" with-caption$="[[message.text]]" src="[[message.media.url]]" on-tap="_showFancybox"></iron-image>
               </template>
             </template>
             <template is="dom-if" if="[[isFileType]]" restamp="true">
@@ -433,9 +433,9 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
             <template is="dom-if" if="[[originalText]]" restamp="true">
               <div class="bubble-text">
                 <div class="text-original" hidden$="[[!showOriginal]]" inner-h-t-m-l="[[originalText]]">
-                  [[message.message]]
+                  [[message.text]]
                 </div>
-                <div class="text-translation" hidden$="[[showOriginal]]" inner-h-t-m-l="[[text]]">[[message.message]]</div>
+                <div class="text-translation" hidden$="[[showOriginal]]" inner-h-t-m-l="[[text]]">[[message.text]]</div>
               </div>
             </template>
           </div>
@@ -739,11 +739,11 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
    */
   _messageChange(message) {
     if (!message) return;
-    let baseMessage = message.message;
-    if (message.message && message.locales) {
-      baseMessage = this._returnFinalMessage(message.message, message.locales);
+    let baseMessage = message.text;
+    if (message.text && message.locales) {
+      baseMessage = this._returnFinalMessage(message.text, message.locales);
     }
-    const originalText = this._extractHyperlinks(message.message);
+    const originalText = this._extractHyperlinks(message.text);
     this._setOriginalText(originalText);
     const translatedMessage = this._extractHyperlinks(baseMessage);
     this._setText(translatedMessage);
