@@ -607,7 +607,6 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       isImageMedia: {
         type: Boolean,
         value: false,
-        readOnly: true,
       },
       /**
        * The media is a file
@@ -749,7 +748,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
     this._setText(translatedMessage);
     if (message.media && message.media.contentType) {
       if (message.media.contentType.match(/image\/(gif|bmp|jpeg|png)$/i)) {
-        this._setIsImageMedia(message.media.contentType);
+        this.isImageMedia = true;
       } else if (message.media.contentType.match(/audio\/(ogg|webm|wav)$/i)) {
         this.isAudioType = true;
       } else {
