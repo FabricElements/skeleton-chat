@@ -525,7 +525,7 @@ class SkeletonChatInput extends PolymerElement {
       isAnonymous: user.isAnonymous,
       group: group,
       processed: false,
-      message: baseText,
+      text: baseText,
       type: 'default',
       uid: user.uid,
       user: {
