@@ -395,7 +395,7 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
       }
     </style>
 
-    <paper-icon-item owner$="[[isOwner]]" lider$="[[isChatOwner]]" type-media$="[[message.media.type]]">
+    <paper-icon-item owner$="[[isOwner]]" lider$="[[isChatOwner]]" type-media$="[[message.media.contentType]]">
       <div class="icon-container" slot="item-icon">
           <iron-image fade sizing="cover" src$="[[image]]" hidden$="[[!image]]" id="owner-img"></iron-image>
           <div id="acronym" hidden$="[[!acronym]]">
@@ -747,10 +747,10 @@ class SkeletonChatMessage extends GestureEventListeners(PolymerElement) {
     this._setOriginalText(originalText);
     const translatedMessage = this._extractHyperlinks(baseMessage);
     this._setText(translatedMessage);
-    if (message.media && message.media.type) {
-      if (message.media.type.match(/image\/(gif|bmp|jpeg|png)$/i)) {
-        this._setIsImageMedia(message.media.type);
-      } else if (message.media.type.match(/audio\/(ogg|webm|wav)$/i)) {
+    if (message.media && message.media.contentType) {
+      if (message.media.contentType.match(/image\/(gif|bmp|jpeg|png)$/i)) {
+        this._setIsImageMedia(message.media.contentType);
+      } else if (message.media.contentType.match(/audio\/(ogg|webm|wav)$/i)) {
         this.isAudioType = true;
       } else {
         this.isFileType = true;
