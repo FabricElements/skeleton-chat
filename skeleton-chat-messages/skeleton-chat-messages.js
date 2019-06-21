@@ -48,10 +48,16 @@ class SkeletonChatMessages extends mixinBehaviors([
       }
 
       iron-scroll-threshold {
-        @apply --layout-flex-auto;
-        bottom: var(--skeleton-chat-box-bottom);
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        /*@apply --layout-flex-auto;*/
+        bottom: var(--skeleton-chat-box-bottom, 0);
         box-sizing: border-box;
         padding-top: 1rem;
+        padding-bottom: 1rem;
         /*padding-bottom: 1rem;*/
         @apply --skeleton-chat-messages;
       }
@@ -63,6 +69,11 @@ class SkeletonChatMessages extends mixinBehaviors([
       }
 
       #input-box {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        min-height: var(--skeleton-chat-box-bottom, 0);
         background-color: var(--skeleton-chat-input-box-color, var(--paper-grey-50));
         @apply --skeleton-chat-messages-input;
       }
